@@ -32,11 +32,14 @@ import androidx.compose.ui.unit.dp
 import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.domain.model.main.Transaction
 import com.dms.moneymanager.presentation.screen.main.MainEvent
+import com.dms.moneymanager.presentation.screen.main.component.main.bottomsheet.BottomSheetAppliedTransaction
 import com.dms.moneymanager.presentation.screen.main.component.main.bottomsheet.BottomSheetCreateAccount
 import com.dms.moneymanager.presentation.screen.main.component.main.bottomsheet.BottomSheetCreateTransaction
-import com.dms.moneymanager.presentation.screen.main.component.main.list.MainList
+import com.dms.moneymanager.presentation.screen.main.component.main.mainlist.MainList
+import com.dms.moneymanager.presentation.screen.main.model.BottomSheetAppliedTransaction
+import com.dms.moneymanager.presentation.screen.main.model.BottomSheetCreateAccount
+import com.dms.moneymanager.presentation.screen.main.model.BottomSheetCreateTransaction
 import com.dms.moneymanager.presentation.screen.main.model.HeaderBackgroundColor
-import com.dms.moneymanager.presentation.screen.main.model.MainBottomSheetType
 import com.dms.moneymanager.presentation.screen.main.model.MainUiModel
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 
@@ -55,15 +58,24 @@ fun MainScreen(
             sheetState = bottomSheetState
         ) {
             when (viewState.mainBottomSheetType) {
-                MainBottomSheetType.CREATE_ACCOUNT -> {
+                is BottomSheetCreateAccount -> {
                     BottomSheetCreateAccount(
                         onEvent = onEvent,
                         closeBottomSheetAction = { onEvent(MainEvent.CloseBottomSheet) }
                     )
                 }
 
-                MainBottomSheetType.CREATE_TRANSACTION -> {
+                is BottomSheetCreateTransaction -> {
                     BottomSheetCreateTransaction(
+                        onEvent = onEvent,
+                        closeBottomSheetAction = { onEvent(MainEvent.CloseBottomSheet) }
+                    )
+                }
+
+                is BottomSheetAppliedTransaction -> {
+                    BottomSheetAppliedTransaction(
+                        accounts = viewState.listAccount,
+                        transaction = viewState.mainBottomSheetType.transaction,
                         onEvent = onEvent,
                         closeBottomSheetAction = { onEvent(MainEvent.CloseBottomSheet) }
                     )
@@ -97,8 +109,8 @@ private fun MainContent(
         Spacer(modifier = Modifier.weight(1f))
         AddFloatingButton(
             modifier = Modifier.padding(bottom = 10.dp, end = 10.dp),
-            addAccountAction = { onEvent(MainEvent.OpenBottomSheet(MainBottomSheetType.CREATE_ACCOUNT)) },
-            addTransactionAction = { onEvent(MainEvent.OpenBottomSheet(MainBottomSheetType.CREATE_TRANSACTION)) }
+            addAccountAction = { onEvent(MainEvent.OpenBottomSheet(mainBottomSheetType = BottomSheetCreateAccount)) },
+            addTransactionAction = { onEvent(MainEvent.OpenBottomSheet(mainBottomSheetType = BottomSheetCreateTransaction)) }
         )
     }
 }

@@ -21,6 +21,7 @@ abstract class MainEvent {
     class AddAccountEvent(val account: Account) : MainEvent()
     class RemoveAccountEvent(val account: Account) : MainEvent()
     class AddTransactionEvent(val transaction: Transaction) : MainEvent()
+    class AppliedTransaction(val account: Account, val transaction: Transaction) : MainEvent()
     class RemoveTransactionEvent(val transaction: Transaction) : MainEvent()
     class OpenBottomSheet(val mainBottomSheetType: MainBottomSheetType) : MainEvent()
     object CloseBottomSheet : MainEvent()
@@ -84,6 +85,10 @@ class MainViewModel @Inject constructor(
                 createTransaction(transaction = event.transaction)
             }
 
+            is MainEvent.AppliedTransaction -> {
+                appliedTransaction(account = event.account, transaction = event.transaction)
+            }
+
             is MainEvent.RemoveTransactionEvent -> {
                 removeTransaction(transaction = event.transaction)
             }
@@ -117,6 +122,14 @@ class MainViewModel @Inject constructor(
     private fun createTransaction(transaction: Transaction) {
         viewModelScope.launch {
             kotlin.runCatching { transactionUseCase.createTransaction(transaction = transaction) }
+                .onSuccess { refreshDatas() }
+                .onFailure { /* TODO Handle failure */ }
+        }
+    }
+
+    private fun appliedTransaction(account: Account, transaction: Transaction) {
+        viewModelScope.launch {
+            kotlin.runCatching { accountUseCase.appliedTransaction(account = account, transaction = transaction) }
                 .onSuccess { refreshDatas() }
                 .onFailure { /* TODO Handle failure */ }
         }

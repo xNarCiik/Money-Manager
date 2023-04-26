@@ -1,4 +1,4 @@
-package com.dms.moneymanager.presentation.screen.main.component.main.list
+package com.dms.moneymanager.presentation.screen.main.component.main.mainlist
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.domain.model.main.Transaction
 import com.dms.moneymanager.presentation.screen.main.MainEvent
+import com.dms.moneymanager.presentation.screen.main.model.BottomSheetAppliedTransaction
 
 @Composable
 fun MainList(
@@ -69,7 +70,16 @@ fun MainList(
             itemsIndexed(listTransaction) { index, transaction ->
                 TransactionItem(
                     transaction = transaction,
-                    removeAction = { onEvent(MainEvent.RemoveTransactionEvent(transaction)) },
+                    appliedAction = {
+                        onEvent(
+                            MainEvent.OpenBottomSheet(
+                                mainBottomSheetType = BottomSheetAppliedTransaction(
+                                    transaction = transaction
+                                )
+                            )
+                        )
+                    },
+                    removeAction = { onEvent(MainEvent.RemoveTransactionEvent(transaction = transaction)) },
                     showDivider = index != listTransaction.size - 1
                 )
             }

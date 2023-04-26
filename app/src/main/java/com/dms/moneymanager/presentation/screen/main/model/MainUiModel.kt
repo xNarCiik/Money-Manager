@@ -19,7 +19,7 @@ enum class HeaderBackgroundColor(val value: Color) {
     POSITIVE_BALANCE(Color.Green)
 }
 
-enum class MainBottomSheetType {
-    CREATE_ACCOUNT,
-    CREATE_TRANSACTION
-}
+abstract class MainBottomSheetType
+object BottomSheetCreateAccount : MainBottomSheetType()
+object BottomSheetCreateTransaction : MainBottomSheetType()
+class BottomSheetAppliedTransaction(val transaction: Transaction) : MainBottomSheetType()

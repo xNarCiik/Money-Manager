@@ -1,4 +1,4 @@
-package com.dms.moneymanager.presentation.screen.main.component.main.list
+package com.dms.moneymanager.presentation.screen.main.component.main.mainlist
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -21,6 +21,7 @@ import com.dms.moneymanager.domain.model.main.Transaction
 @Composable
 fun TransactionItem(
     transaction: Transaction,
+    appliedAction: () -> Unit,
     removeAction: () -> Unit,
     showDivider: Boolean
 ) {
@@ -48,6 +49,7 @@ fun TransactionItem(
         DropDownMenuTransaction(
             expanded = expandedDropDownMenu,
             closeDropDownMenuAction = { expandedDropDownMenu = false },
+            appliedAction = appliedAction,
             removeAction = removeAction
         )
     }
@@ -57,6 +59,7 @@ fun TransactionItem(
 private fun DropDownMenuTransaction(
     expanded: Boolean,
     closeDropDownMenuAction: () -> Unit,
+    appliedAction: () -> Unit,
     removeAction: () -> Unit
 ) {
     DropdownMenu(
@@ -66,6 +69,7 @@ private fun DropDownMenuTransaction(
         DropdownMenuItem(
             text = { Text("Appliquer") },
             onClick = {
+                appliedAction()
                 closeDropDownMenuAction()
             }
         )

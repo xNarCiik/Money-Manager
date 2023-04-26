@@ -24,7 +24,7 @@ object AppModule {
     @Singleton
     @Provides
     fun provideDatabase(@ApplicationContext context: Context) =
-        Database.getDatabase(context)
+        Database.getDatabase(context = context)
 
     @Singleton
     @Provides
@@ -41,25 +41,30 @@ object AppModule {
     @Singleton
     @Provides
     fun provideAccountRepository(accountDao: AccountDao): AccountRepository {
-        return AccountRepositoryImpl(accountDao)
+        return AccountRepositoryImpl(accountDao = accountDao)
     }
 
     @Singleton
     @Provides
-    fun provideAccountUseCase(accountRepository: AccountRepository): AccountUseCase {
-        return AccountUseCase(accountRepository)
+    fun provideAccountUseCase(
+        accountRepository: AccountRepository,
+        transactionUseCase: TransactionUseCase
+    ): AccountUseCase {
+        return AccountUseCase(
+            accountRepository = accountRepository,
+            transactionUseCase = transactionUseCase
+        )
     }
 
     @Singleton
     @Provides
     fun provideTransactionRepository(transactionDao: TransactionDao): TransactionRepository {
-        return TransactionRepositoryImpl(transactionDao)
+        return TransactionRepositoryImpl(transactionDao = transactionDao)
     }
 
     @Singleton
     @Provides
     fun provideTransactionUseCase(transactionRepository: TransactionRepository): TransactionUseCase {
-        return TransactionUseCase(transactionRepository)
+        return TransactionUseCase(transactionRepository = transactionRepository)
     }
-
 }

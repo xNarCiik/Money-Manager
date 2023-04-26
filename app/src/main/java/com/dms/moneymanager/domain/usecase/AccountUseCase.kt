@@ -6,12 +6,19 @@ import com.dms.moneymanager.domain.repository.AccountRepository
 import javax.inject.Inject
 
 class AccountUseCase @Inject constructor(
-    private val accountRepository: AccountRepository
+    private val accountRepository: AccountRepository,
+    private val transactionUseCase: TransactionUseCase
 ) {
     suspend fun getAccounts() = accountRepository.getAccounts()
 
     suspend fun createAccount(account: Account) {
         accountRepository.insertAccount(account = account)
+    }
+
+    suspend fun appliedTransaction(account: Account, transaction: Transaction) {
+        account.currentBalance += transaction.amount
+        accountRepository.updateAccount(account = account)
+        transactionUseCase.removeTransaction(transaction = transaction)
     }
 
     suspend fun removeAccount(account: Account) {
