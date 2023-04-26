@@ -1,4 +1,4 @@
-package com.dms.moneymanager.presentation.screen.main.component.main.mainlist
+package com.dms.moneymanager.presentation.screen.main.component.mainlist
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row

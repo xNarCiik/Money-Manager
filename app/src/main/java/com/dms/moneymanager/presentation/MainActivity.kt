@@ -13,7 +13,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.dms.moneymanager.presentation.screen.main.MainViewModel
-import com.dms.moneymanager.presentation.screen.main.component.main.MainScreen
+import com.dms.moneymanager.presentation.screen.main.component.MainScreen
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 import dagger.hilt.android.AndroidEntryPoint
 

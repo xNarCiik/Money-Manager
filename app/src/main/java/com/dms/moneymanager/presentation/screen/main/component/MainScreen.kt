@@ -1,4 +1,4 @@
-package com.dms.moneymanager.presentation.screen.main.component.main
+package com.dms.moneymanager.presentation.screen.main.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -32,10 +32,10 @@ import androidx.compose.ui.unit.dp
 import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.domain.model.main.Transaction
 import com.dms.moneymanager.presentation.screen.main.MainEvent
-import com.dms.moneymanager.presentation.screen.main.component.main.bottomsheet.BottomSheetAppliedTransaction
-import com.dms.moneymanager.presentation.screen.main.component.main.bottomsheet.BottomSheetCreateAccount
-import com.dms.moneymanager.presentation.screen.main.component.main.bottomsheet.BottomSheetCreateTransaction
-import com.dms.moneymanager.presentation.screen.main.component.main.mainlist.MainList
+import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetAppliedTransaction
+import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetCreateAccount
+import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetCreateTransaction
+import com.dms.moneymanager.presentation.screen.main.component.mainlist.MainList
 import com.dms.moneymanager.presentation.screen.main.model.BottomSheetAppliedTransaction
 import com.dms.moneymanager.presentation.screen.main.model.BottomSheetCreateAccount
 import com.dms.moneymanager.presentation.screen.main.model.BottomSheetCreateTransaction

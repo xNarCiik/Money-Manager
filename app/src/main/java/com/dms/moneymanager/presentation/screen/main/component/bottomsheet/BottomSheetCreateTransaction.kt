@@ -1,4 +1,4 @@
-package com.dms.moneymanager.presentation.screen.main.component.main.bottomsheet
+package com.dms.moneymanager.presentation.screen.main.component.bottomsheet
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,11 +13,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
-import com.dms.moneymanager.domain.model.main.Account
+import com.dms.moneymanager.domain.model.main.Transaction
 import com.dms.moneymanager.presentation.screen.main.MainEvent
 
 @Composable
-fun BottomSheetCreateAccount(
+fun BottomSheetCreateTransaction(
     onEvent: (MainEvent) -> Unit,
     closeBottomSheetAction: () -> Unit,
 ) {
@@ -49,16 +49,16 @@ fun BottomSheetCreateAccount(
             onClick = {
                 closeBottomSheetAction()
                 onEvent(
-                    MainEvent.AddAccountEvent(
-                        account = Account(
+                    MainEvent.AddTransactionEvent(
+                        transaction = Transaction(
                             name = name.text,
-                            currentBalance = value.text.toFloat() // TODO
+                            amount = value.text.toFloat() // TODO
                         )
                     )
                 )
             }
         ) {
-            Text("Create Account")
+            Text("Create transaction")
         }
     }
 }

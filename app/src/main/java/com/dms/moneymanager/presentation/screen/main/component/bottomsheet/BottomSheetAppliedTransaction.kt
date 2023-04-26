@@ -1,4 +1,4 @@
-package com.dms.moneymanager.presentation.screen.main.component.main.bottomsheet
+package com.dms.moneymanager.presentation.screen.main.component.bottomsheet
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
