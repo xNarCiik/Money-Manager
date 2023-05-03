@@ -43,7 +43,7 @@ fun AccountItem(
         }
 
         if (showDivider) {
-            Divider()
+            Divider(modifier = Modifier.padding(horizontal = 12.dp))
         }
 
         DropDownMenuAccount(

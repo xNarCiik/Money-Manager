@@ -44,7 +44,7 @@ fun TransactionItem(
         }
 
         if (showDivider) {
-            Divider()
+            Divider(modifier = Modifier.padding(horizontal = 12.dp))
         }
 
         DropDownMenuTransaction(

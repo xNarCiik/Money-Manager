@@ -1,17 +1,22 @@
 package com.dms.moneymanager.presentation.screen.main.component.mainlist
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Row
+import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.dms.moneymanager.R
 import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.domain.model.main.Transaction
 import com.dms.moneymanager.presentation.screen.main.MainEvent
@@ -23,16 +28,24 @@ fun MainList(
     listTransaction: List<Transaction>,
     onEvent: (MainEvent) -> Unit
 ) {
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(color = Color.Blue)
             .padding(all = 10.dp)
     ) {
-        Text(
-            text = "Comptes"
-        )
+        AccountList(listAccount = listAccount, onEvent = onEvent)
+
+        Spacer(modifier = Modifier.height(height = 32.dp))
+
+        TransactionList(listTransaction = listTransaction, onEvent = onEvent)
     }
+}
+
+@Composable
+private fun AccountList(listAccount: List<Account>, onEvent: (MainEvent) -> Unit) {
+    TitleListText(stringId = R.string.accounts)
+
+    Divider(modifier = Modifier.padding(top = 12.dp))
 
     if (listAccount.isNotEmpty()) {
         LazyColumn {
@@ -45,25 +58,15 @@ fun MainList(
             }
         }
     } else {
-        Text(
-            text = "Aucun compte",
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(15.dp),
-            textAlign = TextAlign.Center
-        )
+        EmptyText(stringId = R.string.empty_account)
     }
+}
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(color = Color.Blue)
-            .padding(all = 10.dp)
-    ) {
-        Text(
-            text = "Transactions"
-        )
-    }
+@Composable
+private fun TransactionList(listTransaction: List<Transaction>, onEvent: (MainEvent) -> Unit) {
+    TitleListText(stringId = R.string.incoming_transactions)
+
+    Divider(modifier = Modifier.padding(top = 12.dp))
 
     if (listTransaction.isNotEmpty()) {
         LazyColumn {
@@ -85,12 +88,25 @@ fun MainList(
             }
         }
     } else {
-        Text(
-            text = "Aucune transaction",
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(15.dp),
-            textAlign = TextAlign.Center
-        )
+        EmptyText(stringId = R.string.empty_transaction)
     }
+}
+
+@Composable
+private fun TitleListText(@StringRes stringId: Int) {
+    Text(
+        text = stringResource(id = stringId),
+        style = MaterialTheme.typography.titleLarge
+    )
+}
+
+@Composable
+private fun EmptyText(@StringRes stringId: Int) {
+    Text(
+        text = stringResource(id = stringId),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 22.dp),
+        textAlign = TextAlign.Center
+    )
 }

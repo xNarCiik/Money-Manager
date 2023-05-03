@@ -1,13 +1,12 @@
 package com.dms.moneymanager.presentation.screen.main.component
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
@@ -18,6 +17,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -29,14 +29,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.dms.moneymanager.R
 import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.domain.model.main.Transaction
-import com.dms.moneymanager.presentation.util.toAmountString
 import com.dms.moneymanager.presentation.screen.main.MainEvent
 import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetAppliedTransaction
 import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetCreateAccount
@@ -45,7 +47,6 @@ import com.dms.moneymanager.presentation.screen.main.component.mainlist.MainList
 import com.dms.moneymanager.presentation.screen.main.model.BottomSheetAppliedTransaction
 import com.dms.moneymanager.presentation.screen.main.model.BottomSheetCreateAccount
 import com.dms.moneymanager.presentation.screen.main.model.BottomSheetCreateTransaction
-import com.dms.moneymanager.presentation.screen.main.model.HeaderBackgroundColor
 import com.dms.moneymanager.presentation.screen.main.model.MainUiModel
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 
@@ -106,17 +107,25 @@ private fun MainContent(
 ) {
     Column(horizontalAlignment = Alignment.End) {
         HeaderContent(
-            onMenuClick = { navController.navigate("history") },
-            headerBackgroundColor = viewState.headerBackgroundColor,
-            currentBalance = viewState.currentBalance,
-            futureBalance = viewState.futureBalance
+            onMenuClick = { navController.navigate("history") }
         )
+
+        /* Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(text = "Budjet actuel")
+            Text(text = currentBalance.toAmountString())
+        }
+
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(text = "Budjet prévisionnel futur")
+            Text(text = futureBalance.toAmountString())
+        } */
+
         MainList(
             listAccount = viewState.listAccount,
             listTransaction = viewState.listTransaction,
             onEvent = onEvent
         )
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.weight(weight = 1f))
         AddFloatingButton(
             modifier = Modifier.padding(bottom = 10.dp, end = 10.dp),
             addAccountAction = { onEvent(MainEvent.OpenBottomSheet(mainBottomSheetType = BottomSheetCreateAccount)) },
@@ -126,36 +135,27 @@ private fun MainContent(
 }
 
 @Composable
-private fun HeaderContent(
-    onMenuClick: () -> Unit,
-    headerBackgroundColor: HeaderBackgroundColor,
-    currentBalance: Float,
-    futureBalance: Float
-) {
+private fun HeaderContent(onMenuClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(color = headerBackgroundColor.value)
             .padding(all = 10.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            modifier = Modifier.clickable {
-                onMenuClick()
-            },
+            modifier = Modifier
+                .size(26.dp)
+                .clickable { onMenuClick() },
             imageVector = Icons.Rounded.Menu,
             contentDescription = "Menu icon"
         )
 
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "Budjet actuel")
-            Text(text = currentBalance.toAmountString())
-        }
-
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "Budjet prévisionnel futur")
-            Text(text = futureBalance.toAmountString())
-        }
+        Text(
+            modifier = Modifier.weight(weight = 1f),
+            text = stringResource(id = R.string.app_name),
+            style = MaterialTheme.typography.headlineMedium,
+            textAlign = TextAlign.Center
+        )
     }
 }
 

@@ -6,7 +6,6 @@ import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.domain.model.main.Transaction
 import com.dms.moneymanager.domain.usecase.AccountUseCase
 import com.dms.moneymanager.domain.usecase.TransactionUseCase
-import com.dms.moneymanager.presentation.screen.main.model.HeaderBackgroundColor
 import com.dms.moneymanager.presentation.screen.main.model.MainBottomSheetType
 import com.dms.moneymanager.presentation.screen.main.model.MainUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,7 +32,6 @@ class MainViewModel @Inject constructor(
     private val transactionUseCase: TransactionUseCase
 ) : ViewModel() {
 
-    private var _headerBackgroundColor = MutableStateFlow(HeaderBackgroundColor.STABLE_BALANCE)
     private var _currentBalance = MutableStateFlow(0.0f)
     private val _futureBalance = MutableStateFlow(0.0f)
     private var _listAccount = MutableStateFlow<List<Account>>(emptyList())
@@ -42,23 +40,19 @@ class MainViewModel @Inject constructor(
 
     @Suppress("UNCHECKED_CAST")
     val viewState = combine(
-        _headerBackgroundColor,
         _currentBalance,
         _futureBalance,
         _listAccount,
         _listTransaction,
         _mainBottomSheetType
     ) { params ->
-
-        val headerBackgroundColor = params[0] as HeaderBackgroundColor
-        val currentBalance = params[1] as Float
-        val futureBalance = params[2] as Float
-        val listAccount = params[3] as List<Account>
-        val listTransaction = params[4] as List<Transaction>
-        val mainBottomSheetType = params[5] as MainBottomSheetType?
+        val currentBalance = params[0] as Float
+        val futureBalance = params[1] as Float
+        val listAccount = params[2] as List<Account>
+        val listTransaction = params[3] as List<Transaction>
+        val mainBottomSheetType = params[4] as MainBottomSheetType?
 
         MainUiModel(
-            headerBackgroundColor = headerBackgroundColor,
             currentBalance = currentBalance,
             futureBalance = futureBalance,
             listAccount = listAccount,
@@ -152,11 +146,6 @@ class MainViewModel @Inject constructor(
                 accounts = _listAccount.value,
                 transactions = _listTransaction.value
             )
-            _headerBackgroundColor.value = when {
-                _futureBalance.value < 0 -> HeaderBackgroundColor.NEGATIVE_BALANCE
-                _futureBalance.value > 0 -> HeaderBackgroundColor.POSITIVE_BALANCE
-                else -> HeaderBackgroundColor.STABLE_BALANCE
-            }
         }
     }
 }
