@@ -12,6 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.dms.moneymanager.presentation.screen.history.HistoryViewModel
+import com.dms.moneymanager.presentation.screen.history.component.HistoryScreen
 import com.dms.moneymanager.presentation.screen.main.MainViewModel
 import com.dms.moneymanager.presentation.screen.main.component.MainScreen
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
@@ -19,8 +21,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
-    private val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,11 +34,18 @@ class MainActivity : ComponentActivity() {
 
                     NavHost(navController = navController, startDestination = "main") {
                         composable("main") {
+                            val mainViewModel: MainViewModel by viewModels()
                             val viewState = mainViewModel.viewState.collectAsState()
                             MainScreen(
                                 viewState = viewState.value,
-                                onEvent = mainViewModel::onEvent
+                                onEvent = mainViewModel::onEvent,
+                                navController = navController
                             )
+                        }
+                        composable("history") {
+                            val historyViewModel: HistoryViewModel by viewModels()
+                            val viewState = historyViewModel.viewState.collectAsState()
+                            HistoryScreen(viewState = viewState.value)
                         }
                     }
                 }

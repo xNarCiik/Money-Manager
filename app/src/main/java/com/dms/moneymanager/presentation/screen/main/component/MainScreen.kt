@@ -1,6 +1,7 @@
 package com.dms.moneymanager.presentation.screen.main.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -29,6 +31,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.domain.model.main.Transaction
 import com.dms.moneymanager.presentation.util.toAmountString
@@ -48,7 +53,8 @@ import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 @Composable
 fun MainScreen(
     viewState: MainUiModel,
-    onEvent: (MainEvent) -> Unit
+    onEvent: (MainEvent) -> Unit,
+    navController: NavHostController
 ) {
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
@@ -87,17 +93,20 @@ fun MainScreen(
 
     MainContent(
         viewState = viewState,
-        onEvent = onEvent
+        onEvent = onEvent,
+        navController = navController
     )
 }
 
 @Composable
 private fun MainContent(
     viewState: MainUiModel,
-    onEvent: (MainEvent) -> Unit
+    onEvent: (MainEvent) -> Unit,
+    navController: NavController
 ) {
     Column(horizontalAlignment = Alignment.End) {
         HeaderContent(
+            onMenuClick = { navController.navigate("history") },
             headerBackgroundColor = viewState.headerBackgroundColor,
             currentBalance = viewState.currentBalance,
             futureBalance = viewState.futureBalance
@@ -118,6 +127,7 @@ private fun MainContent(
 
 @Composable
 private fun HeaderContent(
+    onMenuClick: () -> Unit,
     headerBackgroundColor: HeaderBackgroundColor,
     currentBalance: Float,
     futureBalance: Float
@@ -129,6 +139,14 @@ private fun HeaderContent(
             .padding(all = 10.dp),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
+        Icon(
+            modifier = Modifier.clickable {
+                onMenuClick()
+            },
+            imageVector = Icons.Rounded.Menu,
+            contentDescription = "Menu icon"
+        )
+
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(text = "Budjet actuel")
             Text(text = currentBalance.toAmountString())
@@ -191,9 +209,16 @@ private fun MainScreenPreview() {
         MainScreen(
             viewState = MainUiModel(
                 listAccount = arrayListOf(Account(name = "account 1", currentBalance = 2000.0f)),
-                listTransaction = arrayListOf(Transaction(name = "transaction 1", amount = -10.5f, isApplied = false))
+                listTransaction = arrayListOf(
+                    Transaction(
+                        name = "transaction 1",
+                        amount = -10.5f,
+                        isApplied = false
+                    )
+                )
             ),
-            onEvent = { }
+            onEvent = { },
+            navController = rememberNavController()
         )
     }
 }

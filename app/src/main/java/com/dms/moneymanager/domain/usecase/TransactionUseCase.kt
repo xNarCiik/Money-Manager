@@ -7,8 +7,9 @@ import javax.inject.Inject
 class TransactionUseCase @Inject constructor(
     private val transactionRepository: TransactionRepository
 ) {
-    suspend fun getNotAppliedTransactions() =
-        transactionRepository.getTransactions().filter { !it.isApplied }
+    suspend fun getAllTransactions() = transactionRepository.getTransactions()
+
+    suspend fun getNotAppliedTransactions() = getAllTransactions().filter { !it.isApplied }
 
     suspend fun createTransaction(transaction: Transaction) {
         transactionRepository.insertTransaction(transaction = transaction)
