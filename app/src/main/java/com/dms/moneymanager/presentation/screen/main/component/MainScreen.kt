@@ -31,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.domain.model.main.Transaction
+import com.dms.moneymanager.domain.util.toAmountString
 import com.dms.moneymanager.presentation.screen.main.MainEvent
 import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetAppliedTransaction
 import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetCreateAccount
@@ -130,12 +131,12 @@ private fun HeaderContent(
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(text = "Budjet actuel")
-            Text(text = "${currentBalance}€")
+            Text(text = currentBalance.toAmountString())
         }
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(text = "Budjet prévisionnel futur")
-            Text(text = "${futureBalance}€")
+            Text(text = futureBalance.toAmountString())
         }
     }
 }

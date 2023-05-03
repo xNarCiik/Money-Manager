@@ -16,7 +16,7 @@ data class MainUiModel(
 enum class HeaderBackgroundColor(val value: Color) {
     NEGATIVE_BALANCE(Color.Red),
     STABLE_BALANCE(Color.DarkGray),
-    POSITIVE_BALANCE(Color.Green)
+    POSITIVE_BALANCE(Color.Transparent)
 }
 
 abstract class MainBottomSheetType

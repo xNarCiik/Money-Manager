@@ -17,6 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.dms.moneymanager.domain.model.main.Transaction
+import com.dms.moneymanager.domain.util.toAmountString
 
 @Composable
 fun TransactionItem(
@@ -38,7 +39,7 @@ fun TransactionItem(
                 modifier = Modifier.weight(weight = 1f)
             )
             Text(
-                text = transaction.amount.toString()
+                text = transaction.amount.toAmountString()
             )
         }
 
