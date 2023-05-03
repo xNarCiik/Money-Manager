@@ -1,6 +1,7 @@
 package com.dms.moneymanager.presentation.screen.main.component
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -48,6 +49,7 @@ import com.dms.moneymanager.presentation.screen.main.model.BottomSheetAppliedTra
 import com.dms.moneymanager.presentation.screen.main.model.BottomSheetCreateAccount
 import com.dms.moneymanager.presentation.screen.main.model.BottomSheetCreateTransaction
 import com.dms.moneymanager.presentation.screen.main.model.MainUiModel
+import com.dms.moneymanager.presentation.util.toAmountString
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -110,22 +112,20 @@ private fun MainContent(
             onMenuClick = { navController.navigate("history") }
         )
 
-        /* Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "Budjet actuel")
-            Text(text = currentBalance.toAmountString())
-        }
-
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "Budjet prévisionnel futur")
-            Text(text = futureBalance.toAmountString())
-        } */
+        InfoBalance(
+            modifier = Modifier.padding(vertical = 12.dp),
+            currentBalance = viewState.currentBalance,
+            futureBalance = viewState.futureBalance
+        )
 
         MainList(
             listAccount = viewState.listAccount,
             listTransaction = viewState.listTransaction,
             onEvent = onEvent
         )
+
         Spacer(modifier = Modifier.weight(weight = 1f))
+        
         AddFloatingButton(
             modifier = Modifier.padding(bottom = 10.dp, end = 10.dp),
             addAccountAction = { onEvent(MainEvent.OpenBottomSheet(mainBottomSheetType = BottomSheetCreateAccount)) },
@@ -156,6 +156,28 @@ private fun HeaderContent(onMenuClick: () -> Unit) {
             style = MaterialTheme.typography.headlineMedium,
             textAlign = TextAlign.Center
         )
+    }
+}
+
+@Composable
+private fun InfoBalance(
+    modifier: Modifier = Modifier,
+    currentBalance: Float,
+    futureBalance: Float
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(text = "Budjet actuel")
+            Text(text = currentBalance.toAmountString())
+        }
+
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(text = "Budjet futur")
+            Text(text = futureBalance.toAmountString())
+        }
     }
 }
 

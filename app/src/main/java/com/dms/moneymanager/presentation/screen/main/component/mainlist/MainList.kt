@@ -45,7 +45,7 @@ fun MainList(
 private fun AccountList(listAccount: List<Account>, onEvent: (MainEvent) -> Unit) {
     TitleListText(stringId = R.string.accounts)
 
-    Divider(modifier = Modifier.padding(top = 12.dp))
+    TitleListDivider()
 
     if (listAccount.isNotEmpty()) {
         LazyColumn {
@@ -66,7 +66,7 @@ private fun AccountList(listAccount: List<Account>, onEvent: (MainEvent) -> Unit
 private fun TransactionList(listTransaction: List<Transaction>, onEvent: (MainEvent) -> Unit) {
     TitleListText(stringId = R.string.incoming_transactions)
 
-    Divider(modifier = Modifier.padding(top = 12.dp))
+    TitleListDivider()
 
     if (listTransaction.isNotEmpty()) {
         LazyColumn {
@@ -98,6 +98,11 @@ private fun TitleListText(@StringRes stringId: Int) {
         text = stringResource(id = stringId),
         style = MaterialTheme.typography.titleLarge
     )
+}
+
+@Composable
+private fun TitleListDivider() {
+    Divider(modifier = Modifier.padding(top = 12.dp))
 }
 
 @Composable
