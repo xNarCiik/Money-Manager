@@ -7,8 +7,10 @@ object TransactionMapper {
 
     fun Transaction.toTransactionEntity() = with(this) {
         TransactionEntity(
+            id = id,
             name = name,
             amount = amount,
+            isApplied = isApplied,
             dueDate = dueDate,
             recurrenceType = recurrenceType
         )
@@ -16,8 +18,10 @@ object TransactionMapper {
 
     fun TransactionEntity.toTransaction() = with(this) {
         Transaction(
+            id = id,
             name = name,
             amount = amount,
+            isApplied = isApplied,
             dueDate = dueDate,
             recurrenceType = recurrenceType
         )

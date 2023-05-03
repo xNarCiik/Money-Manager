@@ -68,7 +68,7 @@ class MainViewModel @Inject constructor(
     }.stateIn(viewModelScope, SharingStarted.Lazily, MainUiModel())
 
     init {
-        refreshDatas()
+        refreshData()
     }
 
     fun onEvent(event: MainEvent) {
@@ -106,7 +106,7 @@ class MainViewModel @Inject constructor(
     private fun createAccount(account: Account) {
         viewModelScope.launch {
             kotlin.runCatching { accountUseCase.createAccount(account = account) }
-                .onSuccess { refreshDatas() }
+                .onSuccess { refreshData() }
                 .onFailure { /* TODO Handle failure */ }
         }
     }
@@ -114,7 +114,7 @@ class MainViewModel @Inject constructor(
     private fun removeAccount(account: Account) {
         viewModelScope.launch {
             kotlin.runCatching { accountUseCase.removeAccount(account = account) }
-                .onSuccess { refreshDatas() }
+                .onSuccess { refreshData() }
                 .onFailure { /* TODO Handle failure */ }
         }
     }
@@ -122,7 +122,7 @@ class MainViewModel @Inject constructor(
     private fun createTransaction(transaction: Transaction) {
         viewModelScope.launch {
             kotlin.runCatching { transactionUseCase.createTransaction(transaction = transaction) }
-                .onSuccess { refreshDatas() }
+                .onSuccess { refreshData() }
                 .onFailure { /* TODO Handle failure */ }
         }
     }
@@ -130,7 +130,7 @@ class MainViewModel @Inject constructor(
     private fun appliedTransaction(account: Account, transaction: Transaction) {
         viewModelScope.launch {
             kotlin.runCatching { accountUseCase.appliedTransaction(account = account, transaction = transaction) }
-                .onSuccess { refreshDatas() }
+                .onSuccess { refreshData() }
                 .onFailure { /* TODO Handle failure */ }
         }
     }
@@ -138,15 +138,15 @@ class MainViewModel @Inject constructor(
     private fun removeTransaction(transaction: Transaction) {
         viewModelScope.launch {
             kotlin.runCatching { transactionUseCase.removeTransaction(transaction = transaction) }
-                .onSuccess { refreshDatas() }
+                .onSuccess { refreshData() }
                 .onFailure { /* TODO Handle failure */ }
         }
     }
 
-    private fun refreshDatas() {
+    private fun refreshData() {
         viewModelScope.launch {
             _listAccount.value = accountUseCase.getAccounts()
-            _listTransaction.value = transactionUseCase.getTransactions()
+            _listTransaction.value = transactionUseCase.getNotAppliedTransactions()
             _currentBalance.value = accountUseCase.getCurrentBalance(accounts = _listAccount.value)
             _futureBalance.value = accountUseCase.getFutureBalance(
                 accounts = _listAccount.value,

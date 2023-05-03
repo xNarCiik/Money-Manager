@@ -31,7 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.domain.model.main.Transaction
-import com.dms.moneymanager.domain.util.toAmountString
+import com.dms.moneymanager.presentation.util.toAmountString
 import com.dms.moneymanager.presentation.screen.main.MainEvent
 import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetAppliedTransaction
 import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetCreateAccount
@@ -191,7 +191,7 @@ private fun MainScreenPreview() {
         MainScreen(
             viewState = MainUiModel(
                 listAccount = arrayListOf(Account(name = "account 1", currentBalance = 2000.0f)),
-                listTransaction = arrayListOf(Transaction(name = "transaction 1", amount = -10.5f))
+                listTransaction = arrayListOf(Transaction(name = "transaction 1", amount = -10.5f, isApplied = false))
             ),
             onEvent = { }
         )

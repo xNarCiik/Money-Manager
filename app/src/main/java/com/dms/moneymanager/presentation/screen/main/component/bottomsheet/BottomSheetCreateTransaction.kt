@@ -52,7 +52,8 @@ fun BottomSheetCreateTransaction(
                     MainEvent.AddTransactionEvent(
                         transaction = Transaction(
                             name = name.text,
-                            amount = value.text.toFloat() // TODO
+                            amount = value.text.toFloat(), // TODO
+                            isApplied = false
                         )
                     )
                 )

@@ -17,7 +17,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.dms.moneymanager.domain.model.main.Account
-import com.dms.moneymanager.domain.util.toAmountString
+import com.dms.moneymanager.presentation.util.toAmountString
 
 @Composable
 fun AccountItem(
