@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
@@ -41,13 +42,10 @@ import com.dms.moneymanager.R
 import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.domain.model.main.Transaction
 import com.dms.moneymanager.presentation.screen.main.MainEvent
-import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetAppliedTransaction
 import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetCreateAccount
 import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetCreateTransaction
 import com.dms.moneymanager.presentation.screen.main.component.mainlist.MainList
-import com.dms.moneymanager.presentation.screen.main.model.BottomSheetAppliedTransaction
-import com.dms.moneymanager.presentation.screen.main.model.BottomSheetCreateAccount
-import com.dms.moneymanager.presentation.screen.main.model.BottomSheetCreateTransaction
+import com.dms.moneymanager.presentation.screen.main.model.MainBottomSheetType
 import com.dms.moneymanager.presentation.screen.main.model.MainUiModel
 import com.dms.moneymanager.presentation.util.toAmountString
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
@@ -68,24 +66,15 @@ fun MainScreen(
             sheetState = bottomSheetState
         ) {
             when (viewState.mainBottomSheetType) {
-                is BottomSheetCreateAccount -> {
+                is MainBottomSheetType.BottomSheetCreateAccount -> {
                     BottomSheetCreateAccount(
                         onEvent = onEvent,
                         closeBottomSheetAction = { onEvent(MainEvent.CloseBottomSheet) }
                     )
                 }
 
-                is BottomSheetCreateTransaction -> {
+                is MainBottomSheetType.BottomSheetCreateTransaction -> {
                     BottomSheetCreateTransaction(
-                        onEvent = onEvent,
-                        closeBottomSheetAction = { onEvent(MainEvent.CloseBottomSheet) }
-                    )
-                }
-
-                is BottomSheetAppliedTransaction -> {
-                    BottomSheetAppliedTransaction(
-                        accounts = viewState.listAccount,
-                        transaction = viewState.mainBottomSheetType.transaction,
                         onEvent = onEvent,
                         closeBottomSheetAction = { onEvent(MainEvent.CloseBottomSheet) }
                     )
@@ -109,7 +98,8 @@ private fun MainContent(
 ) {
     Column(horizontalAlignment = Alignment.End) {
         HeaderContent(
-            onMenuClick = { navController.navigate("history") }
+            onMenuClick = { navController.navigate("history") },
+            onInfoClick = { /* TODO BOTTOM SHEET */ }
         )
 
         InfoBalance(
@@ -119,23 +109,24 @@ private fun MainContent(
         )
 
         MainList(
+            mainUiState = viewState.mainUiState,
             listAccount = viewState.listAccount,
             listTransaction = viewState.listTransaction,
             onEvent = onEvent
         )
 
         Spacer(modifier = Modifier.weight(weight = 1f))
-        
+
         AddFloatingButton(
             modifier = Modifier.padding(bottom = 10.dp, end = 10.dp),
-            addAccountAction = { onEvent(MainEvent.OpenBottomSheet(mainBottomSheetType = BottomSheetCreateAccount)) },
-            addTransactionAction = { onEvent(MainEvent.OpenBottomSheet(mainBottomSheetType = BottomSheetCreateTransaction)) }
+            addAccountAction = { onEvent(MainEvent.OpenBottomSheet(mainBottomSheetType = MainBottomSheetType.BottomSheetCreateAccount)) },
+            addTransactionAction = { onEvent(MainEvent.OpenBottomSheet(mainBottomSheetType = MainBottomSheetType.BottomSheetCreateTransaction)) }
         )
     }
 }
 
 @Composable
-private fun HeaderContent(onMenuClick: () -> Unit) {
+private fun HeaderContent(onMenuClick: () -> Unit, onInfoClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -155,6 +146,14 @@ private fun HeaderContent(onMenuClick: () -> Unit) {
             text = stringResource(id = R.string.app_name),
             style = MaterialTheme.typography.headlineMedium,
             textAlign = TextAlign.Center
+        )
+
+        Icon(
+            modifier = Modifier
+                .size(26.dp)
+                .clickable { onInfoClick() },
+            imageVector = Icons.Rounded.Info,
+            contentDescription = "Info icon"
         )
     }
 }

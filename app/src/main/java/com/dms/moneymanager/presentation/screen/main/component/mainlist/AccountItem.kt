@@ -17,11 +17,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.dms.moneymanager.domain.model.main.Account
+import com.dms.moneymanager.presentation.screen.main.model.MainUiState
 import com.dms.moneymanager.presentation.util.toAmountString
 
 @Composable
 fun AccountItem(
+    mainUiState: MainUiState,
     account: Account,
+    appliedTransaction: () -> Unit,
     removeAction: () -> Unit,
     showDivider: Boolean
 ) {
@@ -30,7 +33,14 @@ fun AccountItem(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { expandedDropDownMenu = true }
+            .clickable {
+                when (mainUiState) {
+                    MainUiState.APPLIED_TRANSACTION -> {
+                        appliedTransaction()
+                    }
+                    else -> expandedDropDownMenu = true
+                }
+            }
     ) {
         Row(modifier = Modifier.padding(all = 15.dp)) {
             Text(

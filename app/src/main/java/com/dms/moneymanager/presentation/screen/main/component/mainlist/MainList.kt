@@ -20,10 +20,11 @@ import com.dms.moneymanager.R
 import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.domain.model.main.Transaction
 import com.dms.moneymanager.presentation.screen.main.MainEvent
-import com.dms.moneymanager.presentation.screen.main.model.BottomSheetAppliedTransaction
+import com.dms.moneymanager.presentation.screen.main.model.MainUiState
 
 @Composable
 fun MainList(
+    mainUiState: MainUiState,
     listAccount: List<Account>,
     listTransaction: List<Transaction>,
     onEvent: (MainEvent) -> Unit
@@ -33,7 +34,11 @@ fun MainList(
             .fillMaxWidth()
             .padding(all = 10.dp)
     ) {
-        AccountList(listAccount = listAccount, onEvent = onEvent)
+        AccountList(
+            mainUiState = mainUiState,
+            listAccount = listAccount,
+            onEvent = onEvent
+        )
 
         Spacer(modifier = Modifier.height(height = 32.dp))
 
@@ -42,7 +47,11 @@ fun MainList(
 }
 
 @Composable
-private fun AccountList(listAccount: List<Account>, onEvent: (MainEvent) -> Unit) {
+private fun AccountList(
+    mainUiState: MainUiState,
+    listAccount: List<Account>,
+    onEvent: (MainEvent) -> Unit
+) {
     TitleListText(stringId = R.string.accounts)
 
     TitleListDivider()
@@ -51,7 +60,11 @@ private fun AccountList(listAccount: List<Account>, onEvent: (MainEvent) -> Unit
         LazyColumn {
             itemsIndexed(listAccount) { index, account ->
                 AccountItem(
+                    mainUiState = mainUiState,
                     account = account,
+                    appliedTransaction = {
+                        onEvent(MainEvent.AppliedTransaction(account = account))
+                    },
                     removeAction = { onEvent(MainEvent.RemoveAccountEvent(account)) },
                     showDivider = index != listAccount.size - 1
                 )
@@ -74,13 +87,7 @@ private fun TransactionList(listTransaction: List<Transaction>, onEvent: (MainEv
                 TransactionItem(
                     transaction = transaction,
                     appliedAction = {
-                        onEvent(
-                            MainEvent.OpenBottomSheet(
-                                mainBottomSheetType = BottomSheetAppliedTransaction(
-                                    transaction = transaction
-                                )
-                            )
-                        )
+                        onEvent(MainEvent.OnClickAppliedTransaction(transaction = transaction))
                     },
                     removeAction = { onEvent(MainEvent.RemoveTransactionEvent(transaction = transaction)) },
                     showDivider = index != listTransaction.size - 1

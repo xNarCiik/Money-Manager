@@ -4,6 +4,7 @@ import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.domain.model.main.Transaction
 
 data class MainUiModel(
+    val mainUiState: MainUiState = MainUiState.NORMAL,
     val currentBalance: Float = 0.0f,
     val futureBalance: Float = 0.0f,
     val listAccount: List<Account> = emptyList(),
@@ -11,7 +12,11 @@ data class MainUiModel(
     val mainBottomSheetType: MainBottomSheetType? = null
 )
 
-abstract class MainBottomSheetType
-object BottomSheetCreateAccount : MainBottomSheetType()
-object BottomSheetCreateTransaction : MainBottomSheetType()
-class BottomSheetAppliedTransaction(val transaction: Transaction) : MainBottomSheetType()
+enum class MainUiState {
+    NORMAL, APPLIED_TRANSACTION
+}
+
+sealed interface MainBottomSheetType {
+    object BottomSheetCreateAccount : MainBottomSheetType
+    object BottomSheetCreateTransaction : MainBottomSheetType
+}
