@@ -11,7 +11,7 @@ data class MainUiModel(
     val listAccount: List<Account> = emptyList(),
     val listTransaction: List<Transaction> = emptyList(),
     val mainBottomSheetType: MainBottomSheetType? = null,
-    @StringRes val error: Int? = null
+    @StringRes val toastMessage: Int? = null
 )
 
 enum class MainUiState {

@@ -27,8 +27,7 @@ import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 
 @Composable
 fun BottomSheetCreateTransaction(
-    onEvent: (MainEvent) -> Unit,
-    closeBottomSheetAction: () -> Unit,
+    onEvent: (MainEvent) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -38,7 +37,7 @@ fun BottomSheetCreateTransaction(
     ) {
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = stringResource(R.string.create_transaction),
+            text = stringResource(R.string.add_transaction),
             style = MaterialTheme.typography.titleLarge
         )
 
@@ -79,7 +78,7 @@ fun BottomSheetCreateTransaction(
             modifier = Modifier.padding(vertical = 18.dp),
             onClick = onValidateAction
         ) {
-            Text(text = stringResource(R.string.create_the_transaction))
+            Text(text = stringResource(R.string.add_the_transaction))
         }
     }
 }
@@ -89,8 +88,7 @@ fun BottomSheetCreateTransaction(
 private fun BottomSheetCreateTransactionPreview() {
     MoneyManagerTheme {
         BottomSheetCreateTransaction(
-            onEvent = { },
-            closeBottomSheetAction = { }
+            onEvent = { }
         )
     }
 }

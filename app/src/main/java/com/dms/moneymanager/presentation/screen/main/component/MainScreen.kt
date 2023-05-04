@@ -61,9 +61,9 @@ fun MainScreen(
 ) {
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    viewState.error?.let { error ->
+    viewState.toastMessage?.let { error ->
         Toast.makeText(LocalContext.current, error, Toast.LENGTH_SHORT).show()
-        onEvent(MainEvent.RemoveError)
+        onEvent(MainEvent.RemoveToast)
     }
 
     // Sheet content
@@ -81,10 +81,7 @@ fun MainScreen(
                 }
 
                 is MainBottomSheetType.BottomSheetCreateTransaction -> {
-                    BottomSheetCreateTransaction(
-                        onEvent = onEvent,
-                        closeBottomSheetAction = { onEvent(MainEvent.CloseBottomSheet) }
-                    )
+                    BottomSheetCreateTransaction(onEvent = onEvent)
                 }
             }
         }
@@ -212,7 +209,7 @@ private fun AddFloatingButton(
             onDismissRequest = { expandedDropDownMenu = false }
         ) {
             DropdownMenuItem(
-                text = { Text("Add account") },
+                text = { Text(text = stringResource(R.string.add_account)) },
                 onClick = {
                     expandedDropDownMenu = false
                     addAccountAction()
@@ -220,7 +217,7 @@ private fun AddFloatingButton(
             )
             Divider()
             DropdownMenuItem(
-                text = { Text("Add transaction") },
+                text = { Text(text = stringResource(id = R.string.add_transaction)) },
                 onClick = {
                     expandedDropDownMenu = false
                     addTransactionAction()
@@ -240,8 +237,7 @@ private fun MainScreenPreview() {
                 listTransaction = arrayListOf(
                     Transaction(
                         name = "transaction 1",
-                        amount = -10.5f,
-                        isApplied = false
+                        amount = -10.5f
                     )
                 )
             ),

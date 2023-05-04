@@ -27,7 +27,7 @@ sealed interface MainEvent {
     class RemoveTransactionEvent(val transaction: Transaction) : MainEvent
     class OpenBottomSheet(val mainBottomSheetType: MainBottomSheetType) : MainEvent
     object CloseBottomSheet : MainEvent
-    object RemoveError : MainEvent
+    object RemoveToast : MainEvent
 }
 
 @HiltViewModel
@@ -42,7 +42,7 @@ class MainViewModel @Inject constructor(
     private var _listAccount = MutableStateFlow<List<Account>>(value = emptyList())
     private var _listTransaction = MutableStateFlow<List<Transaction>>(value = emptyList())
     private var _mainBottomSheetType = MutableStateFlow<MainBottomSheetType?>(value = null)
-    private var _error = MutableStateFlow<Int?>(value = null)
+    private var _toastMessage = MutableStateFlow<Int?>(value = null)
 
     private var selectedTransaction: Transaction? = null
 
@@ -54,7 +54,7 @@ class MainViewModel @Inject constructor(
         _listAccount,
         _listTransaction,
         _mainBottomSheetType,
-        _error
+        _toastMessage
     ) { params ->
         val mainUiState = params[0] as MainUiState
         val currentBalance = params[1] as Float
@@ -62,7 +62,7 @@ class MainViewModel @Inject constructor(
         val listAccount = params[3] as List<Account>
         val listTransaction = params[4] as List<Transaction>
         val mainBottomSheetType = params[5] as MainBottomSheetType?
-        val error = params[6] as Int?
+        val toastMessage = params[6] as Int?
 
         MainUiModel(
             mainUiState = mainUiState,
@@ -71,7 +71,7 @@ class MainViewModel @Inject constructor(
             listAccount = listAccount,
             listTransaction = listTransaction,
             mainBottomSheetType = mainBottomSheetType,
-            error = error
+            toastMessage = toastMessage
         )
     }.stateIn(viewModelScope, SharingStarted.Lazily, MainUiModel())
 
@@ -118,8 +118,8 @@ class MainViewModel @Inject constructor(
                 _mainBottomSheetType.value = null
             }
 
-            is MainEvent.RemoveError -> {
-                _error.value = null
+            is MainEvent.RemoveToast -> {
+                _toastMessage.value = null
             }
         }
     }
@@ -127,8 +127,11 @@ class MainViewModel @Inject constructor(
     private fun createAccount(account: Account) {
         viewModelScope.launch {
             kotlin.runCatching { accountUseCase.createAccount(account = account) }
-                .onSuccess { refreshData() }
-                .onFailure { _error.value = R.string.error_failed_create_account }
+                .onSuccess {
+                    onEvent(MainEvent.CloseBottomSheet)
+                    refreshData()
+                }
+                .onFailure { _toastMessage.value = R.string.error_failed_add_account }
         }
     }
 
@@ -136,25 +139,28 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             kotlin.runCatching { accountUseCase.removeAccount(account = account) }
                 .onSuccess { refreshData() }
-                .onFailure { _error.value = R.string.error_failed_remove_account }
+                .onFailure { _toastMessage.value = R.string.error_failed_remove_account }
         }
     }
 
     private fun createTransaction(name: String, amount: String) {
         viewModelScope.launch {
             if (name.isEmpty()) {
-                _error.value = R.string.error_incorrect_name
+                _toastMessage.value = R.string.error_incorrect_name
                 return@launch
             }
             val amountFloat = amount.toFloatOrNull()
             if (amountFloat == null) {
-                _error.value = R.string.error_incorrect_amount
+                _toastMessage.value = R.string.error_incorrect_amount
                 return@launch
             }
             val transaction = Transaction(name = name, amount = amountFloat)
             kotlin.runCatching { transactionUseCase.createTransaction(transaction = transaction) }
-                .onSuccess { refreshData() }
-                .onFailure { _error.value = R.string.create_the_transaction }
+                .onSuccess {
+                    onEvent(MainEvent.CloseBottomSheet)
+                    refreshData()
+                }
+                .onFailure { _toastMessage.value = R.string.error_failed_add_transaction }
         }
     }
 
@@ -167,7 +173,7 @@ class MainViewModel @Inject constructor(
                 )
             }
                 .onSuccess { refreshData() }
-                .onFailure { _error.value = R.string.error_failed_remove_account }
+                .onFailure { _toastMessage.value = R.string.error_failed_applied_transaction }
         }
     }
 
@@ -175,7 +181,7 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             kotlin.runCatching { transactionUseCase.removeTransaction(transaction = transaction) }
                 .onSuccess { refreshData() }
-                .onFailure { _error.value = R.string.error_failed_remove_account }
+                .onFailure { _toastMessage.value = R.string.error_failed_remove_account }
         }
     }
 
