@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 sealed interface MainEvent {
-    class AddAccountEvent(val account: Account) : MainEvent
+    class AddAccountEvent(val name: String, val balance: String) : MainEvent
     class RemoveAccountEvent(val account: Account) : MainEvent
     class AddTransactionEvent(val name: String, val amount: String) : MainEvent
     class OnClickAppliedTransaction(val transaction: Transaction) : MainEvent
@@ -82,7 +82,7 @@ class MainViewModel @Inject constructor(
     fun onEvent(event: MainEvent) {
         when (event) {
             is MainEvent.AddAccountEvent -> {
-                createAccount(account = event.account)
+                createAccount(name = event.name, balance = event.balance)
             }
 
             is MainEvent.RemoveAccountEvent -> {
@@ -124,8 +124,18 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun createAccount(account: Account) {
+    private fun createAccount(name: String, balance: String) {
         viewModelScope.launch {
+            if (name.isEmpty()) {
+                _toastMessage.value = R.string.error_incorrect_name
+                return@launch
+            }
+            val balanceFloat = balance.toFloatOrNull()
+            if (balanceFloat == null) {
+                _toastMessage.value = R.string.error_incorrect_balance
+                return@launch
+            }
+            val account = Account(name = name, currentBalance = balanceFloat)
             kotlin.runCatching { accountUseCase.createAccount(account = account) }
                 .onSuccess {
                     onEvent(MainEvent.CloseBottomSheet)

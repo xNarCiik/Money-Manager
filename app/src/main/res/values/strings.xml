@@ -10,11 +10,15 @@
     <string name="add_the_transaction">Ajouter la transaction</string>
     <string name="name">Nom</string>
     <string name="amount">Montant</string>
+    <string name="balance">Solde</string>
     <string name="error_failed_add_account">"Échec de l'ajout du compte"</string>
     <string name="error_failed_remove_account">Échec de la suppression du compte</string>
     <string name="error_failed_add_transaction">"Échec de l'ajout de la transaction"</string>
     <string name="error_failed_applied_transaction">"Échec de lors de l'application de la transaction"</string>
     <string name="error_failed_remove_transaction">Échec de la suppression de la transaction</string>
     <string name="error_incorrect_name">Veuillez saisir un nom correct</string>
+    <string name="error_incorrect_balance">Veuillez saisir un solde correct</string>
     <string name="error_incorrect_amount">Veuillez saisir un montant correct</string>
+    <string name="current_balance">Solde actuel</string>
+    <string name="future_balance">Solde futur</string>
 </resources>

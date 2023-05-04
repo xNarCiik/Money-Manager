@@ -74,10 +74,7 @@ fun MainScreen(
         ) {
             when (viewState.mainBottomSheetType) {
                 is MainBottomSheetType.BottomSheetCreateAccount -> {
-                    BottomSheetCreateAccount(
-                        onEvent = onEvent,
-                        closeBottomSheetAction = { onEvent(MainEvent.CloseBottomSheet) }
-                    )
+                    BottomSheetCreateAccount(onEvent = onEvent)
                 }
 
                 is MainBottomSheetType.BottomSheetCreateTransaction -> {
@@ -173,12 +170,12 @@ private fun InfoBalance(
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "Budjet actuel")
+            Text(text = stringResource(R.string.current_balance))
             Text(text = currentBalance.toAmountString())
         }
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "Budjet futur")
+            Text(text = stringResource(R.string.future_balance))
             Text(text = futureBalance.toAmountString())
         }
     }

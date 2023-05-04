@@ -26,9 +26,7 @@ import com.dms.moneymanager.presentation.screen.main.MainEvent
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 
 @Composable
-fun BottomSheetCreateTransaction(
-    onEvent: (MainEvent) -> Unit
-) {
+fun BottomSheetCreateTransaction(onEvent: (MainEvent) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -87,8 +85,6 @@ fun BottomSheetCreateTransaction(
 @Composable
 private fun BottomSheetCreateTransactionPreview() {
     MoneyManagerTheme {
-        BottomSheetCreateTransaction(
-            onEvent = { }
-        )
+        BottomSheetCreateTransaction(onEvent = { })
     }
 }
