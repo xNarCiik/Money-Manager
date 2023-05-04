@@ -2,6 +2,7 @@ package com.dms.moneymanager.presentation.screen.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dms.moneymanager.R
 import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.domain.model.main.Transaction
 import com.dms.moneymanager.domain.usecase.AccountUseCase
@@ -20,12 +21,13 @@ import javax.inject.Inject
 sealed interface MainEvent {
     class AddAccountEvent(val account: Account) : MainEvent
     class RemoveAccountEvent(val account: Account) : MainEvent
-    class AddTransactionEvent(val transaction: Transaction) : MainEvent
+    class AddTransactionEvent(val name: String, val amount: String) : MainEvent
     class OnClickAppliedTransaction(val transaction: Transaction) : MainEvent
     class AppliedTransaction(val account: Account) : MainEvent
     class RemoveTransactionEvent(val transaction: Transaction) : MainEvent
     class OpenBottomSheet(val mainBottomSheetType: MainBottomSheetType) : MainEvent
     object CloseBottomSheet : MainEvent
+    object RemoveError : MainEvent
 }
 
 @HiltViewModel
@@ -40,6 +42,7 @@ class MainViewModel @Inject constructor(
     private var _listAccount = MutableStateFlow<List<Account>>(value = emptyList())
     private var _listTransaction = MutableStateFlow<List<Transaction>>(value = emptyList())
     private var _mainBottomSheetType = MutableStateFlow<MainBottomSheetType?>(value = null)
+    private var _error = MutableStateFlow<Int?>(value = null)
 
     private var selectedTransaction: Transaction? = null
 
@@ -50,7 +53,8 @@ class MainViewModel @Inject constructor(
         _futureBalance,
         _listAccount,
         _listTransaction,
-        _mainBottomSheetType
+        _mainBottomSheetType,
+        _error
     ) { params ->
         val mainUiState = params[0] as MainUiState
         val currentBalance = params[1] as Float
@@ -58,6 +62,7 @@ class MainViewModel @Inject constructor(
         val listAccount = params[3] as List<Account>
         val listTransaction = params[4] as List<Transaction>
         val mainBottomSheetType = params[5] as MainBottomSheetType?
+        val error = params[6] as Int?
 
         MainUiModel(
             mainUiState = mainUiState,
@@ -65,7 +70,8 @@ class MainViewModel @Inject constructor(
             futureBalance = futureBalance,
             listAccount = listAccount,
             listTransaction = listTransaction,
-            mainBottomSheetType = mainBottomSheetType
+            mainBottomSheetType = mainBottomSheetType,
+            error = error
         )
     }.stateIn(viewModelScope, SharingStarted.Lazily, MainUiModel())
 
@@ -84,7 +90,7 @@ class MainViewModel @Inject constructor(
             }
 
             is MainEvent.AddTransactionEvent -> {
-                createTransaction(transaction = event.transaction)
+                createTransaction(name = event.name, amount = event.amount)
             }
 
             is MainEvent.OnClickAppliedTransaction -> {
@@ -111,6 +117,10 @@ class MainViewModel @Inject constructor(
             is MainEvent.CloseBottomSheet -> {
                 _mainBottomSheetType.value = null
             }
+
+            is MainEvent.RemoveError -> {
+                _error.value = null
+            }
         }
     }
 
@@ -118,7 +128,7 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             kotlin.runCatching { accountUseCase.createAccount(account = account) }
                 .onSuccess { refreshData() }
-                .onFailure { /* TODO Handle failure */ }
+                .onFailure { _error.value = R.string.error_failed_create_account }
         }
     }
 
@@ -126,15 +136,25 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             kotlin.runCatching { accountUseCase.removeAccount(account = account) }
                 .onSuccess { refreshData() }
-                .onFailure { /* TODO Handle failure */ }
+                .onFailure { _error.value = R.string.error_failed_remove_account }
         }
     }
 
-    private fun createTransaction(transaction: Transaction) {
+    private fun createTransaction(name: String, amount: String) {
         viewModelScope.launch {
+            if (name.isEmpty()) {
+                _error.value = R.string.error_incorrect_name
+                return@launch
+            }
+            val amountFloat = amount.toFloatOrNull()
+            if (amountFloat == null) {
+                _error.value = R.string.error_incorrect_amount
+                return@launch
+            }
+            val transaction = Transaction(name = name, amount = amountFloat)
             kotlin.runCatching { transactionUseCase.createTransaction(transaction = transaction) }
                 .onSuccess { refreshData() }
-                .onFailure { /* TODO Handle failure */ }
+                .onFailure { _error.value = R.string.create_the_transaction }
         }
     }
 
@@ -147,7 +167,7 @@ class MainViewModel @Inject constructor(
                 )
             }
                 .onSuccess { refreshData() }
-                .onFailure { /* TODO Handle failure */ }
+                .onFailure { _error.value = R.string.error_failed_remove_account }
         }
     }
 
@@ -155,7 +175,7 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             kotlin.runCatching { transactionUseCase.removeTransaction(transaction = transaction) }
                 .onSuccess { refreshData() }
-                .onFailure { /* TODO Handle failure */ }
+                .onFailure { _error.value = R.string.error_failed_remove_account }
         }
     }
 

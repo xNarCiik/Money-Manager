@@ -20,6 +20,6 @@ interface TransactionDao {
     @Query("SELECT * FROM $TRANSACTION_TABLE")
     suspend fun getTransactions(): List<TransactionEntity>
 
-    @Query("DELETE FROM $TRANSACTION_TABLE WHERE NAME = :name")
-    suspend fun deleteByName(name: String)
+    @Query("DELETE FROM $TRANSACTION_TABLE WHERE ID = :id")
+    suspend fun deleteById(id: Int)
 }

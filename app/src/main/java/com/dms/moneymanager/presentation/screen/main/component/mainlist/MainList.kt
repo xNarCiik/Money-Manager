@@ -1,6 +1,7 @@
 package com.dms.moneymanager.presentation.screen.main.component.mainlist
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,6 +21,7 @@ import com.dms.moneymanager.R
 import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.domain.model.main.Transaction
 import com.dms.moneymanager.presentation.screen.main.MainEvent
+import com.dms.moneymanager.presentation.screen.main.model.MainBottomSheetType
 import com.dms.moneymanager.presentation.screen.main.model.MainUiState
 
 @Composable
@@ -71,7 +73,10 @@ private fun AccountList(
             }
         }
     } else {
-        EmptyText(stringId = R.string.empty_account)
+        EmptyText(
+            stringId = R.string.empty_account,
+            onClick = { onEvent(MainEvent.OpenBottomSheet(MainBottomSheetType.BottomSheetCreateAccount)) }
+        )
     }
 }
 
@@ -95,7 +100,10 @@ private fun TransactionList(listTransaction: List<Transaction>, onEvent: (MainEv
             }
         }
     } else {
-        EmptyText(stringId = R.string.empty_transaction)
+        EmptyText(
+            stringId = R.string.empty_transaction,
+            onClick = { onEvent(MainEvent.OpenBottomSheet(MainBottomSheetType.BottomSheetCreateTransaction)) }
+        )
     }
 }
 
@@ -113,12 +121,13 @@ private fun TitleListDivider() {
 }
 
 @Composable
-private fun EmptyText(@StringRes stringId: Int) {
+private fun EmptyText(@StringRes stringId: Int, onClick: () -> Unit) {
     Text(
         text = stringResource(id = stringId),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 22.dp),
+            .padding(vertical = 22.dp)
+            .clickable { onClick() },
         textAlign = TextAlign.Center
     )
 }

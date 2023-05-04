@@ -23,6 +23,6 @@ class TransactionRepositoryImpl @Inject constructor(
     }
 
     override suspend fun removeTransaction(transaction: Transaction) {
-        transactionDao.deleteByName(transaction.name)
+        transactionDao.deleteById(transaction.id)
     }
 }

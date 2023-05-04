@@ -13,8 +13,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
 import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.presentation.screen.main.MainEvent
+import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 
 @Composable
 fun BottomSheetCreateAccount(
@@ -60,5 +62,16 @@ fun BottomSheetCreateAccount(
         ) {
             Text("Create Account")
         }
+    }
+}
+
+@Preview
+@Composable
+private fun BottomSheetCreateAccountPreview() {
+    MoneyManagerTheme {
+        BottomSheetCreateAccount(
+            onEvent = { },
+            closeBottomSheetAction = { }
+        )
     }
 }
