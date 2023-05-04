@@ -119,7 +119,7 @@ private fun MainContent(
         Spacer(modifier = Modifier.weight(weight = 1f))
 
         AddFloatingButton(
-            modifier = Modifier.padding(bottom = 10.dp, end = 10.dp),
+            modifier = Modifier.padding(bottom = 15.dp, end = 15.dp),
             addAccountAction = { onEvent(MainEvent.OpenBottomSheet(mainBottomSheetType = MainBottomSheetType.BottomSheetCreateAccount)) },
             addTransactionAction = { onEvent(MainEvent.OpenBottomSheet(mainBottomSheetType = MainBottomSheetType.BottomSheetCreateTransaction)) }
         )
@@ -192,8 +192,8 @@ private fun AddFloatingButton(
     FloatingActionButton(
         modifier = modifier,
         onClick = { expandedDropDownMenu = true },
-        containerColor = Color.Blue,
-        shape = RoundedCornerShape(22.dp),
+        containerColor = Color.DarkGray,
+        shape = RoundedCornerShape(25.dp),
     ) {
         Icon(
             imageVector = Icons.Rounded.Add,
