@@ -16,6 +16,7 @@ import com.dms.moneymanager.presentation.screen.history.HistoryViewModel
 import com.dms.moneymanager.presentation.screen.history.component.HistoryScreen
 import com.dms.moneymanager.presentation.screen.main.MainViewModel
 import com.dms.moneymanager.presentation.screen.main.component.MainScreen
+import com.dms.moneymanager.presentation.util.NavigationRoute
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -32,8 +33,8 @@ class MainActivity : ComponentActivity() {
                 ) {
                     val navController = rememberNavController()
 
-                    NavHost(navController = navController, startDestination = "main") {
-                        composable("main") {
+                    NavHost(navController = navController, startDestination = NavigationRoute.MAIN.route) {
+                        composable(NavigationRoute.MAIN.route) {
                             val mainViewModel: MainViewModel by viewModels()
                             val viewState = mainViewModel.viewState.collectAsState()
                             MainScreen(
@@ -42,7 +43,7 @@ class MainActivity : ComponentActivity() {
                                 navController = navController
                             )
                         }
-                        composable("history") {
+                        composable(NavigationRoute.HISTORY.route) {
                             val historyViewModel: HistoryViewModel by viewModels()
                             val viewState = historyViewModel.viewState.collectAsState()
                             HistoryScreen(viewState = viewState.value)

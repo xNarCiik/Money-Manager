@@ -56,6 +56,7 @@ import com.dms.moneymanager.presentation.screen.main.component.mainlist.MainList
 import com.dms.moneymanager.presentation.screen.main.model.MainBottomSheetType
 import com.dms.moneymanager.presentation.screen.main.model.MainUiModel
 import com.dms.moneymanager.presentation.screen.main.model.MainUiState
+import com.dms.moneymanager.presentation.util.NavigationRoute
 import com.dms.moneymanager.presentation.util.toAmountString
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 import kotlinx.coroutines.launch
@@ -70,27 +71,6 @@ fun MainScreen(
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scaffoldState = rememberScaffoldState()
     val coroutineScope = rememberCoroutineScope()
-
-    when(viewState.mainUiState) {
-        MainUiState.APPLIED_TRANSACTION -> {
-            LaunchedEffect(key1 = "snackbar_key", block = {
-                coroutineScope.launch {
-                    val snackbarResult = scaffoldState.snackbarHostState.showSnackbar(
-                        message = "Cliquez sur le compte vers lequel appliquer la transaction ${viewState.selectedTransaction?.name}.",
-                        actionLabel = "Annuler",
-                        duration = SnackbarDuration.Indefinite
-                    )
-                    when (snackbarResult) {
-                        SnackbarResult.ActionPerformed -> onEvent(MainEvent.CancelSnackbar)
-                        SnackbarResult.Dismissed -> { }
-                    }
-                }
-            })
-        }
-        else -> {
-            scaffoldState.snackbarHostState.currentSnackbarData?.dismiss()
-        }
-    }
 
     // Sheet content
     if (viewState.mainBottomSheetType != null) {
@@ -133,6 +113,28 @@ fun MainScreen(
         Toast.makeText(LocalContext.current, error, Toast.LENGTH_SHORT).show()
         onEvent(MainEvent.RemoveToast)
     }
+
+    when (viewState.mainUiState) {
+        MainUiState.APPLIED_TRANSACTION -> {
+            LaunchedEffect(key1 = "snackbar_key", block = {
+                coroutineScope.launch {
+                    val snackbarResult = scaffoldState.snackbarHostState.showSnackbar(
+                        message = "Cliquez sur le compte vers lequel appliquer la transaction ${viewState.selectedTransaction?.name}.",
+                        actionLabel = "Annuler",
+                        duration = SnackbarDuration.Indefinite
+                    )
+                    when (snackbarResult) {
+                        SnackbarResult.ActionPerformed -> onEvent(MainEvent.CancelSnackbar)
+                        SnackbarResult.Dismissed -> {}
+                    }
+                }
+            })
+        }
+
+        else -> {
+            scaffoldState.snackbarHostState.currentSnackbarData?.dismiss()
+        }
+    }
 }
 
 @Composable
@@ -144,12 +146,12 @@ private fun MainContent(
 ) {
     Column(modifier = modifier) {
         HeaderContent(
-            onMenuClick = { navController.navigate("history") },
+            onMenuClick = { navController.navigate(NavigationRoute.HISTORY.route) },
             onInfoClick = { /* TODO BOTTOM SHEET */ }
         )
 
         InfoBalance(
-            modifier = Modifier.padding(vertical = 12.dp),
+            modifier = Modifier.padding(vertical = 22.dp),
             currentBalance = viewState.currentBalance,
             futureBalance = viewState.futureBalance
         )
@@ -207,12 +209,18 @@ private fun InfoBalance(
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = stringResource(R.string.current_balance))
+            Text(
+                text = stringResource(R.string.current_balance),
+                style = MaterialTheme.typography.titleLarge
+            )
             Text(text = currentBalance.toAmountString())
         }
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = stringResource(R.string.future_balance))
+            Text(
+                text = stringResource(R.string.future_balance),
+                style = MaterialTheme.typography.titleLarge
+            )
             Text(text = futureBalance.toAmountString())
         }
     }

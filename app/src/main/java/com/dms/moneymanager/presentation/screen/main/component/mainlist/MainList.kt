@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -42,7 +43,7 @@ fun MainList(
             onEvent = onEvent
         )
 
-        Spacer(modifier = Modifier.height(height = 32.dp))
+        Spacer(modifier = Modifier.height(height = 28.dp))
 
         TransactionList(listTransaction = listTransaction, onEvent = onEvent)
     }
@@ -54,6 +55,8 @@ private fun AccountList(
     listAccount: List<Account>,
     onEvent: (MainEvent) -> Unit
 ) {
+    TitleListDivider()
+
     TitleListText(stringId = R.string.accounts)
 
     TitleListDivider()
@@ -82,6 +85,8 @@ private fun AccountList(
 
 @Composable
 private fun TransactionList(listTransaction: List<Transaction>, onEvent: (MainEvent) -> Unit) {
+    TitleListDivider()
+
     TitleListText(stringId = R.string.incoming_transactions)
 
     TitleListDivider()
@@ -110,14 +115,16 @@ private fun TransactionList(listTransaction: List<Transaction>, onEvent: (MainEv
 @Composable
 private fun TitleListText(@StringRes stringId: Int) {
     Text(
+        modifier = Modifier.fillMaxWidth(),
         text = stringResource(id = stringId),
-        style = MaterialTheme.typography.titleLarge
+        style = MaterialTheme.typography.titleLarge,
+        textAlign = TextAlign.Center
     )
 }
 
 @Composable
 private fun TitleListDivider() {
-    Divider(modifier = Modifier.padding(top = 12.dp))
+    Divider(modifier = Modifier.padding(vertical = 12.dp), color = Color.White)
 }
 
 @Composable
