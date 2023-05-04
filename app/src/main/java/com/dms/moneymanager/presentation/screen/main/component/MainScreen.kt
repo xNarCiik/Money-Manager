@@ -5,15 +5,19 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.FabPosition
+import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarDuration
+import androidx.compose.material.SnackbarResult
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Menu
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -25,9 +29,11 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,8 +55,10 @@ import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.Botto
 import com.dms.moneymanager.presentation.screen.main.component.mainlist.MainList
 import com.dms.moneymanager.presentation.screen.main.model.MainBottomSheetType
 import com.dms.moneymanager.presentation.screen.main.model.MainUiModel
+import com.dms.moneymanager.presentation.screen.main.model.MainUiState
 import com.dms.moneymanager.presentation.util.toAmountString
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,10 +68,28 @@ fun MainScreen(
     navController: NavHostController
 ) {
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val scaffoldState = rememberScaffoldState()
+    val coroutineScope = rememberCoroutineScope()
 
-    viewState.toastMessage?.let { error ->
-        Toast.makeText(LocalContext.current, error, Toast.LENGTH_SHORT).show()
-        onEvent(MainEvent.RemoveToast)
+    when(viewState.mainUiState) {
+        MainUiState.APPLIED_TRANSACTION -> {
+            LaunchedEffect(key1 = "snackbar_key", block = {
+                coroutineScope.launch {
+                    val snackbarResult = scaffoldState.snackbarHostState.showSnackbar(
+                        message = "Cliquez sur le compte vers lequel appliquer la transaction ${viewState.selectedTransaction?.name}.",
+                        actionLabel = "Annuler",
+                        duration = SnackbarDuration.Indefinite
+                    )
+                    when (snackbarResult) {
+                        SnackbarResult.ActionPerformed -> onEvent(MainEvent.CancelSnackbar)
+                        SnackbarResult.Dismissed -> { }
+                    }
+                }
+            })
+        }
+        else -> {
+            scaffoldState.snackbarHostState.currentSnackbarData?.dismiss()
+        }
     }
 
     // Sheet content
@@ -84,20 +110,39 @@ fun MainScreen(
         }
     }
 
-    MainContent(
-        viewState = viewState,
-        onEvent = onEvent,
-        navController = navController
-    )
+    Scaffold(
+        scaffoldState = scaffoldState,
+        backgroundColor = MaterialTheme.colorScheme.background,
+        floatingActionButton = {
+            AddFloatingButton(
+                addAccountAction = { onEvent(MainEvent.OpenBottomSheet(mainBottomSheetType = MainBottomSheetType.BottomSheetCreateAccount)) },
+                addTransactionAction = { onEvent(MainEvent.OpenBottomSheet(mainBottomSheetType = MainBottomSheetType.BottomSheetCreateTransaction)) }
+            )
+        },
+        floatingActionButtonPosition = FabPosition.Center
+    ) {
+        MainContent(
+            modifier = Modifier.padding(paddingValues = it),
+            viewState = viewState,
+            onEvent = onEvent,
+            navController = navController
+        )
+    }
+
+    viewState.toastMessage?.let { error ->
+        Toast.makeText(LocalContext.current, error, Toast.LENGTH_SHORT).show()
+        onEvent(MainEvent.RemoveToast)
+    }
 }
 
 @Composable
 private fun MainContent(
+    modifier: Modifier = Modifier,
     viewState: MainUiModel,
     onEvent: (MainEvent) -> Unit,
     navController: NavController
 ) {
-    Column(horizontalAlignment = Alignment.End) {
+    Column(modifier = modifier) {
         HeaderContent(
             onMenuClick = { navController.navigate("history") },
             onInfoClick = { /* TODO BOTTOM SHEET */ }
@@ -114,14 +159,6 @@ private fun MainContent(
             listAccount = viewState.listAccount,
             listTransaction = viewState.listTransaction,
             onEvent = onEvent
-        )
-
-        Spacer(modifier = Modifier.weight(weight = 1f))
-
-        AddFloatingButton(
-            modifier = Modifier.padding(bottom = 15.dp, end = 15.dp),
-            addAccountAction = { onEvent(MainEvent.OpenBottomSheet(mainBottomSheetType = MainBottomSheetType.BottomSheetCreateAccount)) },
-            addTransactionAction = { onEvent(MainEvent.OpenBottomSheet(mainBottomSheetType = MainBottomSheetType.BottomSheetCreateTransaction)) }
         )
     }
 }
@@ -183,14 +220,12 @@ private fun InfoBalance(
 
 @Composable
 private fun AddFloatingButton(
-    modifier: Modifier,
     addAccountAction: () -> Unit,
     addTransactionAction: () -> Unit
 ) {
     var expandedDropDownMenu by remember { mutableStateOf(false) }
 
     FloatingActionButton(
-        modifier = modifier,
         onClick = { expandedDropDownMenu = true },
         containerColor = Color.DarkGray,
         shape = RoundedCornerShape(25.dp),

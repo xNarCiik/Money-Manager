@@ -10,6 +10,7 @@ data class MainUiModel(
     val futureBalance: Float = 0.0f,
     val listAccount: List<Account> = emptyList(),
     val listTransaction: List<Transaction> = emptyList(),
+    val selectedTransaction: Transaction? = null,
     val mainBottomSheetType: MainBottomSheetType? = null,
     @StringRes val toastMessage: Int? = null
 )

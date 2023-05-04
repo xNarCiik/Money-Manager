@@ -28,6 +28,7 @@ sealed interface MainEvent {
     class OpenBottomSheet(val mainBottomSheetType: MainBottomSheetType) : MainEvent
     object CloseBottomSheet : MainEvent
     object RemoveToast : MainEvent
+    object CancelSnackbar : MainEvent
 }
 
 @HiltViewModel
@@ -41,10 +42,9 @@ class MainViewModel @Inject constructor(
     private val _futureBalance = MutableStateFlow(value = 0.0f)
     private var _listAccount = MutableStateFlow<List<Account>>(value = emptyList())
     private var _listTransaction = MutableStateFlow<List<Transaction>>(value = emptyList())
+    private var _selectedTransaction = MutableStateFlow<Transaction?>(value = null)
     private var _mainBottomSheetType = MutableStateFlow<MainBottomSheetType?>(value = null)
     private var _toastMessage = MutableStateFlow<Int?>(value = null)
-
-    private var selectedTransaction: Transaction? = null
 
     @Suppress("UNCHECKED_CAST")
     val viewState = combine(
@@ -53,6 +53,7 @@ class MainViewModel @Inject constructor(
         _futureBalance,
         _listAccount,
         _listTransaction,
+        _selectedTransaction,
         _mainBottomSheetType,
         _toastMessage
     ) { params ->
@@ -61,8 +62,9 @@ class MainViewModel @Inject constructor(
         val futureBalance = params[2] as Float
         val listAccount = params[3] as List<Account>
         val listTransaction = params[4] as List<Transaction>
-        val mainBottomSheetType = params[5] as MainBottomSheetType?
-        val toastMessage = params[6] as Int?
+        val selectedTransaction = params[5] as Transaction?
+        val mainBottomSheetType = params[6] as MainBottomSheetType?
+        val toastMessage = params[7] as Int?
 
         MainUiModel(
             mainUiState = mainUiState,
@@ -70,6 +72,7 @@ class MainViewModel @Inject constructor(
             futureBalance = futureBalance,
             listAccount = listAccount,
             listTransaction = listTransaction,
+            selectedTransaction = selectedTransaction,
             mainBottomSheetType = mainBottomSheetType,
             toastMessage = toastMessage
         )
@@ -95,15 +98,14 @@ class MainViewModel @Inject constructor(
 
             is MainEvent.OnClickAppliedTransaction -> {
                 _mainUiState.value = MainUiState.APPLIED_TRANSACTION
-                selectedTransaction = event.transaction
+                _selectedTransaction.value = event.transaction
             }
 
             is MainEvent.AppliedTransaction -> {
-                selectedTransaction?.let {
+                _selectedTransaction.value?.let {
                     appliedTransaction(account = event.account, transaction = it)
                 }
-                _mainUiState.value = MainUiState.NORMAL
-                selectedTransaction = null
+                onEvent(MainEvent.CancelSnackbar)
             }
 
             is MainEvent.RemoveTransactionEvent -> {
@@ -120,6 +122,16 @@ class MainViewModel @Inject constructor(
 
             is MainEvent.RemoveToast -> {
                 _toastMessage.value = null
+            }
+
+            is MainEvent.CancelSnackbar -> {
+                when (_mainUiState.value) {
+                    MainUiState.APPLIED_TRANSACTION -> {
+                        _mainUiState.value = MainUiState.NORMAL
+                        _selectedTransaction.value = null
+                    }
+                    else -> { }
+                }
             }
         }
     }
