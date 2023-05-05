@@ -1,6 +1,9 @@
 package com.dms.moneymanager.presentation.screen.main.component
 
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,6 +21,8 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -144,19 +149,20 @@ private fun MainContent(
     onEvent: (MainEvent) -> Unit,
     navController: NavController
 ) {
-    Column(modifier = modifier) {
+    Column(modifier = modifier.padding(all = 12.dp)) {
         HeaderContent(
             onMenuClick = { navController.navigate(NavigationRoute.HISTORY.route) },
             onInfoClick = { /* TODO BOTTOM SHEET */ }
         )
 
         InfoBalance(
-            modifier = Modifier.padding(vertical = 22.dp),
+            modifier = Modifier.padding(top = 22.dp),
             currentBalance = viewState.currentBalance,
             futureBalance = viewState.futureBalance
         )
 
         MainList(
+            modifier = Modifier.padding(top = 12.dp),
             mainUiState = viewState.mainUiState,
             listAccount = viewState.listAccount,
             listTransaction = viewState.listTransaction,
@@ -169,8 +175,7 @@ private fun MainContent(
 private fun HeaderContent(onMenuClick: () -> Unit, onInfoClick: () -> Unit) {
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(all = 10.dp),
+            .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
@@ -204,24 +209,36 @@ private fun InfoBalance(
     currentBalance: Float,
     futureBalance: Float
 ) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly
+    Card(
+        modifier = modifier
+            .padding(all = 4.dp),
+        shape = RoundedCornerShape(size = 8.dp),
+        border = BorderStroke(width = 1.dp, Color.White),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.Transparent
+        )
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                text = stringResource(R.string.current_balance),
-                style = MaterialTheme.typography.titleLarge
-            )
-            Text(text = currentBalance.toAmountString())
-        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 15.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = stringResource(R.string.current_balance),
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Text(text = currentBalance.toAmountString())
+            }
 
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                text = stringResource(R.string.future_balance),
-                style = MaterialTheme.typography.titleLarge
-            )
-            Text(text = futureBalance.toAmountString())
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = stringResource(R.string.future_balance),
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Text(text = futureBalance.toAmountString())
+            }
         }
     }
 }

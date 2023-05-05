@@ -21,4 +21,6 @@
     <string name="error_incorrect_amount">Veuillez saisir un montant correct</string>
     <string name="current_balance">Solde actuel</string>
     <string name="future_balance">Solde futur</string>
+    <string name="remove">Supprimer</string>
+    <string name="applied">Appliquer</string>
 </resources>

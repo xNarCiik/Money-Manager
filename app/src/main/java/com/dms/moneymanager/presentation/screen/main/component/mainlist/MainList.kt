@@ -3,11 +3,13 @@ package com.dms.moneymanager.presentation.screen.main.component.mainlist
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
@@ -27,15 +29,15 @@ import com.dms.moneymanager.presentation.screen.main.model.MainUiState
 
 @Composable
 fun MainList(
+    modifier: Modifier = Modifier,
     mainUiState: MainUiState,
     listAccount: List<Account>,
     listTransaction: List<Transaction>,
     onEvent: (MainEvent) -> Unit
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .padding(all = 10.dp)
     ) {
         AccountList(
             mainUiState = mainUiState,
@@ -43,9 +45,10 @@ fun MainList(
             onEvent = onEvent
         )
 
-        Spacer(modifier = Modifier.height(height = 28.dp))
-
-        TransactionList(listTransaction = listTransaction, onEvent = onEvent)
+        TransactionList(
+            listTransaction = listTransaction,
+            onEvent = onEvent
+        )
     }
 }
 
@@ -62,16 +65,16 @@ private fun AccountList(
     TitleListDivider()
 
     if (listAccount.isNotEmpty()) {
-        LazyColumn {
-            itemsIndexed(listAccount) { index, account ->
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(count = 3),
+            contentPadding = PaddingValues(all = 8.dp)
+        ) {
+            itemsIndexed(listAccount) { _, account ->
                 AccountItem(
                     mainUiState = mainUiState,
                     account = account,
-                    appliedTransaction = {
-                        onEvent(MainEvent.AppliedTransaction(account = account))
-                    },
-                    removeAction = { onEvent(MainEvent.RemoveAccountEvent(account)) },
-                    showDivider = index != listAccount.size - 1
+                    appliedTransaction = { onEvent(MainEvent.AppliedTransaction(toAccount = account)) },
+                    removeAction = { onEvent(MainEvent.RemoveAccountEvent(account = account)) }
                 )
             }
         }
@@ -93,14 +96,13 @@ private fun TransactionList(listTransaction: List<Transaction>, onEvent: (MainEv
 
     if (listTransaction.isNotEmpty()) {
         LazyColumn {
-            itemsIndexed(listTransaction) { index, transaction ->
+            itemsIndexed(listTransaction) { _, transaction ->
                 TransactionItem(
                     transaction = transaction,
                     appliedAction = {
                         onEvent(MainEvent.OnClickAppliedTransaction(transaction = transaction))
                     },
-                    removeAction = { onEvent(MainEvent.RemoveTransactionEvent(transaction = transaction)) },
-                    showDivider = index != listTransaction.size - 1
+                    removeAction = { onEvent(MainEvent.RemoveTransactionEvent(transaction = transaction)) }
                 )
             }
         }

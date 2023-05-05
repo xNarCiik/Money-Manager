@@ -23,7 +23,7 @@ sealed interface MainEvent {
     class RemoveAccountEvent(val account: Account) : MainEvent
     class AddTransactionEvent(val name: String, val amount: String) : MainEvent
     class OnClickAppliedTransaction(val transaction: Transaction) : MainEvent
-    class AppliedTransaction(val account: Account) : MainEvent
+    class AppliedTransaction(val toAccount: Account) : MainEvent
     class RemoveTransactionEvent(val transaction: Transaction) : MainEvent
     class OpenBottomSheet(val mainBottomSheetType: MainBottomSheetType) : MainEvent
     object CloseBottomSheet : MainEvent
@@ -103,7 +103,7 @@ class MainViewModel @Inject constructor(
 
             is MainEvent.AppliedTransaction -> {
                 _selectedTransaction.value?.let {
-                    appliedTransaction(account = event.account, transaction = it)
+                    appliedTransaction(account = event.toAccount, transaction = it)
                 }
                 onEvent(MainEvent.CancelSnackbar)
             }
