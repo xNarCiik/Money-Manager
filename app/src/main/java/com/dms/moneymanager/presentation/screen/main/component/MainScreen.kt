@@ -2,8 +2,6 @@ package com.dms.moneymanager.presentation.screen.main.component
 
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -48,7 +46,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.dms.moneymanager.R
@@ -98,6 +95,13 @@ fun MainScreen(
     Scaffold(
         scaffoldState = scaffoldState,
         backgroundColor = MaterialTheme.colorScheme.background,
+        topBar = {
+            TopBarMoneyManager(
+                modifier = Modifier.padding(all = 12.dp),
+                onMenuClick = { navController.navigate(NavigationRoute.HISTORY.route) },
+                onInfoClick = { /* TODO BOTTOM SHEET */ }
+            )
+        },
         floatingActionButton = {
             AddFloatingButton(
                 addAccountAction = { onEvent(MainEvent.OpenBottomSheet(mainBottomSheetType = MainBottomSheetType.BottomSheetCreateAccount)) },
@@ -109,8 +113,7 @@ fun MainScreen(
         MainContent(
             modifier = Modifier.padding(paddingValues = it),
             viewState = viewState,
-            onEvent = onEvent,
-            navController = navController
+            onEvent = onEvent
         )
     }
 
@@ -146,23 +149,17 @@ fun MainScreen(
 private fun MainContent(
     modifier: Modifier = Modifier,
     viewState: MainUiModel,
-    onEvent: (MainEvent) -> Unit,
-    navController: NavController
+    onEvent: (MainEvent) -> Unit
 ) {
     Column(modifier = modifier.padding(all = 12.dp)) {
-        HeaderContent(
-            onMenuClick = { navController.navigate(NavigationRoute.HISTORY.route) },
-            onInfoClick = { /* TODO BOTTOM SHEET */ }
-        )
-
         InfoBalance(
-            modifier = Modifier.padding(top = 22.dp),
+            modifier = Modifier.padding(top = 12.dp),
             currentBalance = viewState.currentBalance,
             futureBalance = viewState.futureBalance
         )
 
         MainList(
-            modifier = Modifier.padding(top = 12.dp),
+            modifier = Modifier.padding(top = 24.dp),
             mainUiState = viewState.mainUiState,
             listAccount = viewState.listAccount,
             listTransaction = viewState.listTransaction,
@@ -172,34 +169,41 @@ private fun MainContent(
 }
 
 @Composable
-private fun HeaderContent(onMenuClick: () -> Unit, onInfoClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            modifier = Modifier
-                .size(26.dp)
-                .clickable { onMenuClick() },
-            imageVector = Icons.Rounded.Menu,
-            contentDescription = "Menu icon"
-        )
+private fun TopBarMoneyManager(
+    modifier: Modifier = Modifier,
+    onMenuClick: () -> Unit,
+    onInfoClick: () -> Unit
+) {
+    Column {
+        Row(
+            modifier = modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                modifier = Modifier
+                    .size(size = 28.dp)
+                    .clickable { onMenuClick() },
+                imageVector = Icons.Rounded.Menu,
+                contentDescription = "Menu icon"
+            )
 
-        Text(
-            modifier = Modifier.weight(weight = 1f),
-            text = stringResource(id = R.string.app_name),
-            style = MaterialTheme.typography.headlineMedium,
-            textAlign = TextAlign.Center
-        )
+            Text(
+                modifier = Modifier.weight(weight = 1f),
+                text = stringResource(id = R.string.app_name),
+                style = MaterialTheme.typography.headlineMedium,
+                textAlign = TextAlign.Center
+            )
 
-        Icon(
-            modifier = Modifier
-                .size(26.dp)
-                .clickable { onInfoClick() },
-            imageVector = Icons.Rounded.Info,
-            contentDescription = "Info icon"
-        )
+            Icon(
+                modifier = Modifier
+                    .size(size = 28.dp)
+                    .clickable { onInfoClick() },
+                imageVector = Icons.Rounded.Info,
+                contentDescription = "Info icon"
+            )
+        }
+
+        Divider()
     }
 }
 
@@ -212,8 +216,8 @@ private fun InfoBalance(
     Card(
         modifier = modifier
             .padding(all = 4.dp),
-        shape = RoundedCornerShape(size = 8.dp),
-        border = BorderStroke(width = 1.dp, Color.White),
+        shape = RoundedCornerShape(size = 2.dp),
+        border = BorderStroke(width = 0.3.dp, Color.White),
         colors = CardDefaults.cardColors(
             containerColor = Color.Transparent
         )

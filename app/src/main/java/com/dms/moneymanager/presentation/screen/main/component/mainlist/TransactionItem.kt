@@ -40,11 +40,11 @@ fun TransactionItem(
     Card(
         modifier = Modifier
             .padding(all = 4.dp),
-        shape = RoundedCornerShape(size = 8.dp),
+        shape = RoundedCornerShape(size = 2.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.Transparent
         ),
-        border = BorderStroke(width = 0.25.dp, Color.White),
+        border = BorderStroke(width = 0.3.dp, Color.White),
         onClick = { expandedDropDownMenu = true }
     ) {
         Column(
@@ -89,6 +89,14 @@ private fun DropDownMenuTransaction(
             text = { Text(text = stringResource(id = R.string.applied)) },
             onClick = {
                 appliedAction()
+                closeDropDownMenuAction()
+            }
+        )
+        Divider()
+        DropdownMenuItem(
+            text = { Text(text = stringResource(id = R.string.edit)) },
+            onClick = {
+                // TODO
                 closeDropDownMenuAction()
             }
         )

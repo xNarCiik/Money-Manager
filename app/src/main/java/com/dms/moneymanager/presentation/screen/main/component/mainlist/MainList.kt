@@ -46,6 +46,7 @@ fun MainList(
         )
 
         TransactionList(
+            modifier = Modifier.padding(top = 32.dp),
             listTransaction = listTransaction,
             onEvent = onEvent
         )
@@ -54,70 +55,80 @@ fun MainList(
 
 @Composable
 private fun AccountList(
+    modifier: Modifier = Modifier,
     mainUiState: MainUiState,
     listAccount: List<Account>,
     onEvent: (MainEvent) -> Unit
 ) {
-    TitleListDivider()
+    Column(modifier = modifier) {
+        TitleListText(stringId = R.string.accounts)
 
-    TitleListText(stringId = R.string.accounts)
+        TitleListDivider(modifier = Modifier.padding(vertical = 12.dp))
 
-    TitleListDivider()
-
-    if (listAccount.isNotEmpty()) {
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(count = 3),
-            contentPadding = PaddingValues(all = 8.dp)
-        ) {
-            itemsIndexed(listAccount) { _, account ->
-                AccountItem(
-                    mainUiState = mainUiState,
-                    account = account,
-                    appliedTransaction = { onEvent(MainEvent.AppliedTransaction(toAccount = account)) },
-                    removeAction = { onEvent(MainEvent.RemoveAccountEvent(account = account)) }
-                )
+        if (listAccount.isNotEmpty()) {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(count = 2),
+                contentPadding = PaddingValues(all = 4.dp)
+            ) {
+                itemsIndexed(listAccount) { _, account ->
+                    AccountItem(
+                        mainUiState = mainUiState,
+                        account = account,
+                        appliedTransaction = { onEvent(MainEvent.AppliedTransaction(toAccount = account)) },
+                        removeAction = { onEvent(MainEvent.RemoveAccountEvent(account = account)) }
+                    )
+                }
             }
+        } else {
+            EmptyText(
+                modifier = Modifier.padding(top = 12.dp),
+                stringId = R.string.empty_account,
+                onClick = { onEvent(MainEvent.OpenBottomSheet(MainBottomSheetType.BottomSheetCreateAccount)) }
+            )
         }
-    } else {
-        EmptyText(
-            stringId = R.string.empty_account,
-            onClick = { onEvent(MainEvent.OpenBottomSheet(MainBottomSheetType.BottomSheetCreateAccount)) }
-        )
     }
 }
 
 @Composable
-private fun TransactionList(listTransaction: List<Transaction>, onEvent: (MainEvent) -> Unit) {
-    TitleListDivider()
+private fun TransactionList(
+    modifier: Modifier = Modifier,
+    listTransaction: List<Transaction>,
+    onEvent: (MainEvent) -> Unit
+) {
+    Column(modifier = modifier) {
+        TitleListText(stringId = R.string.incoming_transactions)
 
-    TitleListText(stringId = R.string.incoming_transactions)
+        TitleListDivider(modifier = Modifier.padding(vertical = 12.dp))
 
-    TitleListDivider()
-
-    if (listTransaction.isNotEmpty()) {
-        LazyColumn {
-            itemsIndexed(listTransaction) { _, transaction ->
-                TransactionItem(
-                    transaction = transaction,
-                    appliedAction = {
-                        onEvent(MainEvent.OnClickAppliedTransaction(transaction = transaction))
-                    },
-                    removeAction = { onEvent(MainEvent.RemoveTransactionEvent(transaction = transaction)) }
-                )
+        if (listTransaction.isNotEmpty()) {
+            LazyColumn {
+                itemsIndexed(listTransaction) { _, transaction ->
+                    TransactionItem(
+                        transaction = transaction,
+                        appliedAction = {
+                            onEvent(MainEvent.OnClickAppliedTransaction(transaction = transaction))
+                        },
+                        removeAction = { onEvent(MainEvent.RemoveTransactionEvent(transaction = transaction)) }
+                    )
+                }
             }
+        } else {
+            EmptyText(
+                modifier = Modifier.padding(top = 12.dp),
+                stringId = R.string.empty_transaction,
+                onClick = { onEvent(MainEvent.OpenBottomSheet(MainBottomSheetType.BottomSheetCreateTransaction)) }
+            )
         }
-    } else {
-        EmptyText(
-            stringId = R.string.empty_transaction,
-            onClick = { onEvent(MainEvent.OpenBottomSheet(MainBottomSheetType.BottomSheetCreateTransaction)) }
-        )
     }
 }
 
 @Composable
-private fun TitleListText(@StringRes stringId: Int) {
+private fun TitleListText(
+    modifier: Modifier = Modifier,
+    @StringRes stringId: Int
+) {
     Text(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         text = stringResource(id = stringId),
         style = MaterialTheme.typography.titleLarge,
         textAlign = TextAlign.Center
@@ -125,17 +136,23 @@ private fun TitleListText(@StringRes stringId: Int) {
 }
 
 @Composable
-private fun TitleListDivider() {
-    Divider(modifier = Modifier.padding(vertical = 12.dp), color = Color.White)
+private fun TitleListDivider(modifier: Modifier = Modifier) {
+    Divider(
+        modifier = modifier,
+        thickness = 0.3.dp,
+        color = Color.White
+    )
 }
 
 @Composable
-private fun EmptyText(@StringRes stringId: Int, onClick: () -> Unit) {
+private fun EmptyText(
+    modifier: Modifier = Modifier,
+    @StringRes stringId: Int, onClick: () -> Unit
+) {
     Text(
         text = stringResource(id = stringId),
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 22.dp)
             .clickable { onClick() },
         textAlign = TextAlign.Center
     )

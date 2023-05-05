@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.dms.moneymanager.R
 import com.dms.moneymanager.domain.model.main.Account
@@ -39,13 +41,11 @@ fun AccountItem(
     var expandedDropDownMenu by remember { mutableStateOf(false) }
 
     Card(
-        modifier = Modifier
-            .padding(all = 4.dp),
-        shape = RoundedCornerShape(size = 8.dp),
+        shape = RoundedCornerShape(size = 2.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.Transparent
         ),
-        border = BorderStroke(width = 0.25.dp, Color.White),
+        border = BorderStroke(width = 0.3.dp, Color.White),
         onClick = {
             when (mainUiState) {
                 MainUiState.APPLIED_TRANSACTION -> {
@@ -65,6 +65,7 @@ fun AccountItem(
             Text(
                 text = account.name,
                 style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold
             )
 
@@ -93,6 +94,14 @@ private fun DropDownMenuAccount(
         expanded = expanded,
         onDismissRequest = closeDropDownMenuAction
     ) {
+        DropdownMenuItem(
+            text = { Text(text = stringResource(id = R.string.edit)) },
+            onClick = {
+                // TODO
+                closeDropDownMenuAction()
+            }
+        )
+        Divider()
         DropdownMenuItem(
             text = { Text(text = stringResource(R.string.remove)) },
             onClick = {
