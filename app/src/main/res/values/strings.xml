@@ -24,4 +24,5 @@
     <string name="remove">Supprimer</string>
     <string name="applied">Appliquer</string>
     <string name="edit">Modifier</string>
+    <string name="edit_account">Modifier le compte</string>
 </resources>

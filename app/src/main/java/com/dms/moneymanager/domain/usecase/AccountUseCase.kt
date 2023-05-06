@@ -15,6 +15,10 @@ class AccountUseCase @Inject constructor(
         accountRepository.insertAccount(account = account)
     }
 
+    suspend fun editAccount(account: Account) {
+        accountRepository.updateAccount(account = account)
+    }
+
     suspend fun appliedTransaction(account: Account, transaction: Transaction) {
         account.currentBalance += transaction.amount
         transaction.isApplied = true

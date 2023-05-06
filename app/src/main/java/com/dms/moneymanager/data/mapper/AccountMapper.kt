@@ -7,6 +7,7 @@ object AccountMapper {
 
     fun Account.toAccountEntity() = with(this) {
         AccountEntity(
+            id = id,
             name = name,
             currentBalance = currentBalance
         )
@@ -14,6 +15,7 @@ object AccountMapper {
 
     fun AccountEntity.toAccount() = with(this) {
         Account(
+            id = id,
             name = name,
             currentBalance = currentBalance
         )

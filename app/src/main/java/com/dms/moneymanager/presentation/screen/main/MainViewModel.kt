@@ -20,6 +20,7 @@ import javax.inject.Inject
 
 sealed interface MainEvent {
     class AddAccountEvent(val name: String, val balance: String) : MainEvent
+    class EditAccountEvent(val id: Int, val name: String, val balance: String) : MainEvent
     class RemoveAccountEvent(val account: Account) : MainEvent
     class AddTransactionEvent(val name: String, val amount: String) : MainEvent
     class OnClickAppliedTransaction(val transaction: Transaction) : MainEvent
@@ -88,6 +89,10 @@ class MainViewModel @Inject constructor(
                 createAccount(name = event.name, balance = event.balance)
             }
 
+            is MainEvent.EditAccountEvent -> {
+                editAccount(id = event.id, name = event.name, balance = event.balance)
+            }
+
             is MainEvent.RemoveAccountEvent -> {
                 removeAccount(account = event.account)
             }
@@ -130,7 +135,8 @@ class MainViewModel @Inject constructor(
                         _mainUiState.value = MainUiState.NORMAL
                         _selectedTransaction.value = null
                     }
-                    else -> { }
+
+                    else -> {}
                 }
             }
         }
@@ -149,6 +155,28 @@ class MainViewModel @Inject constructor(
             }
             val account = Account(name = name, currentBalance = balanceFloat)
             kotlin.runCatching { accountUseCase.createAccount(account = account) }
+                .onSuccess {
+                    onEvent(MainEvent.CloseBottomSheet)
+                    refreshData()
+                }
+                .onFailure { _toastMessage.value = R.string.error_failed_add_account }
+        }
+    }
+
+    private fun editAccount(id: Int, name: String, balance: String) {
+        viewModelScope.launch {
+            // TODO REFACTO CHECK WITH CREATE
+            if (name.isEmpty()) {
+                _toastMessage.value = R.string.error_incorrect_name
+                return@launch
+            }
+            val balanceFloat = balance.toFloatOrNull()
+            if (balanceFloat == null) {
+                _toastMessage.value = R.string.error_incorrect_balance
+                return@launch
+            }
+            val account = Account(id = id, name = name, currentBalance = balanceFloat)
+            kotlin.runCatching { accountUseCase.editAccount(account = account) }
                 .onSuccess {
                     onEvent(MainEvent.CloseBottomSheet)
                     refreshData()

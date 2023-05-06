@@ -75,6 +75,7 @@ private fun AccountList(
                         mainUiState = mainUiState,
                         account = account,
                         appliedTransaction = { onEvent(MainEvent.AppliedTransaction(toAccount = account)) },
+                        editAction = { onEvent(MainEvent.OpenBottomSheet(MainBottomSheetType.BottomSheetEditAccount(account = account))) },
                         removeAction = { onEvent(MainEvent.RemoveAccountEvent(account = account)) }
                     )
                 }

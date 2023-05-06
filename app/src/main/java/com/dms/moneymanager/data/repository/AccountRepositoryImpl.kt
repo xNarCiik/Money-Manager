@@ -23,6 +23,6 @@ class AccountRepositoryImpl @Inject constructor(
     }
 
     override suspend fun removeAccount(account: Account) {
-        accountDao.deleteByName(account.name)
+        accountDao.deleteById(account.id)
     }
 }

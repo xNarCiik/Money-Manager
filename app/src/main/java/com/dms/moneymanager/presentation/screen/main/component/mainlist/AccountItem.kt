@@ -36,6 +36,7 @@ fun AccountItem(
     mainUiState: MainUiState,
     account: Account,
     appliedTransaction: () -> Unit,
+    editAction: () -> Unit,
     removeAction: () -> Unit
 ) {
     var expandedDropDownMenu by remember { mutableStateOf(false) }
@@ -77,6 +78,7 @@ fun AccountItem(
             DropDownMenuAccount(
                 expanded = expandedDropDownMenu,
                 closeDropDownMenuAction = { expandedDropDownMenu = false },
+                editAction = editAction,
                 removeAction = removeAction
             )
         }
@@ -88,6 +90,7 @@ fun AccountItem(
 private fun DropDownMenuAccount(
     expanded: Boolean,
     closeDropDownMenuAction: () -> Unit,
+    editAction: () -> Unit,
     removeAction: () -> Unit
 ) {
     DropdownMenu(
@@ -97,7 +100,7 @@ private fun DropDownMenuAccount(
         DropdownMenuItem(
             text = { Text(text = stringResource(id = R.string.edit)) },
             onClick = {
-                // TODO
+                editAction()
                 closeDropDownMenuAction()
             }
         )

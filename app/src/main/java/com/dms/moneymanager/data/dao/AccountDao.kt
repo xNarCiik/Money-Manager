@@ -20,6 +20,6 @@ interface AccountDao {
     @Query("SELECT * FROM $ACCOUNT_TABLE")
     suspend fun getAccounts(): List<AccountEntity>
 
-    @Query("DELETE FROM $ACCOUNT_TABLE WHERE NAME = :name")
-    suspend fun deleteByName(name: String)
+    @Query("DELETE FROM $ACCOUNT_TABLE WHERE ID = :id")
+    suspend fun deleteById(id: Int)
 }
