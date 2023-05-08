@@ -45,6 +45,8 @@ fun BottomSheetTransfer(
     account: Account,
     onEvent: (MainEvent) -> Unit
 ) {
+    val listAccountFiltered = listAccount.filter { it.id != account.id }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -59,7 +61,7 @@ fun BottomSheetTransfer(
 
         var amount by remember { mutableStateOf(TextFieldValue("0.0")) }
         var expanded by remember { mutableStateOf(false) }
-        var selectedAccount by remember { mutableStateOf(listAccount[0]) }
+        var selectedAccount by remember { mutableStateOf(listAccountFiltered[0]) }
 
         val onValidateAction = {
             onEvent(
@@ -117,7 +119,7 @@ fun BottomSheetTransfer(
                     expanded = expanded,
                     onDismissRequest = { expanded = false }
                 ) {
-                    listAccount.forEachIndexed { index, account ->
+                    listAccountFiltered.forEachIndexed { index, account ->
                         DropdownMenuItem(
                             text = { Text(text = account.name) },
                             onClick = {
