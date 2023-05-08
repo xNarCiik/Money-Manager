@@ -55,6 +55,7 @@ import com.dms.moneymanager.presentation.screen.main.MainEvent
 import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetCreateAccount
 import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetCreateTransaction
 import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetEditAccount
+import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetEditTransaction
 import com.dms.moneymanager.presentation.screen.main.component.mainlist.MainList
 import com.dms.moneymanager.presentation.screen.main.model.MainBottomSheetType
 import com.dms.moneymanager.presentation.screen.main.model.MainUiModel
@@ -98,6 +99,10 @@ fun MainScreen(
                 }
 
                 is MainBottomSheetType.BottomSheetEditTransaction -> {
+                    BottomSheetEditTransaction(
+                        transaction = viewState.mainBottomSheetType.transaction,
+                        onEvent = onEvent
+                    )
                 }
             }
         }
@@ -164,13 +169,13 @@ private fun MainContent(
 ) {
     Column(modifier = modifier.padding(all = 12.dp)) {
         InfoBalance(
-            modifier = Modifier.padding(top = 12.dp),
+            modifier = Modifier.padding(top = 18.dp),
             currentBalance = viewState.currentBalance,
             futureBalance = viewState.futureBalance
         )
 
         MainList(
-            modifier = Modifier.padding(top = 24.dp),
+            modifier = Modifier.padding(top = 18.dp),
             mainUiState = viewState.mainUiState,
             listAccount = viewState.listAccount,
             listTransaction = viewState.listTransaction,

@@ -33,6 +33,7 @@ import com.dms.moneymanager.presentation.util.toAmountString
 fun TransactionItem(
     transaction: Transaction,
     appliedAction: () -> Unit,
+    editAction: () -> Unit,
     removeAction: () -> Unit
 ) {
     var expandedDropDownMenu by remember { mutableStateOf(false) }
@@ -68,6 +69,7 @@ fun TransactionItem(
                 expanded = expandedDropDownMenu,
                 closeDropDownMenuAction = { expandedDropDownMenu = false },
                 appliedAction = appliedAction,
+                editAction = editAction,
                 removeAction = removeAction
             )
         }
@@ -79,6 +81,7 @@ private fun DropDownMenuTransaction(
     expanded: Boolean,
     closeDropDownMenuAction: () -> Unit,
     appliedAction: () -> Unit,
+    editAction: () -> Unit,
     removeAction: () -> Unit
 ) {
     DropdownMenu(
@@ -96,7 +99,7 @@ private fun DropDownMenuTransaction(
         DropdownMenuItem(
             text = { Text(text = stringResource(id = R.string.edit)) },
             onClick = {
-                // TODO
+                editAction()
                 closeDropDownMenuAction()
             }
         )

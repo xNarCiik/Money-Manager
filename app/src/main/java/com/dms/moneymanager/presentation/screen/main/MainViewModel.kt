@@ -23,6 +23,7 @@ sealed interface MainEvent {
     class EditAccountEvent(val id: Int, val name: String, val balance: String) : MainEvent
     class RemoveAccountEvent(val account: Account) : MainEvent
     class AddTransactionEvent(val name: String, val amount: String) : MainEvent
+    class EditTransactionEvent(val id: Int, val name: String, val amount: String) : MainEvent
     class OnClickAppliedTransaction(val transaction: Transaction) : MainEvent
     class AppliedTransaction(val toAccount: Account) : MainEvent
     class RemoveTransactionEvent(val transaction: Transaction) : MainEvent
@@ -99,6 +100,10 @@ class MainViewModel @Inject constructor(
 
             is MainEvent.AddTransactionEvent -> {
                 createTransaction(name = event.name, amount = event.amount)
+            }
+
+            is MainEvent.EditTransactionEvent -> {
+                editTransaction(id = event.id, name = event.name, amount = event.amount)
             }
 
             is MainEvent.OnClickAppliedTransaction -> {
@@ -211,6 +216,28 @@ class MainViewModel @Inject constructor(
                     refreshData()
                 }
                 .onFailure { _toastMessage.value = R.string.error_failed_add_transaction }
+        }
+    }
+
+    private fun editTransaction(id: Int, name: String, amount: String) {
+        viewModelScope.launch {
+            // TODO REFACTO CHECK WITH CREATE
+            if (name.isEmpty()) {
+                _toastMessage.value = R.string.error_incorrect_name
+                return@launch
+            }
+            val amountFloat = amount.toFloatOrNull()
+            if (amountFloat == null) {
+                _toastMessage.value = R.string.error_incorrect_balance
+                return@launch
+            }
+            val transaction = Transaction(id = id, name = name, amount = amountFloat)
+            kotlin.runCatching { transactionUseCase.editTransaction(transaction = transaction) }
+                .onSuccess {
+                    onEvent(MainEvent.CloseBottomSheet)
+                    refreshData()
+                }
+                .onFailure { _toastMessage.value = R.string.error_failed_add_account }
         }
     }
 

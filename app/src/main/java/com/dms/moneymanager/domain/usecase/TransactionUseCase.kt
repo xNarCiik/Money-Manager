@@ -15,7 +15,7 @@ class TransactionUseCase @Inject constructor(
         transactionRepository.insertTransaction(transaction = transaction)
     }
 
-    suspend fun updateTransaction(transaction: Transaction) {
+    suspend fun editTransaction(transaction: Transaction) {
         transactionRepository.updateTransaction(transaction = transaction)
     }
 

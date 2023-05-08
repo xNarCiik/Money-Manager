@@ -23,5 +23,5 @@ sealed interface MainBottomSheetType {
     object BottomSheetCreateAccount : MainBottomSheetType
     class BottomSheetEditAccount(val account: Account) : MainBottomSheetType
     object BottomSheetCreateTransaction : MainBottomSheetType
-    class BottomSheetEditTransaction(transaction: Transaction) : MainBottomSheetType
+    class BottomSheetEditTransaction(val transaction: Transaction) : MainBottomSheetType
 }

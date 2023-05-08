@@ -46,7 +46,7 @@ fun MainList(
         )
 
         TransactionList(
-            modifier = Modifier.padding(top = 32.dp),
+            modifier = Modifier.padding(top = 18.dp),
             listTransaction = listTransaction,
             onEvent = onEvent
         )
@@ -67,7 +67,7 @@ private fun AccountList(
 
         if (listAccount.isNotEmpty()) {
             LazyVerticalGrid(
-                columns = GridCells.Fixed(count = 2),
+                columns = GridCells.Fixed(count = 3),
                 contentPadding = PaddingValues(all = 4.dp)
             ) {
                 itemsIndexed(listAccount) { _, account ->
@@ -75,7 +75,15 @@ private fun AccountList(
                         mainUiState = mainUiState,
                         account = account,
                         appliedTransaction = { onEvent(MainEvent.AppliedTransaction(toAccount = account)) },
-                        editAction = { onEvent(MainEvent.OpenBottomSheet(MainBottomSheetType.BottomSheetEditAccount(account = account))) },
+                        editAction = {
+                            onEvent(
+                                MainEvent.OpenBottomSheet(
+                                    MainBottomSheetType.BottomSheetEditAccount(
+                                        account = account
+                                    )
+                                )
+                            )
+                        },
                         removeAction = { onEvent(MainEvent.RemoveAccountEvent(account = account)) }
                     )
                 }
@@ -108,6 +116,15 @@ private fun TransactionList(
                         transaction = transaction,
                         appliedAction = {
                             onEvent(MainEvent.OnClickAppliedTransaction(transaction = transaction))
+                        },
+                        editAction = {
+                            onEvent(
+                                MainEvent.OpenBottomSheet(
+                                    mainBottomSheetType = MainBottomSheetType.BottomSheetEditTransaction(
+                                        transaction = transaction
+                                    )
+                                )
+                            )
                         },
                         removeAction = { onEvent(MainEvent.RemoveTransactionEvent(transaction = transaction)) }
                     )

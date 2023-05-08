@@ -42,6 +42,7 @@ fun AccountItem(
     var expandedDropDownMenu by remember { mutableStateOf(false) }
 
     Card(
+        modifier = Modifier.padding(all = 4.dp),
         shape = RoundedCornerShape(size = 2.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.Transparent
@@ -58,9 +59,7 @@ fun AccountItem(
         }
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(all = 18.dp),
+            modifier = Modifier.fillMaxWidth().padding(all = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(

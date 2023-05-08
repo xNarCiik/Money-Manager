@@ -23,7 +23,7 @@ class AccountUseCase @Inject constructor(
         account.currentBalance += transaction.amount
         transaction.isApplied = true
         accountRepository.updateAccount(account = account)
-        transactionUseCase.updateTransaction(transaction = transaction)
+        transactionUseCase.editTransaction(transaction = transaction)
     }
 
     suspend fun removeAccount(account: Account) {
