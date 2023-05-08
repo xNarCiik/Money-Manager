@@ -73,7 +73,7 @@ fun TransactionItem(
                 )
 
                 Spacer(modifier = Modifier.weight(weight = 1f))
-                
+
                 if (transaction.id % 2 == 0) {
                     Text(
                         modifier = Modifier

@@ -32,6 +32,7 @@ import com.dms.moneymanager.presentation.util.toAmountString
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountItem(
+    modifier: Modifier = Modifier,
     mainUiState: MainUiState,
     account: Account,
     appliedTransaction: () -> Unit,
@@ -42,7 +43,7 @@ fun AccountItem(
     var expandedDropDownMenu by remember { mutableStateOf(false) }
 
     Card(
-        modifier = Modifier.padding(all = 4.dp),
+        modifier = modifier.padding(all = 4.dp),
         shape = RoundedCornerShape(size = 8.dp),
         border = BorderStroke(width = 1.dp, color = Color.Black),
         onClick = {

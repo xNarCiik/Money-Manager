@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.FabPosition
 import androidx.compose.material.Scaffold
@@ -165,8 +166,9 @@ private fun MainContent(
     viewState: MainUiModel,
     onEvent: (MainEvent) -> Unit
 ) {
-    Column(modifier = modifier.padding(all = 12.dp)) {
+    Column(modifier = modifier.padding(horizontal = 12.dp)) {
         InfoBalance(
+            modifier = Modifier.padding(top = 12.dp),
             currentBalance = viewState.currentBalance,
             futureBalance = viewState.futureBalance
         )
@@ -252,8 +254,7 @@ private fun AddFloatingButton(
 
     FloatingActionButton(
         onClick = { expandedDropDownMenu = true },
-        containerColor = Color.DarkGray,
-        shape = RoundedCornerShape(25.dp),
+        shape = CircleShape,
     ) {
         Icon(
             imageVector = Icons.Rounded.Add,
