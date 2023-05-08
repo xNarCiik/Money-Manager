@@ -75,6 +75,15 @@ private fun AccountList(
                         mainUiState = mainUiState,
                         account = account,
                         appliedTransaction = { onEvent(MainEvent.AppliedTransaction(toAccount = account)) },
+                        transferAction = {
+                            onEvent(
+                                MainEvent.OpenBottomSheet(
+                                    mainBottomSheetType = MainBottomSheetType.BottomSheetTransfer(
+                                        account = account
+                                    )
+                                )
+                            )
+                        },
                         editAction = {
                             onEvent(
                                 MainEvent.OpenBottomSheet(

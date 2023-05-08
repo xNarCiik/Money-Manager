@@ -26,6 +26,13 @@ class AccountUseCase @Inject constructor(
         transactionUseCase.editTransaction(transaction = transaction)
     }
 
+    suspend fun transfer(transmitterAccount: Account, receiverAccount: Account, amount: Float) {
+        transmitterAccount.currentBalance -= amount
+        receiverAccount.currentBalance += amount
+        accountRepository.updateAccount(account = transmitterAccount)
+        accountRepository.updateAccount(account = receiverAccount)
+    }
+
     suspend fun removeAccount(account: Account) {
         accountRepository.removeAccount(account = account)
     }

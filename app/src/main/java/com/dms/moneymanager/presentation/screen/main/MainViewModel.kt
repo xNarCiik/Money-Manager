@@ -22,6 +22,12 @@ sealed interface MainEvent {
     class AddAccountEvent(val name: String, val balance: String) : MainEvent
     class EditAccountEvent(val id: Int, val name: String, val balance: String) : MainEvent
     class RemoveAccountEvent(val account: Account) : MainEvent
+    class OnClickTransfer(
+        val transmitterAccount: Account,
+        val receiverAccount: Account,
+        val amount: String
+    ) : MainEvent
+
     class AddTransactionEvent(val name: String, val amount: String) : MainEvent
     class EditTransactionEvent(val id: Int, val name: String, val amount: String) : MainEvent
     class OnClickAppliedTransaction(val transaction: Transaction) : MainEvent
@@ -44,6 +50,7 @@ class MainViewModel @Inject constructor(
     private val _futureBalance = MutableStateFlow(value = 0.0f)
     private var _listAccount = MutableStateFlow<List<Account>>(value = emptyList())
     private var _listTransaction = MutableStateFlow<List<Transaction>>(value = emptyList())
+    private var _selectedAccount = MutableStateFlow<Account?>(value = null)
     private var _selectedTransaction = MutableStateFlow<Transaction?>(value = null)
     private var _mainBottomSheetType = MutableStateFlow<MainBottomSheetType?>(value = null)
     private var _toastMessage = MutableStateFlow<Int?>(value = null)
@@ -55,6 +62,7 @@ class MainViewModel @Inject constructor(
         _futureBalance,
         _listAccount,
         _listTransaction,
+        _selectedAccount,
         _selectedTransaction,
         _mainBottomSheetType,
         _toastMessage
@@ -64,9 +72,10 @@ class MainViewModel @Inject constructor(
         val futureBalance = params[2] as Float
         val listAccount = params[3] as List<Account>
         val listTransaction = params[4] as List<Transaction>
-        val selectedTransaction = params[5] as Transaction?
-        val mainBottomSheetType = params[6] as MainBottomSheetType?
-        val toastMessage = params[7] as Int?
+        val selectedAccount = params[5] as Account?
+        val selectedTransaction = params[6] as Transaction?
+        val mainBottomSheetType = params[7] as MainBottomSheetType?
+        val toastMessage = params[8] as Int?
 
         MainUiModel(
             mainUiState = mainUiState,
@@ -74,6 +83,7 @@ class MainViewModel @Inject constructor(
             futureBalance = futureBalance,
             listAccount = listAccount,
             listTransaction = listTransaction,
+            selectedAccount = selectedAccount,
             selectedTransaction = selectedTransaction,
             mainBottomSheetType = mainBottomSheetType,
             toastMessage = toastMessage
@@ -96,6 +106,14 @@ class MainViewModel @Inject constructor(
 
             is MainEvent.RemoveAccountEvent -> {
                 removeAccount(account = event.account)
+            }
+
+            is MainEvent.OnClickTransfer -> {
+                transfer(
+                    transmitterAccount = event.transmitterAccount,
+                    receiverAccount = event.receiverAccount,
+                    amount = event.amount
+                )
             }
 
             is MainEvent.AddTransactionEvent -> {
@@ -187,6 +205,28 @@ class MainViewModel @Inject constructor(
                     refreshData()
                 }
                 .onFailure { _toastMessage.value = R.string.error_failed_add_account }
+        }
+    }
+
+    private fun transfer(transmitterAccount: Account, receiverAccount: Account, amount: String) {
+        viewModelScope.launch {
+            val amountFloat = amount.toFloatOrNull()
+            if (amountFloat == null || transmitterAccount.currentBalance < amountFloat) {
+                _toastMessage.value = R.string.error_incorrect_amount
+                return@launch
+            }
+            kotlin.runCatching {
+                accountUseCase.transfer(
+                    transmitterAccount = transmitterAccount,
+                    receiverAccount = receiverAccount,
+                    amount = amountFloat
+                )
+            }
+                .onSuccess {
+                    onEvent(MainEvent.CloseBottomSheet)
+                    refreshData()
+                }
+                .onFailure { _toastMessage.value = R.string.error_failed_transfer }
         }
     }
 

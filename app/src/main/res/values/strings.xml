@@ -12,6 +12,7 @@
     <string name="amount">Montant</string>
     <string name="balance">Solde</string>
     <string name="error_failed_add_account">"Échec de l'ajout du compte"</string>
+    <string name="error_failed_transfer">"Échec lors du transfert"</string>
     <string name="error_failed_remove_account">Échec de la suppression du compte</string>
     <string name="error_failed_add_transaction">"Échec de l'ajout de la transaction"</string>
     <string name="error_failed_applied_transaction">"Échec de lors de l'application de la transaction"</string>
@@ -26,4 +27,5 @@
     <string name="edit">Modifier</string>
     <string name="edit_account">Modifier le compte</string>
     <string name="edit_transaction">Modifier la transaction</string>
+    <string name="transfer">Transférer</string>
 </resources>

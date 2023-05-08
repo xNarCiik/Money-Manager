@@ -10,6 +10,7 @@ data class MainUiModel(
     val futureBalance: Float = 0.0f,
     val listAccount: List<Account> = emptyList(),
     val listTransaction: List<Transaction> = emptyList(),
+    val selectedAccount: Account? = null,
     val selectedTransaction: Transaction? = null,
     val mainBottomSheetType: MainBottomSheetType? = null,
     @StringRes val toastMessage: Int? = null
@@ -22,6 +23,7 @@ enum class MainUiState {
 sealed interface MainBottomSheetType {
     object BottomSheetCreateAccount : MainBottomSheetType
     class BottomSheetEditAccount(val account: Account) : MainBottomSheetType
+    class BottomSheetTransfer(val account: Account) : MainBottomSheetType
     object BottomSheetCreateTransaction : MainBottomSheetType
     class BottomSheetEditTransaction(val transaction: Transaction) : MainBottomSheetType
 }

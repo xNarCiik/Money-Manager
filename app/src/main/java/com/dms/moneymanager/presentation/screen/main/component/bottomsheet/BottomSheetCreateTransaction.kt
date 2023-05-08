@@ -66,9 +66,9 @@ fun BottomSheetCreateTransaction(onEvent: (MainEvent) -> Unit) {
             onValueChange = { amount = it },
             singleLine = true,
             label = { Text(text = stringResource(R.string.amount)) },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(
-                onNext = { onValidateAction() }
+                onDone = { onValidateAction() }
             )
         )
 

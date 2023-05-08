@@ -56,6 +56,7 @@ import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.Botto
 import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetCreateTransaction
 import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetEditAccount
 import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetEditTransaction
+import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetTransfer
 import com.dms.moneymanager.presentation.screen.main.component.mainlist.MainList
 import com.dms.moneymanager.presentation.screen.main.model.MainBottomSheetType
 import com.dms.moneymanager.presentation.screen.main.model.MainUiModel
@@ -89,6 +90,14 @@ fun MainScreen(
 
                 is MainBottomSheetType.BottomSheetEditAccount -> {
                     BottomSheetEditAccount(
+                        account = viewState.mainBottomSheetType.account,
+                        onEvent = onEvent
+                    )
+                }
+
+                is MainBottomSheetType.BottomSheetTransfer -> {
+                    BottomSheetTransfer(
+                        listAccount = viewState.listAccount,
                         account = viewState.mainBottomSheetType.account,
                         onEvent = onEvent
                     )

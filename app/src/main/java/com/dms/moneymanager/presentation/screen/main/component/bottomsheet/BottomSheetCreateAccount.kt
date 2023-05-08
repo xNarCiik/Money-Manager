@@ -66,9 +66,9 @@ fun BottomSheetCreateAccount(onEvent: (MainEvent) -> Unit) {
             onValueChange = { balance = it },
             singleLine = true,
             label = { Text(text = stringResource(R.string.balance)) },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(
-                onNext = { onValidateAction() }
+                onDone = { onValidateAction() }
             )
         )
 

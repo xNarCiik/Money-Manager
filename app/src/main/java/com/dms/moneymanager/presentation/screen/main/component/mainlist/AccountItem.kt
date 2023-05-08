@@ -36,6 +36,7 @@ fun AccountItem(
     mainUiState: MainUiState,
     account: Account,
     appliedTransaction: () -> Unit,
+    transferAction: () -> Unit,
     editAction: () -> Unit,
     removeAction: () -> Unit
 ) {
@@ -77,6 +78,7 @@ fun AccountItem(
             DropDownMenuAccount(
                 expanded = expandedDropDownMenu,
                 closeDropDownMenuAction = { expandedDropDownMenu = false },
+                transferAction = transferAction,
                 editAction = editAction,
                 removeAction = removeAction
             )
@@ -89,6 +91,7 @@ fun AccountItem(
 private fun DropDownMenuAccount(
     expanded: Boolean,
     closeDropDownMenuAction: () -> Unit,
+    transferAction: () -> Unit,
     editAction: () -> Unit,
     removeAction: () -> Unit
 ) {
@@ -96,6 +99,14 @@ private fun DropDownMenuAccount(
         expanded = expanded,
         onDismissRequest = closeDropDownMenuAction
     ) {
+        DropdownMenuItem(
+            text = { Text(text = stringResource(R.string.transfer)) },
+            onClick = {
+                transferAction()
+                closeDropDownMenuAction()
+            }
+        )
+        Divider()
         DropdownMenuItem(
             text = { Text(text = stringResource(id = R.string.edit)) },
             onClick = {
