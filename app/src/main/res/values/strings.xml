@@ -2,7 +2,7 @@
     <string name="app_name">Money Manager</string>
     <string name="empty_transaction">Aucune transaction</string>
     <string name="empty_account">Aucun compte</string>
-    <string name="accounts">Comptes</string>
+    <string name="my_accounts">Mes comptes</string>
     <string name="incoming_transactions">Transactions à venir</string>
     <string name="add_account">Ajouter un compte</string>
     <string name="add_the_account">Ajouter le compte</string>

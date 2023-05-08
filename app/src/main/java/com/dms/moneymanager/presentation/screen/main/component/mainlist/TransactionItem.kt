@@ -1,13 +1,16 @@
 package com.dms.moneymanager.presentation.screen.main.component.mainlist
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -19,14 +22,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.dms.moneymanager.R
 import com.dms.moneymanager.domain.model.main.Transaction
+import com.dms.moneymanager.presentation.util.getTextColor
 import com.dms.moneymanager.presentation.util.toAmountString
+import com.dms.moneymanager.ui.theme.Blue
+import com.dms.moneymanager.ui.theme.Green
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,30 +47,65 @@ fun TransactionItem(
     var expandedDropDownMenu by remember { mutableStateOf(false) }
 
     Card(
-        modifier = Modifier
-            .padding(all = 4.dp),
-        shape = RoundedCornerShape(size = 2.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.Transparent
-        ),
-        border = BorderStroke(width = 0.3.dp, Color.White),
+        modifier = Modifier.padding(all = 4.dp),
+        shape = RoundedCornerShape(size = 8.dp),
+        border = BorderStroke(width = 1.dp, Color.Black),
         onClick = { expandedDropDownMenu = true }
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(all = 8.dp)
         ) {
-            Row(modifier = Modifier.padding(all = 15.dp)) {
+            Text(
+                text = transaction.name,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold
+            )
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = transaction.name,
-                    modifier = Modifier.weight(weight = 1f),
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
+                    modifier = Modifier.padding(start = 16.dp),
                     text = transaction.amount.toAmountString(),
-                    style = MaterialTheme.typography.bodyLarge
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = transaction.amount.getTextColor()
                 )
+
+                Spacer(modifier = Modifier.weight(weight = 1f))
+                
+                if (transaction.id % 2 == 0) {
+                    Text(
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .border(
+                                width = 1.dp,
+                                color = Blue,
+                                shape = CircleShape
+                            )
+                            .background(color = Blue, shape = CircleShape)
+                            .padding(all = 4.dp),
+                        text = "Account 1",
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
+                        color = Color.White
+                    )
+                }
+                if (transaction.id % 4 == 0) {
+                    Text(
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .border(
+                                width = 1.dp,
+                                color = Green,
+                                shape = CircleShape
+                            )
+                            .background(color = Green, shape = CircleShape)
+                            .padding(all = 4.dp),
+                        text = "2 du mois",
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
+                        color = Color.White
+                    )
+                }
             }
 
             DropDownMenuTransaction(
