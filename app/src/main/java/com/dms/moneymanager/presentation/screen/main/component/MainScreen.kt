@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.FabPosition
@@ -14,6 +15,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarResult
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.Card
@@ -58,6 +60,7 @@ import com.dms.moneymanager.presentation.screen.main.component.mainlist.MainList
 import com.dms.moneymanager.presentation.screen.main.model.MainBottomSheetType
 import com.dms.moneymanager.presentation.screen.main.model.MainUiModel
 import com.dms.moneymanager.presentation.screen.main.model.MainUiState
+import com.dms.moneymanager.presentation.util.NavigationRoute
 import com.dms.moneymanager.presentation.util.getTextColor
 import com.dms.moneymanager.presentation.util.toAmountString
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
@@ -128,7 +131,8 @@ fun MainScreen(
         MainContent(
             modifier = Modifier.padding(paddingValues = it),
             viewState = viewState,
-            onEvent = onEvent
+            onEvent = onEvent,
+            navController = navController
         )
     }
 
@@ -164,13 +168,15 @@ fun MainScreen(
 private fun MainContent(
     modifier: Modifier = Modifier,
     viewState: MainUiModel,
-    onEvent: (MainEvent) -> Unit
+    onEvent: (MainEvent) -> Unit,
+    navController: NavHostController
 ) {
     Column(modifier = modifier.padding(horizontal = 12.dp)) {
         InfoBalance(
             modifier = Modifier.padding(top = 12.dp),
             currentBalance = viewState.currentBalance,
-            futureBalance = viewState.futureBalance
+            futureBalance = viewState.futureBalance,
+            navigateToBalanceDetail = { navController.navigate(NavigationRoute.HISTORY.route) } // TODO DETAIL SCREEN
         )
 
         MainList(
@@ -183,16 +189,19 @@ private fun MainContent(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun InfoBalance(
     modifier: Modifier = Modifier,
     currentBalance: Float,
-    futureBalance: Float
+    futureBalance: Float,
+    navigateToBalanceDetail: () -> Unit,
 ) {
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(size = 8.dp),
-        border = BorderStroke(width = 1.dp, color = Color.Black)
+        border = BorderStroke(width = 1.dp, color = Color.Black),
+        onClick = navigateToBalanceDetail
     ) {
         Column(
             modifier = Modifier
@@ -241,6 +250,26 @@ private fun InfoBalance(
                 textAlign = TextAlign.End,
                 color = futureBalance.getTextColor()
             )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.End
+            ) {
+                Text(
+                    text = "Visualiser en détail",
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.End
+                )
+                Icon(
+                    modifier = Modifier.size(22.dp),
+                    imageVector = Icons.Default.KeyboardArrowRight,
+                    contentDescription = "icon right"
+                )
+            }
         }
     }
 }

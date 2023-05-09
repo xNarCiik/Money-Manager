@@ -11,6 +11,7 @@ fun Float.toAmountString(): String {
     }
     stringBuilder.append(
         String.format("%.2f€", this)
+            .replace(oldValue = "-", newValue = "- ")
             .replace(oldChar = ',', newChar = '.')
     )
     return stringBuilder.toString() // TODO Handle currency
