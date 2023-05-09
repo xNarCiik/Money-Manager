@@ -7,12 +7,24 @@ import javax.inject.Inject
 class TransactionUseCase @Inject constructor(
     private val transactionRepository: TransactionRepository
 ) {
+    suspend fun getTransactionById(id: Int) = transactionRepository.getTransactionById(id = id)
+
     suspend fun getAllTransactions() = transactionRepository.getTransactions()
 
     suspend fun getNotAppliedTransactions() = getAllTransactions().filter { !it.isApplied }
 
     suspend fun createTransaction(transaction: Transaction) {
         transactionRepository.insertTransaction(transaction = transaction)
+    }
+
+    suspend fun editTransaction(id: Int, name: String, amount: Float) {
+        val currentTransaction = getTransactionById(id = id)
+        transactionRepository.updateTransaction(
+            transaction = currentTransaction.copy(
+                name = name,
+                amount = amount
+            )
+        )
     }
 
     suspend fun editTransaction(transaction: Transaction) {

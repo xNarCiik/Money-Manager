@@ -13,6 +13,14 @@ class TransactionRepositoryImpl @Inject constructor(
     private val transactionDao: TransactionDao,
     private val accountDao: AccountDao
 ) : TransactionRepository {
+    override suspend fun getTransactionById(id: Int): Transaction {
+        val transactionEntity = transactionDao.getTransactionById(id = id)
+        return transactionEntity.toTransaction(
+            linkedAccount = if (transactionEntity.accountId != null) accountDao.getById(id = transactionEntity.accountId)
+                ?.toAccount() else null
+        )
+    }
+
     override suspend fun getTransactions(): List<Transaction> {
         return transactionDao.getTransactions()
             .map {
