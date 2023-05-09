@@ -15,8 +15,8 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarResult
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
@@ -50,6 +50,8 @@ import androidx.navigation.compose.rememberNavController
 import com.dms.moneymanager.R
 import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.domain.model.main.Transaction
+import com.dms.moneymanager.presentation.screen.commun.BottomBar
+import com.dms.moneymanager.presentation.screen.commun.MenuRoute
 import com.dms.moneymanager.presentation.screen.main.MainEvent
 import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetCreateAccount
 import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetCreateTransaction
@@ -128,6 +130,14 @@ fun MainScreen(
                 addTransactionAction = { onEvent(MainEvent.OpenBottomSheet(mainBottomSheetType = MainBottomSheetType.BottomSheetCreateTransaction)) }
             )
         },
+        bottomBar = {
+            BottomBar(
+                defaultSelectedItem = MenuRoute.HOME,
+                onHomeClick = { },
+                onSettingClick = { navController.navigate(NavigationRoute.HISTORY.route) }
+            )
+        },
+        isFloatingActionButtonDocked = true,
         floatingActionButtonPosition = FabPosition.Center
     ) {
         MainContent(
@@ -288,7 +298,7 @@ private fun AddFloatingButton(
         shape = CircleShape,
     ) {
         Icon(
-            imageVector = Icons.Rounded.Add,
+            imageVector = Icons.Default.Add,
             contentDescription = "Add FAB",
             tint = Color.White,
         )
