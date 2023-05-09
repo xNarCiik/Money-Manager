@@ -1,6 +1,7 @@
 package com.dms.moneymanager.data.mapper
 
 import com.dms.moneymanager.data.entity.TransactionEntity
+import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.domain.model.main.Transaction
 
 object TransactionMapper {
@@ -12,18 +13,22 @@ object TransactionMapper {
             amount = amount,
             isApplied = isApplied,
             dueDate = dueDate,
-            recurrenceType = recurrenceType
+            recurrenceType = recurrenceType,
+            accountId = linkedAccount?.id
         )
     }
 
-    fun TransactionEntity.toTransaction() = with(this) {
+    fun TransactionEntity.toTransaction(
+        linkedAccount: Account?
+    ) = with(this) {
         Transaction(
             id = id,
             name = name,
             amount = amount,
             isApplied = isApplied,
             dueDate = dueDate,
-            recurrenceType = recurrenceType
+            recurrenceType = recurrenceType,
+            linkedAccount = linkedAccount
         )
     }
 }

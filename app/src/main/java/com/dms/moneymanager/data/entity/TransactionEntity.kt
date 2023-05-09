@@ -22,5 +22,7 @@ data class TransactionEntity(
     @ColumnInfo(name = "DATE")
     val dueDate: Date?,
     @ColumnInfo(name = "RECURRENCE_TYPE")
-    val recurrenceType: RecurrenceType?
+    val recurrenceType: RecurrenceType?,
+    @ColumnInfo(name = "ACCOUNT_ID")
+    val accountId: Int? = null
 )

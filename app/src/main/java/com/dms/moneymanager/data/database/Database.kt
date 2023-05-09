@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.dms.moneymanager.data.dao.AccountDao
 import com.dms.moneymanager.data.dao.TransactionDao
 import com.dms.moneymanager.data.database.converter.TypeConverter
@@ -12,7 +14,7 @@ import com.dms.moneymanager.data.entity.TransactionEntity
 
 @androidx.room.Database(
     entities = [AccountEntity::class, TransactionEntity::class],
-    version = 1,
+    version = 2, // TODO BACK TO 1
     exportSchema = true
 )
 @TypeConverters(TypeConverter::class)
@@ -33,9 +35,16 @@ abstract class Database : RoomDatabase() {
                     context,
                     Database::class.java,
                     DATABASE_NAME
-                ).build()
+                ).addMigrations(MIGRATION_1_2).build()
                 databaseInstance = instance
                 return instance
+            }
+        }
+
+        // TODO REMOVE ALL AT THE END AND PUT DB VERSION TO 1
+        val MIGRATION_1_2 = object : Migration(1, 2) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE TransactionEntity ADD COLUMN ACCOUNT_ID INTEGER NULL")
             }
         }
     }

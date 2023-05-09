@@ -58,8 +58,11 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideTransactionRepository(transactionDao: TransactionDao): TransactionRepository {
-        return TransactionRepositoryImpl(transactionDao = transactionDao)
+    fun provideTransactionRepository(
+        transactionDao: TransactionDao,
+        accountDao: AccountDao
+    ): TransactionRepository {
+        return TransactionRepositoryImpl(transactionDao = transactionDao, accountDao = accountDao)
     }
 
     @Singleton

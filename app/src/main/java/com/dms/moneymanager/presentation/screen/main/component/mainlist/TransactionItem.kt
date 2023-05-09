@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dms.moneymanager.R
 import com.dms.moneymanager.domain.model.main.Transaction
+import com.dms.moneymanager.presentation.util.getDayOfTheMonth
 import com.dms.moneymanager.presentation.util.getTextColor
 import com.dms.moneymanager.presentation.util.toAmountString
 import com.dms.moneymanager.ui.theme.Blue
@@ -74,7 +75,7 @@ fun TransactionItem(
 
                 Spacer(modifier = Modifier.weight(weight = 1f))
 
-                if (transaction.id % 2 == 0) {
+                transaction.linkedAccount?.let { linkedAccount ->
                     Text(
                         modifier = Modifier
                             .padding(start = 8.dp)
@@ -85,12 +86,13 @@ fun TransactionItem(
                             )
                             .background(color = Blue, shape = CircleShape)
                             .padding(all = 4.dp),
-                        text = "Account 1",
+                        text = linkedAccount.name, // TODO FIND ACCOUNT NAME BY ID
                         style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
                         color = Color.White
                     )
                 }
-                if (transaction.id % 4 == 0) {
+
+                transaction.dueDate?.let { dueDate ->
                     Text(
                         modifier = Modifier
                             .padding(start = 8.dp)
@@ -101,7 +103,7 @@ fun TransactionItem(
                             )
                             .background(color = Green, shape = CircleShape)
                             .padding(all = 4.dp),
-                        text = "2 du mois",
+                        text = "${getDayOfTheMonth(dueDate)} du mois", // TODO PHRASE
                         style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
                         color = Color.White
                     )

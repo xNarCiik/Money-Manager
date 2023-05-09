@@ -8,7 +8,8 @@ data class Transaction(
     val amount: Float,
     var isApplied: Boolean = false,
     val dueDate: Date? = null,
-    val recurrenceType: RecurrenceType? = null
+    val recurrenceType: RecurrenceType? = null,
+    val linkedAccount: Account? = null
 )
 
 enum class RecurrenceType {

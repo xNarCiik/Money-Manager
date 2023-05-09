@@ -61,6 +61,8 @@ import com.dms.moneymanager.presentation.screen.main.model.MainBottomSheetType
 import com.dms.moneymanager.presentation.screen.main.model.MainUiModel
 import com.dms.moneymanager.presentation.screen.main.model.MainUiState
 import com.dms.moneymanager.presentation.util.NavigationRoute
+import com.dms.moneymanager.presentation.util.getCurrentDateString
+import com.dms.moneymanager.presentation.util.getLastDayOfMonthDateString
 import com.dms.moneymanager.presentation.util.getTextColor
 import com.dms.moneymanager.presentation.util.toAmountString
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
@@ -217,7 +219,7 @@ private fun InfoBalance(
                 )
                 Text(
                     modifier = Modifier.padding(start = 6.dp),
-                    text = "(1 janvier 2023)",
+                    text = "(Le ${getCurrentDateString()})",
                     style = MaterialTheme.typography.bodySmall
                 )
             }
@@ -238,7 +240,7 @@ private fun InfoBalance(
                 )
                 Text(
                     modifier = Modifier.padding(start = 6.dp),
-                    text = "(31 janvier 2023)",
+                    text = "(Le ${getLastDayOfMonthDateString()})",
                     style = MaterialTheme.typography.bodySmall
                 )
             }
