@@ -10,6 +10,10 @@ import javax.inject.Inject
 class AccountRepositoryImpl @Inject constructor(
     private val accountDao: AccountDao
 ) : AccountRepository {
+    override suspend fun getAccountById(id: Int): Account? {
+        return accountDao.getById(id = id)?.toAccount()
+    }
+
     override suspend fun getAccounts(): List<Account> {
         return accountDao.getAccounts().map { it.toAccount() }
     }

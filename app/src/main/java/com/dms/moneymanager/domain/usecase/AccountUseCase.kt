@@ -9,14 +9,23 @@ class AccountUseCase @Inject constructor(
     private val accountRepository: AccountRepository,
     private val transactionUseCase: TransactionUseCase
 ) {
+    private suspend fun getAccountById(id: Int) = accountRepository.getAccountById(id = id)
+
     suspend fun getAccounts() = accountRepository.getAccounts()
 
     suspend fun createAccount(account: Account) {
         accountRepository.insertAccount(account = account)
     }
 
-    suspend fun editAccount(account: Account) {
-        accountRepository.updateAccount(account = account)
+    suspend fun editAccount(id: Int, name: String, currentBalance: Float) {
+        getAccountById(id = id)?.let { currentAccount ->
+            accountRepository.updateAccount(
+                account = currentAccount.copy(
+                    name = name,
+                    currentBalance = currentBalance
+                )
+            )
+        }
     }
 
     suspend fun appliedTransaction(account: Account, transaction: Transaction) {

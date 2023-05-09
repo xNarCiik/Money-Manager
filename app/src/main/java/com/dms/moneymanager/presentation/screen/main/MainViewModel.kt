@@ -198,8 +198,7 @@ class MainViewModel @Inject constructor(
                 _toastMessage.value = R.string.error_incorrect_balance
                 return@launch
             }
-            val account = Account(id = id, name = name, currentBalance = balanceFloat)
-            kotlin.runCatching { accountUseCase.editAccount(account = account) }
+            kotlin.runCatching { accountUseCase.editAccount(id = id, name = name, currentBalance = balanceFloat) }
                 .onSuccess {
                     onEvent(MainEvent.CloseBottomSheet)
                     refreshData()
