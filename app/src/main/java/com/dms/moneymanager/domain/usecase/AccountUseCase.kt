@@ -44,6 +44,7 @@ class AccountUseCase @Inject constructor(
 
     suspend fun removeAccount(account: Account) {
         accountRepository.removeAccount(account = account)
+        transactionUseCase.removeAccountOnTransactions(account = account)
     }
 
     fun getCurrentBalance(accounts: List<Account>) = accounts.map { it.currentBalance }.sum()

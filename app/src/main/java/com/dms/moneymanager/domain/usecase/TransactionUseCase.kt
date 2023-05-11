@@ -1,5 +1,6 @@
 package com.dms.moneymanager.domain.usecase
 
+import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.domain.model.main.Transaction
 import com.dms.moneymanager.domain.repository.TransactionRepository
 import javax.inject.Inject
@@ -7,7 +8,8 @@ import javax.inject.Inject
 class TransactionUseCase @Inject constructor(
     private val transactionRepository: TransactionRepository
 ) {
-    private suspend fun getTransactionById(id: Int) = transactionRepository.getTransactionById(id = id)
+    private suspend fun getTransactionById(id: Int) =
+        transactionRepository.getTransactionById(id = id)
 
     suspend fun getAllTransactions() = transactionRepository.getTransactions()
 
@@ -18,14 +20,14 @@ class TransactionUseCase @Inject constructor(
     }
 
     suspend fun editTransaction(id: Int, name: String, amount: Float) {
-       getTransactionById(id = id)?.let { currentTransaction ->
-           transactionRepository.updateTransaction(
-               transaction = currentTransaction.copy(
-                   name = name,
-                   amount = amount
-               )
-           )
-       }
+        getTransactionById(id = id)?.let { currentTransaction ->
+            transactionRepository.updateTransaction(
+                transaction = currentTransaction.copy(
+                    name = name,
+                    amount = amount
+                )
+            )
+        }
     }
 
     suspend fun editTransaction(transaction: Transaction) {
@@ -34,5 +36,11 @@ class TransactionUseCase @Inject constructor(
 
     suspend fun removeTransaction(transaction: Transaction) {
         transactionRepository.removeTransaction(transaction = transaction)
+    }
+
+    suspend fun removeAccountOnTransactions(account: Account) {
+        getAllTransactions().filter { it.linkedAccount?.id == account.id }.forEach {
+            editTransaction(it.copy(linkedAccount = null))
+        }
     }
 }
