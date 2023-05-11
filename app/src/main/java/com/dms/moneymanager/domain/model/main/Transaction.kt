@@ -1,5 +1,6 @@
 package com.dms.moneymanager.domain.model.main
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 import java.util.Date
 
 data class Transaction(
@@ -12,7 +13,10 @@ data class Transaction(
     val linkedAccount: Account? = null
 )
 
-enum class RecurrenceType {
-    MONTH,
-    YEAR
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS,
+    include = JsonTypeInfo.As.PROPERTY,
+    property = "type")
+abstract class RecurrenceType {
+    data class MonthlyRecurrence(val numberOfRepetition: Int): RecurrenceType()
+    object YearRecurrence: RecurrenceType()
 }

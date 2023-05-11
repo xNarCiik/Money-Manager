@@ -71,7 +71,6 @@ import com.dms.moneymanager.presentation.util.getCurrentDateString
 import com.dms.moneymanager.presentation.util.getLastDayOfMonthDateString
 import com.dms.moneymanager.presentation.util.getTextColor
 import com.dms.moneymanager.presentation.util.toAmountString
-import com.dms.moneymanager.ui.theme.DarkGray
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 import kotlinx.coroutines.launch
 
@@ -329,6 +328,7 @@ private fun InfoBalance(
             }
         }
 
+        // TODO REWORK UI COLOR
         OutlinedButton(
             modifier = Modifier
                 .padding(

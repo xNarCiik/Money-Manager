@@ -2,17 +2,24 @@ package com.dms.moneymanager.data.database.converter
 
 import androidx.room.TypeConverter
 import com.dms.moneymanager.domain.model.main.RecurrenceType
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import java.util.Date
 
 class TypeConverter {
-    @TypeConverter
-    fun toRecurrenceType(value: String?) = if(value != null) RecurrenceType.valueOf(value) else null
+
+    private val mapper = jacksonObjectMapper()
 
     @TypeConverter
-    fun fromRecurrenceType(recurrenceType: RecurrenceType?) = recurrenceType?.name
+    fun toRecurrenceType(json: String?) =
+        if (json != null) mapper.readValue<RecurrenceType>(content = json) else null
 
     @TypeConverter
-    fun toDate(value: Long?) = if(value != null) Date(value) else null
+    fun fromRecurrenceType(recurrenceType: RecurrenceType?): String? =
+        mapper.writeValueAsString(recurrenceType)
+
+    @TypeConverter
+    fun toDate(value: Long?) = if (value != null) Date(value) else null
 
     @TypeConverter
     fun fromDate(date: Date?) = date?.time
