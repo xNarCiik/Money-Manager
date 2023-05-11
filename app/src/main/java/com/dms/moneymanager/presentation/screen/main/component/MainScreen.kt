@@ -131,11 +131,11 @@ fun MainScreen(
             )
         },
         bottomBar = {
-            BottomBar(
+          /*  BottomBar(
                 defaultSelectedItem = MenuRoute.HOME,
                 onHomeClick = { },
                 onSettingClick = { navController.navigate(NavigationRoute.HISTORY.route) }
-            )
+            )  */ // TODO LATER
         },
         isFloatingActionButtonDocked = true,
         floatingActionButtonPosition = FabPosition.Center
