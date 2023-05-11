@@ -14,5 +14,9 @@ data class AccountEntity(
     @ColumnInfo(name = "NAME")
     val name: String,
     @ColumnInfo(name = "CURRENT_BALANCE")
-    val currentBalance: Float
+    val currentBalance: Float,
+    @ColumnInfo(name = "HAS_OVERDRAFT")
+    val hasOverdraft: Boolean,
+    @ColumnInfo(name = "OVERDRAFT_LIMIT")
+    val overdraftLimit: Float?
 )

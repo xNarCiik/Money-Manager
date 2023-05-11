@@ -9,7 +9,9 @@ object AccountMapper {
         AccountEntity(
             id = id,
             name = name,
-            currentBalance = currentBalance
+            currentBalance = currentBalance,
+            hasOverdraft = hasOverdraft,
+            overdraftLimit = overdraftLimit
         )
     }
 
@@ -17,7 +19,9 @@ object AccountMapper {
         Account(
             id = id,
             name = name,
-            currentBalance = currentBalance
+            currentBalance = currentBalance,
+            hasOverdraft = hasOverdraft,
+            overdraftLimit = overdraftLimit
         )
     }
 }
