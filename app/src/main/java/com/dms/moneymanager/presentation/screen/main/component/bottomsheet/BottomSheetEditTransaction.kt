@@ -1,11 +1,13 @@
 package com.dms.moneymanager.presentation.screen.main.component.bottomsheet
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -76,6 +78,19 @@ fun BottomSheetEditTransaction(
                 onDone = { onValidateAction() }
             )
         )
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            var appliedDateIsChecked by remember { mutableStateOf(false) }
+            Checkbox(
+                checked = appliedDateIsChecked,
+                onCheckedChange = { appliedDateIsChecked = it }
+            )
+            Text(text = "Date d'application")
+
+            if (appliedDateIsChecked) {
+
+            }
+        }
 
         Button(
             modifier = Modifier.padding(vertical = 18.dp),
