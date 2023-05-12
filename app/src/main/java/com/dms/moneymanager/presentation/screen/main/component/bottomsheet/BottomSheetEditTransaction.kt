@@ -4,9 +4,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,6 +27,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dms.moneymanager.R
+import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.domain.model.main.Transaction
 import com.dms.moneymanager.presentation.screen.main.MainEvent
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
@@ -31,6 +35,7 @@ import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 @Composable
 fun BottomSheetEditTransaction(
     transaction: Transaction,
+    accounts: List<Account>,
     onEvent: (MainEvent) -> Unit
 ) {
     Column(
@@ -88,7 +93,24 @@ fun BottomSheetEditTransaction(
             Text(text = "Date d'application")
 
             if (appliedDateIsChecked) {
+                // TODO
+                Text(text = "Date d'application")
+            }
+        }
 
+        Text(text = "Destination")
+
+        LazyRow {
+            itemsIndexed(accounts) { _, account ->
+                Card(
+                    modifier = Modifier
+                        //.size(100.dp)
+                        .padding(4.dp)
+                ) {
+                    Text(
+                        text = account.name
+                    )
+                }
             }
         }
 
@@ -107,6 +129,7 @@ private fun BottomSheetEditAccountPreview() {
     MoneyManagerTheme {
         BottomSheetEditTransaction(
             transaction = Transaction(id = 0, name = "Transaction name", amount = 100f),
+            accounts = listOf(Account(name = "test", currentBalance = 0f)),
             onEvent = { }
         )
     }

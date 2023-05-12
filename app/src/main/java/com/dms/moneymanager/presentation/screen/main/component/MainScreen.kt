@@ -22,7 +22,6 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.rememberScaffoldState
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
@@ -105,7 +104,7 @@ fun MainScreen(
 
                 is MainBottomSheetType.BottomSheetTransfer -> {
                     BottomSheetTransfer(
-                        listAccount = viewState.listAccount,
+                        listAccount = viewState.accounts,
                         account = viewState.mainBottomSheetType.account,
                         onEvent = onEvent
                     )
@@ -118,6 +117,7 @@ fun MainScreen(
                 is MainBottomSheetType.BottomSheetEditTransaction -> {
                     BottomSheetEditTransaction(
                         transaction = viewState.mainBottomSheetType.transaction,
+                        accounts = viewState.accounts,
                         onEvent = onEvent
                     )
                 }
@@ -198,8 +198,8 @@ private fun MainContent(
         MainList(
             modifier = Modifier.padding(top = 12.dp),
             mainUiState = viewState.mainUiState,
-            listAccount = viewState.listAccount,
-            listTransaction = viewState.listTransaction,
+            listAccount = viewState.accounts,
+            listTransaction = viewState.transactions,
             onEvent = onEvent
         )
     }
@@ -395,8 +395,8 @@ private fun MainScreenPreview() {
     MoneyManagerTheme {
         MainScreen(
             viewState = MainUiModel(
-                listAccount = arrayListOf(Account(name = "account 1", currentBalance = 2000.0f)),
-                listTransaction = arrayListOf(
+                accounts = arrayListOf(Account(name = "account 1", currentBalance = 2000.0f)),
+                transactions = arrayListOf(
                     Transaction(
                         name = "transaction 1",
                         amount = -10.5f
