@@ -24,7 +24,7 @@ sealed interface MainEvent {
     class RemoveAccountEvent(val account: Account) : MainEvent
     class OnClickTransfer(
         val transmitterAccount: Account,
-        val receiverAccount: Account,
+        val receiverAccount: Account?,
         val amount: String
     ) : MainEvent
 
@@ -198,7 +198,13 @@ class MainViewModel @Inject constructor(
                 _toastMessage.value = R.string.error_incorrect_balance
                 return@launch
             }
-            kotlin.runCatching { accountUseCase.editAccount(id = id, name = name, currentBalance = balanceFloat) }
+            kotlin.runCatching {
+                accountUseCase.editAccount(
+                    id = id,
+                    name = name,
+                    currentBalance = balanceFloat
+                )
+            }
                 .onSuccess {
                     onEvent(MainEvent.CloseBottomSheet)
                     refreshData()
@@ -207,11 +213,15 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun transfer(transmitterAccount: Account, receiverAccount: Account, amount: String) {
+    private fun transfer(transmitterAccount: Account, receiverAccount: Account?, amount: String) {
         viewModelScope.launch {
             val amountFloat = amount.toFloatOrNull()
-            if (amountFloat == null || transmitterAccount.currentBalance < amountFloat) {
+            if (amountFloat == null || transmitterAccount.currentBalance < amountFloat || amountFloat <= 0.0f) {
                 _toastMessage.value = R.string.error_incorrect_amount
+                return@launch
+            }
+            if (receiverAccount == null) {
+                _toastMessage.value = R.string.error_account_not_selected
                 return@launch
             }
             kotlin.runCatching {

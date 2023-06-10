@@ -7,4 +7,7 @@ data class Account(
     var futureBalance: Float? = null,
     var hasOverdraft: Boolean = false,
     var overdraftLimit: Float? = null
-)
+) {
+    val availableBalance: Float
+        get() = if(currentBalance > 0f) currentBalance else 0f
+}

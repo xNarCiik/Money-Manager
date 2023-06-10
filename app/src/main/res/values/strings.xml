@@ -20,6 +20,7 @@
     <string name="error_incorrect_name">Veuillez saisir un nom correct</string>
     <string name="error_incorrect_balance">Veuillez saisir un solde correct</string>
     <string name="error_incorrect_amount">Veuillez saisir un montant correct</string>
+    <string name="error_account_not_selected">Veuillez sélectionner un compte</string>
     <string name="current_balance">Solde actuel</string>
     <string name="future_balance">Solde futur</string>
     <string name="remove">Supprimer</string>

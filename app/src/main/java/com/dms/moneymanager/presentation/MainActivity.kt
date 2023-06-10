@@ -13,9 +13,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.dms.moneymanager.presentation.screen.history.HistoryViewModel
-import com.dms.moneymanager.presentation.screen.history.component.HistoryScreen
+import com.dms.moneymanager.presentation.screen.history.HistoryScreen
 import com.dms.moneymanager.presentation.screen.main.MainViewModel
-import com.dms.moneymanager.presentation.screen.main.component.MainScreen
+import com.dms.moneymanager.presentation.screen.main.MainScreen
 import com.dms.moneymanager.presentation.util.NavigationRoute
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 import dagger.hilt.android.AndroidEntryPoint

@@ -1,4 +1,4 @@
-package com.dms.moneymanager.presentation.screen.history.component
+package com.dms.moneymanager.presentation.screen.history
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
