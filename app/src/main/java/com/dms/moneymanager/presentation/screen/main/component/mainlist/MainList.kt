@@ -65,7 +65,15 @@ fun MainList(
                             )
                         )
                     },
-                    removeAction = { onEvent(MainEvent.RemoveAccountEvent(account = account)) }
+                    removeAction = {
+                        onEvent(
+                            MainEvent.OpenBottomSheet(
+                                mainBottomSheetType = MainBottomSheetType.BottomSheetConfirmRemoveAccount(
+                                    account = account
+                                )
+                            )
+                        )
+                    }
                 )
             }
         } else {
@@ -100,7 +108,15 @@ fun MainList(
                             )
                         )
                     },
-                    removeAction = { onEvent(MainEvent.RemoveTransactionEvent(transaction = transaction)) }
+                    removeAction = {
+                        onEvent(
+                            MainEvent.OpenBottomSheet(
+                                mainBottomSheetType = MainBottomSheetType.BottomSheetConfirmRemoveTransaction(
+                                    transaction = transaction
+                                )
+                            )
+                        )
+                    }
                 )
             }
         } else {

@@ -22,8 +22,10 @@ enum class MainUiState {
 
 sealed interface MainBottomSheetType {
     object BottomSheetCreateAccount : MainBottomSheetType
-    class BottomSheetEditAccount(val account: Account) : MainBottomSheetType
     class BottomSheetTransfer(val account: Account) : MainBottomSheetType
+    class BottomSheetEditAccount(val account: Account) : MainBottomSheetType
+    class BottomSheetConfirmRemoveAccount(val account: Account) : MainBottomSheetType
     object BottomSheetCreateTransaction : MainBottomSheetType
     class BottomSheetEditTransaction(val transaction: Transaction) : MainBottomSheetType
+    class BottomSheetConfirmRemoveTransaction(val transaction: Transaction) : MainBottomSheetType
 }

@@ -40,6 +40,8 @@ import com.dms.moneymanager.R
 import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.domain.model.main.Transaction
 import com.dms.moneymanager.presentation.screen.main.component.InfoBalance
+import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetConfirmRemoveAccount
+import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetConfirmRemoveTransaction
 import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetCreateAccount
 import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetCreateTransaction
 import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetEditAccount
@@ -75,6 +77,14 @@ fun MainScreen(
                     BottomSheetCreateAccount(onEvent = onEvent)
                 }
 
+                is MainBottomSheetType.BottomSheetTransfer -> {
+                    BottomSheetTransfer(
+                        listAccount = viewState.accounts,
+                        account = viewState.mainBottomSheetType.account,
+                        onEvent = onEvent
+                    )
+                }
+
                 is MainBottomSheetType.BottomSheetEditAccount -> {
                     BottomSheetEditAccount(
                         account = viewState.mainBottomSheetType.account,
@@ -82,9 +92,8 @@ fun MainScreen(
                     )
                 }
 
-                is MainBottomSheetType.BottomSheetTransfer -> {
-                    BottomSheetTransfer(
-                        listAccount = viewState.accounts,
+                is MainBottomSheetType.BottomSheetConfirmRemoveAccount -> {
+                    BottomSheetConfirmRemoveAccount(
                         account = viewState.mainBottomSheetType.account,
                         onEvent = onEvent
                     )
@@ -98,6 +107,13 @@ fun MainScreen(
                     BottomSheetEditTransaction(
                         transaction = viewState.mainBottomSheetType.transaction,
                         accounts = viewState.accounts,
+                        onEvent = onEvent
+                    )
+                }
+
+                is MainBottomSheetType.BottomSheetConfirmRemoveTransaction -> {
+                    BottomSheetConfirmRemoveTransaction(
+                        transaction = viewState.mainBottomSheetType.transaction,
                         onEvent = onEvent
                     )
                 }

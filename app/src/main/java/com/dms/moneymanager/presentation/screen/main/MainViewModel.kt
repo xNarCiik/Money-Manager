@@ -106,6 +106,7 @@ class MainViewModel @Inject constructor(
 
             is MainEvent.RemoveAccountEvent -> {
                 removeAccount(account = event.account)
+                _mainBottomSheetType.value = null
             }
 
             is MainEvent.OnClickTransfer -> {
@@ -138,6 +139,7 @@ class MainViewModel @Inject constructor(
 
             is MainEvent.RemoveTransactionEvent -> {
                 removeTransaction(transaction = event.transaction)
+                _mainBottomSheetType.value = null
             }
 
             is MainEvent.OpenBottomSheet -> {
