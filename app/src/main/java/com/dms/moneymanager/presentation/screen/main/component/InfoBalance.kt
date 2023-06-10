@@ -35,6 +35,7 @@ import com.dms.moneymanager.presentation.util.getCurrentDateString
 import com.dms.moneymanager.presentation.util.getLastDayOfMonthDateString
 import com.dms.moneymanager.presentation.util.getTextColor
 import com.dms.moneymanager.presentation.util.toAmountString
+import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -183,23 +184,27 @@ fun InfoBalance(
 @Preview
 @Composable
 private fun InfoBalanceNotExpendedPreview() {
-    InfoBalance(
-        currentBalance = 100f,
-        futureBalance = 0f,
-        isExpended = false,
-        onClick = { },
-        onExpendedClick = { }
-    )
+    MoneyManagerTheme {
+        InfoBalance(
+            currentBalance = 100f,
+            futureBalance = 0f,
+            isExpended = false,
+            onClick = { },
+            onExpendedClick = { }
+        )
+    }
 }
 
 @Preview
 @Composable
 private fun InfoBalanceExpendedPreview() {
-    InfoBalance(
-        currentBalance = 100f,
-        futureBalance = 0f,
-        isExpended = true,
-        onClick = { },
-        onExpendedClick = { }
-    )
+    MoneyManagerTheme {
+        InfoBalance(
+            currentBalance = 100f,
+            futureBalance = 0f,
+            isExpended = true,
+            onClick = { },
+            onExpendedClick = { }
+        )
+    }
 }
