@@ -37,7 +37,6 @@ import com.dms.moneymanager.presentation.util.getLastDayOfMonthDateString
 import com.dms.moneymanager.presentation.util.getTextColor
 import com.dms.moneymanager.presentation.util.toAmountString
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
-import com.dms.moneymanager.ui.theme.PurpleGrey80
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
