@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -36,6 +37,7 @@ import com.dms.moneymanager.presentation.util.getLastDayOfMonthDateString
 import com.dms.moneymanager.presentation.util.getTextColor
 import com.dms.moneymanager.presentation.util.toAmountString
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
+import com.dms.moneymanager.ui.theme.PurpleGrey80
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -170,6 +172,9 @@ fun InfoBalance(
                 .size(size = 30.dp)
                 .align(alignment = if (isExpended) Alignment.BottomStart else Alignment.BottomCenter),
             shape = CircleShape,
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = Color.White
+            ),
             contentPadding = PaddingValues(all = 0.dp),
             onClick = onExpendedClick,
         ) {
