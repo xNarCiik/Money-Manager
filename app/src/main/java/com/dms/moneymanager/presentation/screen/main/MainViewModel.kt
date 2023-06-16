@@ -28,8 +28,19 @@ sealed interface MainEvent {
         val amount: String
     ) : MainEvent
 
-    class AddTransactionEvent(val name: String, val amount: String) : MainEvent
-    class EditTransactionEvent(val id: Int, val name: String, val amount: String) : MainEvent
+    class AddTransactionEvent(
+        val name: String,
+        val amount: String,
+        val destinationAccount: Account?
+    ) : MainEvent
+
+    class EditTransactionEvent(
+        val id: Int,
+        val name: String,
+        val amount: String,
+        val destinationAccount: Account?
+    ) : MainEvent
+
     class OnClickAppliedTransaction(val transaction: Transaction) : MainEvent
     class AppliedTransaction(val toAccount: Account) : MainEvent
     class RemoveTransactionEvent(val transaction: Transaction) : MainEvent
@@ -118,11 +129,20 @@ class MainViewModel @Inject constructor(
             }
 
             is MainEvent.AddTransactionEvent -> {
-                createTransaction(name = event.name, amount = event.amount)
+                createTransaction(
+                    name = event.name,
+                    amount = event.amount,
+                    destinationAccount = event.destinationAccount
+                )
             }
 
             is MainEvent.EditTransactionEvent -> {
-                editTransaction(id = event.id, name = event.name, amount = event.amount)
+                editTransaction(
+                    id = event.id,
+                    name = event.name,
+                    amount = event.amount,
+                    destinationAccount = event.destinationAccount
+                )
             }
 
             is MainEvent.OnClickAppliedTransaction -> {
@@ -249,7 +269,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun createTransaction(name: String, amount: String) {
+    private fun createTransaction(name: String, amount: String, destinationAccount: Account?) {
         viewModelScope.launch {
             if (name.isEmpty()) {
                 _toastMessage.value = R.string.error_incorrect_name
@@ -260,7 +280,11 @@ class MainViewModel @Inject constructor(
                 _toastMessage.value = R.string.error_incorrect_amount
                 return@launch
             }
-            val transaction = Transaction(name = name, amount = amountFloat)
+            val transaction = Transaction(
+                name = name,
+                amount = amountFloat,
+                destinationAccount = destinationAccount
+            )
             kotlin.runCatching { transactionUseCase.createTransaction(transaction = transaction) }
                 .onSuccess {
                     onEvent(MainEvent.CloseBottomSheet)
@@ -270,7 +294,12 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun editTransaction(id: Int, name: String, amount: String) {
+    private fun editTransaction(
+        id: Int,
+        name: String,
+        amount: String,
+        destinationAccount: Account?
+    ) {
         viewModelScope.launch {
             // TODO REFACTO CHECK WITH CREATE
             if (name.isEmpty()) {
@@ -286,7 +315,8 @@ class MainViewModel @Inject constructor(
                 transactionUseCase.editTransaction(
                     id = id,
                     name = name,
-                    amount = amountFloat
+                    amount = amountFloat,
+                    destinationAccount = destinationAccount
                 )
             }
                 .onSuccess {

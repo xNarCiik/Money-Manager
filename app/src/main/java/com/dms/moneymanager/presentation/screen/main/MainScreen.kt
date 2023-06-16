@@ -100,7 +100,10 @@ fun MainScreen(
                 }
 
                 is MainBottomSheetType.BottomSheetCreateTransaction -> {
-                    BottomSheetCreateTransaction(onEvent = onEvent)
+                    BottomSheetCreateTransaction(
+                        onEvent = onEvent,
+                        accounts = viewState.accounts
+                    )
                 }
 
                 is MainBottomSheetType.BottomSheetEditTransaction -> {

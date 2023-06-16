@@ -10,7 +10,7 @@ data class Transaction(
     var isApplied: Boolean = false,
     val dueDate: Date? = null,
     val recurrenceType: RecurrenceType? = null,
-    val linkedAccount: Account? = null
+    val destinationAccount: Account? = null
 )
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS,

@@ -19,12 +19,18 @@ class TransactionUseCase @Inject constructor(
         transactionRepository.insertTransaction(transaction = transaction)
     }
 
-    suspend fun editTransaction(id: Int, name: String, amount: Float) {
+    suspend fun editTransaction(
+        id: Int,
+        name: String,
+        amount: Float,
+        destinationAccount: Account?
+    ) {
         getTransactionById(id = id)?.let { currentTransaction ->
             transactionRepository.updateTransaction(
                 transaction = currentTransaction.copy(
                     name = name,
-                    amount = amount
+                    amount = amount,
+                    destinationAccount = destinationAccount
                 )
             )
         }
@@ -39,8 +45,8 @@ class TransactionUseCase @Inject constructor(
     }
 
     suspend fun removeAccountOnTransactions(account: Account) {
-        getAllTransactions().filter { it.linkedAccount?.id == account.id }.forEach {
-            editTransaction(it.copy(linkedAccount = null))
+        getAllTransactions().filter { it.destinationAccount?.id == account.id }.forEach {
+            editTransaction(it.copy(destinationAccount = null))
         }
     }
 }

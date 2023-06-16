@@ -2,14 +2,14 @@ package com.dms.moneymanager.presentation.screen.main.component.bottomsheet
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,6 +30,7 @@ import com.dms.moneymanager.R
 import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.domain.model.main.Transaction
 import com.dms.moneymanager.presentation.screen.main.MainEvent
+import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.commun.AccountItem
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 
 @Composable
@@ -52,13 +53,16 @@ fun BottomSheetEditTransaction(
 
         var name by remember { mutableStateOf(TextFieldValue(transaction.name)) }
         var amount by remember { mutableStateOf(TextFieldValue(transaction.amount.toString())) }
+        var selectAccount by remember { mutableStateOf(value = false) }
+        var selectedAccount by remember { mutableStateOf<Account?>(null) }
 
         val onValidateAction = {
             onEvent(
                 MainEvent.EditTransactionEvent(
                     id = transaction.id,
                     name = name.text,
-                    amount = amount.text
+                    amount = amount.text,
+                    destinationAccount = selectedAccount
                 )
             )
         }
@@ -94,26 +98,50 @@ fun BottomSheetEditTransaction(
 
             if (appliedDateIsChecked) {
                 // TODO
-                Text(text = "Date d'application")
             }
         }
 
-        Text(text = "Destination")
+        Spacer(modifier = Modifier.padding(top = 14.dp))
 
-        LazyRow {
-            itemsIndexed(accounts) { _, account ->
-                Card(
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = "Sélectionner un compte de destination",
+                style = MaterialTheme.typography.labelMedium
+            )
+
+            Spacer(modifier = Modifier.weight(weight = 1f))
+
+            Checkbox(
+                checked = selectAccount,
+                onCheckedChange = { selected ->
+                    if(!selected) {
+                        selectedAccount = null
+                    }
+                    selectAccount = selected
+                }
+            )
+        }
+
+        if (selectAccount) {
+            Spacer(modifier = Modifier.padding(top = 8.dp))
+
+            Column(modifier = Modifier.fillMaxWidth()) {
+                LazyColumn(
                     modifier = Modifier
-                        //.size(100.dp)
-                        .padding(4.dp)
+                        .fillMaxWidth()
                 ) {
-                    Text(
-                        text = account.name
-                    )
+                    itemsIndexed(accounts) { _, account ->
+                        AccountItem(
+                            account = account,
+                            isSelected = selectedAccount == account,
+                            onClick = {
+                                selectedAccount = account
+                            }
+                        )
+                    }
                 }
             }
         }
-
         Button(
             modifier = Modifier.padding(vertical = 18.dp),
             onClick = onValidateAction

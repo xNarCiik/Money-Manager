@@ -75,7 +75,7 @@ fun TransactionItem(
 
                 Spacer(modifier = Modifier.weight(weight = 1f))
 
-                transaction.linkedAccount?.let { linkedAccount ->
+                transaction.destinationAccount?.let { destinationAccount ->
                     Text(
                         modifier = Modifier
                             .padding(start = 8.dp)
@@ -86,7 +86,7 @@ fun TransactionItem(
                             )
                             .background(color = Blue, shape = CircleShape)
                             .padding(all = 4.dp),
-                        text = linkedAccount.name, // TODO FIND ACCOUNT NAME BY ID
+                        text = destinationAccount.name, // TODO FIND ACCOUNT NAME BY ID
                         style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
                         color = Color.White
                     )

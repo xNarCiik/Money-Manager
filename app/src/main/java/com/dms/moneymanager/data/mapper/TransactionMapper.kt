@@ -14,12 +14,12 @@ object TransactionMapper {
             isApplied = isApplied,
             dueDate = dueDate,
             recurrenceType = recurrenceType,
-            accountId = linkedAccount?.id
+            accountId = destinationAccount?.id
         )
     }
 
     fun TransactionEntity.toTransaction(
-        linkedAccount: Account?
+        destinationAccount: Account?
     ) = with(this) {
         Transaction(
             id = id,
@@ -28,7 +28,7 @@ object TransactionMapper {
             isApplied = isApplied,
             dueDate = dueDate,
             recurrenceType = recurrenceType,
-            linkedAccount = linkedAccount
+            destinationAccount = destinationAccount
         )
     }
 }
