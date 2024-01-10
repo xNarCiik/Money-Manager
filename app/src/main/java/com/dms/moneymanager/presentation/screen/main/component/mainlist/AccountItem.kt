@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults.cardColors
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -38,14 +39,20 @@ fun AccountItem(
     appliedTransaction: () -> Unit,
     transferAction: () -> Unit,
     editAction: () -> Unit,
+    enableOrDisableAction: () -> Unit,
     removeAction: () -> Unit
 ) {
     var expandedDropDownMenu by remember { mutableStateOf(false) }
+    val isEnable = account.isEnable
 
     Card(
-        modifier = modifier.padding(all = 4.dp),
+        modifier = modifier
+            .padding(all = 4.dp),
         shape = RoundedCornerShape(size = 8.dp),
         border = BorderStroke(width = 1.dp, color = Color.Black),
+        colors = cardColors(
+            containerColor = if (isEnable) MaterialTheme.colorScheme.surfaceVariant else Color.Gray
+        ),
         onClick = {
             when (mainUiState) {
                 MainUiState.APPLIED_TRANSACTION -> {
@@ -56,9 +63,11 @@ fun AccountItem(
             }
         }
     ) {
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .padding(all = 8.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = 8.dp)
+        ) {
             Text(
                 text = account.name,
                 style = MaterialTheme.typography.bodyLarge,
@@ -79,6 +88,8 @@ fun AccountItem(
                 closeDropDownMenuAction = { expandedDropDownMenu = false },
                 transferAction = transferAction,
                 editAction = editAction,
+                isEnable = isEnable,
+                enableOrDisableAction = enableOrDisableAction,
                 removeAction = removeAction
             )
         }
@@ -92,6 +103,8 @@ private fun DropDownMenuAccount(
     closeDropDownMenuAction: () -> Unit,
     transferAction: () -> Unit,
     editAction: () -> Unit,
+    isEnable: Boolean,
+    enableOrDisableAction: () -> Unit,
     removeAction: () -> Unit
 ) {
     DropdownMenu(
@@ -110,6 +123,19 @@ private fun DropDownMenuAccount(
             text = { Text(text = stringResource(id = R.string.edit)) },
             onClick = {
                 editAction()
+                closeDropDownMenuAction()
+            }
+        )
+        Divider()
+        DropdownMenuItem(
+            text = {
+                Text(
+                    text =
+                    stringResource(id = if (isEnable) R.string.disable else R.string.enable)
+                )
+            },
+            onClick = {
+                enableOrDisableAction()
                 closeDropDownMenuAction()
             }
         )

@@ -17,7 +17,7 @@ class AccountUseCase @Inject constructor(
         accountRepository.insertAccount(account = account)
     }
 
-    suspend fun editAccount(id: Int, name: String, currentBalance: Float) {
+    suspend fun updateAccount(id: Int, name: String, currentBalance: Float) {
         getAccountById(id = id)?.let { currentAccount ->
             accountRepository.updateAccount(
                 account = currentAccount.copy(
@@ -28,11 +28,16 @@ class AccountUseCase @Inject constructor(
         }
     }
 
+    suspend fun enableOrDisableAccount(account: Account) {
+        account.isEnable = !account.isEnable
+        accountRepository.updateAccount(account = account)
+    }
+
     suspend fun appliedTransaction(account: Account, transaction: Transaction) {
         account.currentBalance += transaction.amount
         transaction.isApplied = true
         accountRepository.updateAccount(account = account)
-        transactionUseCase.editTransaction(transaction = transaction)
+        transactionUseCase.updateTransaction(transaction = transaction)
     }
 
     suspend fun transfer(transmitterAccount: Account, receiverAccount: Account, amount: Float) {
@@ -47,11 +52,12 @@ class AccountUseCase @Inject constructor(
         transactionUseCase.removeAccountOnTransactions(account = account)
     }
 
-    fun getCurrentBalance(accounts: List<Account>) = accounts.map { it.currentBalance }.sum()
+    fun getCurrentBalance(accounts: List<Account>) =
+        accounts.filter { it.isEnable }.map { it.currentBalance }.sum()
 
     fun getFutureBalance(accounts: List<Account>, transactions: List<Transaction>): Float {
         val currentBalance = getCurrentBalance(accounts = accounts)
-        val sumAllTransactions = transactions.map { it.amount }.sum()
-        return currentBalance + sumAllTransactions
+        val sumAllTransactionsEnable = transactions.filter { it.isEnable }.map { it.amount }.sum()
+        return currentBalance + sumAllTransactionsEnable
     }
 }

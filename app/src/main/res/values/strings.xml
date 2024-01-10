@@ -28,5 +28,7 @@
     <string name="edit">Modifier</string>
     <string name="edit_account">Modifier le compte</string>
     <string name="edit_transaction">Modifier la transaction</string>
+    <string name="enable">Activer</string>
+    <string name="disable">Désactiver</string>
     <string name="transfer">Transférer</string>
 </resources>

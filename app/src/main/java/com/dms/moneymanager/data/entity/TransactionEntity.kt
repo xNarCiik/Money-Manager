@@ -17,6 +17,8 @@ data class TransactionEntity(
     val name: String,
     @ColumnInfo(name = "AMOUNT")
     val amount: Float,
+    @ColumnInfo(name = "IS_ENABLE")
+    val isEnable: Boolean,
     @ColumnInfo(name = "IS_APPLIED")
     val isApplied: Boolean,
     @ColumnInfo(name = "DATE")

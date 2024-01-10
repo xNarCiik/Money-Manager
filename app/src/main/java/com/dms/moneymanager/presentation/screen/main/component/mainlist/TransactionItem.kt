@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -43,14 +44,19 @@ fun TransactionItem(
     transaction: Transaction,
     appliedAction: () -> Unit,
     editAction: () -> Unit,
+    enableOrDisableAction: () -> Unit,
     removeAction: () -> Unit
 ) {
     var expandedDropDownMenu by remember { mutableStateOf(false) }
+    val isEnable = transaction.isEnable
 
     Card(
         modifier = Modifier.padding(all = 4.dp),
         shape = RoundedCornerShape(size = 8.dp),
         border = BorderStroke(width = 1.dp, Color.Black),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isEnable) MaterialTheme.colorScheme.surfaceVariant else Color.Gray
+        ),
         onClick = { expandedDropDownMenu = true }
     ) {
         Column(
@@ -115,6 +121,8 @@ fun TransactionItem(
                 closeDropDownMenuAction = { expandedDropDownMenu = false },
                 appliedAction = appliedAction,
                 editAction = editAction,
+                isEnable = isEnable,
+                enableOrDisableAction = enableOrDisableAction,
                 removeAction = removeAction
             )
         }
@@ -127,6 +135,8 @@ private fun DropDownMenuTransaction(
     closeDropDownMenuAction: () -> Unit,
     appliedAction: () -> Unit,
     editAction: () -> Unit,
+    isEnable: Boolean,
+    enableOrDisableAction: () -> Unit,
     removeAction: () -> Unit
 ) {
     DropdownMenu(
@@ -145,6 +155,19 @@ private fun DropDownMenuTransaction(
             text = { Text(text = stringResource(id = R.string.edit)) },
             onClick = {
                 editAction()
+                closeDropDownMenuAction()
+            }
+        )
+        Divider()
+        DropdownMenuItem(
+            text = {
+                Text(
+                    text =
+                    stringResource(id = if (isEnable) R.string.disable else R.string.enable)
+                )
+            },
+            onClick = {
+                enableOrDisableAction()
                 closeDropDownMenuAction()
             }
         )

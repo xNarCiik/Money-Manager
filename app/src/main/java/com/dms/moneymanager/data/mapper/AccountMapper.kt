@@ -10,6 +10,7 @@ object AccountMapper {
             id = id,
             name = name,
             currentBalance = currentBalance,
+            isEnable = isEnable,
             hasOverdraft = hasOverdraft,
             overdraftLimit = overdraftLimit
         )
@@ -20,6 +21,7 @@ object AccountMapper {
             id = id,
             name = name,
             currentBalance = currentBalance,
+            isEnable = isEnable,
             hasOverdraft = hasOverdraft,
             overdraftLimit = overdraftLimit
         )

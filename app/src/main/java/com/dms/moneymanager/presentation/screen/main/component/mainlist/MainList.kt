@@ -65,6 +65,9 @@ fun MainList(
                             )
                         )
                     },
+                    enableOrDisableAction = {
+                        onEvent(MainEvent.EnableOrDisableAccountEvent(account = account))
+                    },
                     removeAction = {
                         onEvent(
                             MainEvent.OpenBottomSheet(
@@ -107,6 +110,9 @@ fun MainList(
                                 )
                             )
                         )
+                    },
+                    enableOrDisableAction = {
+                        onEvent(MainEvent.EnableOrDisableTransactionEvent(transaction = transaction))
                     },
                     removeAction = {
                         onEvent(

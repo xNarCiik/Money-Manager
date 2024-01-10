@@ -21,6 +21,7 @@ import javax.inject.Inject
 sealed interface MainEvent {
     class AddAccountEvent(val name: String, val balance: String) : MainEvent
     class EditAccountEvent(val id: Int, val name: String, val balance: String) : MainEvent
+    class EnableOrDisableAccountEvent(val account: Account) : MainEvent
     class RemoveAccountEvent(val account: Account) : MainEvent
     class OnClickTransfer(
         val transmitterAccount: Account,
@@ -41,6 +42,7 @@ sealed interface MainEvent {
         val destinationAccount: Account?
     ) : MainEvent
 
+    class EnableOrDisableTransactionEvent(val transaction: Transaction) : MainEvent
     class OnClickAppliedTransaction(val transaction: Transaction) : MainEvent
     class AppliedTransaction(val toAccount: Account) : MainEvent
     class RemoveTransactionEvent(val transaction: Transaction) : MainEvent
@@ -115,6 +117,13 @@ class MainViewModel @Inject constructor(
                 editAccount(id = event.id, name = event.name, balance = event.balance)
             }
 
+            is MainEvent.EnableOrDisableAccountEvent -> {
+                viewModelScope.launch {
+                    accountUseCase.enableOrDisableAccount(account = event.account)
+                    refreshData()
+                }
+            }
+
             is MainEvent.RemoveAccountEvent -> {
                 removeAccount(account = event.account)
                 _mainBottomSheetType.value = null
@@ -143,6 +152,13 @@ class MainViewModel @Inject constructor(
                     amount = event.amount,
                     destinationAccount = event.destinationAccount
                 )
+            }
+
+            is MainEvent.EnableOrDisableTransactionEvent -> {
+                viewModelScope.launch {
+                    transactionUseCase.enableOrDisableTransaction(transaction = event.transaction)
+                    refreshData()
+                }
             }
 
             is MainEvent.OnClickAppliedTransaction -> {
@@ -221,7 +237,7 @@ class MainViewModel @Inject constructor(
                 return@launch
             }
             kotlin.runCatching {
-                accountUseCase.editAccount(
+                accountUseCase.updateAccount(
                     id = id,
                     name = name,
                     currentBalance = balanceFloat
@@ -312,7 +328,7 @@ class MainViewModel @Inject constructor(
                 return@launch
             }
             kotlin.runCatching {
-                transactionUseCase.editTransaction(
+                transactionUseCase.updateTransaction(
                     id = id,
                     name = name,
                     amount = amountFloat,

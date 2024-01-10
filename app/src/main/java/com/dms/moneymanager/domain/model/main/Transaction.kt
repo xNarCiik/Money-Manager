@@ -7,6 +7,7 @@ data class Transaction(
     val id: Int = 0,
     val name: String,
     val amount: Float,
+    var isEnable: Boolean = true,
     var isApplied: Boolean = false,
     val dueDate: Date? = null,
     val recurrenceType: RecurrenceType? = null,

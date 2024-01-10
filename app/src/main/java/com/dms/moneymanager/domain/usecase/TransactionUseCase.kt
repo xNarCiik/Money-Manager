@@ -19,7 +19,7 @@ class TransactionUseCase @Inject constructor(
         transactionRepository.insertTransaction(transaction = transaction)
     }
 
-    suspend fun editTransaction(
+    suspend fun updateTransaction(
         id: Int,
         name: String,
         amount: Float,
@@ -36,7 +36,12 @@ class TransactionUseCase @Inject constructor(
         }
     }
 
-    suspend fun editTransaction(transaction: Transaction) {
+    suspend fun updateTransaction(transaction: Transaction) {
+        transactionRepository.updateTransaction(transaction = transaction)
+    }
+
+    suspend fun enableOrDisableTransaction(transaction: Transaction,) {
+        transaction.isEnable = !transaction.isEnable
         transactionRepository.updateTransaction(transaction = transaction)
     }
 
@@ -46,7 +51,7 @@ class TransactionUseCase @Inject constructor(
 
     suspend fun removeAccountOnTransactions(account: Account) {
         getAllTransactions().filter { it.destinationAccount?.id == account.id }.forEach {
-            editTransaction(it.copy(destinationAccount = null))
+            updateTransaction(it.copy(destinationAccount = null))
         }
     }
 }

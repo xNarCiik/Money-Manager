@@ -5,6 +5,7 @@ data class Account(
     val name: String,
     var currentBalance: Float,
     var futureBalance: Float? = null,
+    var isEnable: Boolean = true,
     var hasOverdraft: Boolean = false,
     var overdraftLimit: Float? = null
 ) {
