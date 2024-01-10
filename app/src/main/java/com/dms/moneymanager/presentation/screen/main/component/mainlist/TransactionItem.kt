@@ -12,7 +12,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -150,7 +150,7 @@ private fun DropDownMenuTransaction(
                 closeDropDownMenuAction()
             }
         )
-        Divider()
+        HorizontalDivider()
         DropdownMenuItem(
             text = { Text(text = stringResource(id = R.string.edit)) },
             onClick = {
@@ -158,7 +158,7 @@ private fun DropDownMenuTransaction(
                 closeDropDownMenuAction()
             }
         )
-        Divider()
+        HorizontalDivider()
         DropdownMenuItem(
             text = {
                 Text(
@@ -171,7 +171,7 @@ private fun DropDownMenuTransaction(
                 closeDropDownMenuAction()
             }
         )
-        Divider()
+        HorizontalDivider()
         DropdownMenuItem(
             text = { Text(text = stringResource(id = R.string.remove)) },
             onClick = {
