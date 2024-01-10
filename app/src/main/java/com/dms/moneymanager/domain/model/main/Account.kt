@@ -4,7 +4,7 @@ data class Account(
     val id: Int = 0,
     val name: String,
     var currentBalance: Float,
-    var futureBalance: Float? = null,
+    var futureBalance: Float = currentBalance, // Will be recalculated in view model
     var isEnable: Boolean = true,
     var hasOverdraft: Boolean = false,
     var overdraftLimit: Float? = null

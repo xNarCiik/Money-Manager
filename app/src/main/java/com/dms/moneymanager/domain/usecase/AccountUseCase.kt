@@ -52,10 +52,20 @@ class AccountUseCase @Inject constructor(
         transactionUseCase.removeAccountOnTransactions(account = account)
     }
 
+    fun updateFutureBalanceAccount(account: Account, transactions: List<Transaction>) {
+        account.futureBalance =
+            account.currentBalance +
+                    transactions.filter { it.isEnable && it.destinationAccount?.id == account.id }
+                        .map { it.amount }.sum()
+    }
+
     fun getCurrentBalance(accounts: List<Account>) =
         accounts.filter { it.isEnable }.map { it.currentBalance }.sum()
 
     fun getFutureBalance(accounts: List<Account>, transactions: List<Transaction>): Float {
+        accounts.forEach {
+            updateFutureBalanceAccount(account = it, transactions = transactions)
+        }
         val currentBalance = getCurrentBalance(accounts = accounts)
         val sumAllTransactionsEnable = transactions.filter { it.isEnable }.map { it.amount }.sum()
         return currentBalance + sumAllTransactionsEnable
