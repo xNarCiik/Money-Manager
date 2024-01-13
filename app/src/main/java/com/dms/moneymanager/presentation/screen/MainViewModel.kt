@@ -1,4 +1,4 @@
-package com.dms.moneymanager.presentation.screen.main
+package com.dms.moneymanager.presentation.screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,9 +7,9 @@ import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.domain.model.main.Transaction
 import com.dms.moneymanager.domain.usecase.AccountUseCase
 import com.dms.moneymanager.domain.usecase.TransactionUseCase
-import com.dms.moneymanager.presentation.screen.main.model.MainBottomSheetType
-import com.dms.moneymanager.presentation.screen.main.model.MainUiModel
-import com.dms.moneymanager.presentation.screen.main.model.MainUiState
+import com.dms.moneymanager.presentation.screen.transactions.model.MainBottomSheetType
+import com.dms.moneymanager.presentation.screen.transactions.model.MainUiModel
+import com.dms.moneymanager.presentation.screen.transactions.model.MainUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

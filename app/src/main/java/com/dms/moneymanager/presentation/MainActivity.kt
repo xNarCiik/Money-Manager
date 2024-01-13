@@ -5,7 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
@@ -14,8 +16,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.dms.moneymanager.presentation.screen.history.HistoryViewModel
 import com.dms.moneymanager.presentation.screen.history.HistoryScreen
-import com.dms.moneymanager.presentation.screen.main.MainViewModel
-import com.dms.moneymanager.presentation.screen.main.MainScreen
+import com.dms.moneymanager.presentation.screen.MainViewModel
+import com.dms.moneymanager.presentation.screen.settings.SettingsScreen
+import com.dms.moneymanager.presentation.screen.settings.SettingsViewModel
+import com.dms.moneymanager.presentation.screen.accounts.AccountsScreen
+import com.dms.moneymanager.presentation.screen.commun.BottomBar
+import com.dms.moneymanager.presentation.screen.commun.MenuRoute
+import com.dms.moneymanager.presentation.screen.transactions.TransactionsScreen
 import com.dms.moneymanager.presentation.util.NavigationRoute
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,26 +34,55 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MoneyManagerTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    val navController = rememberNavController()
+                val navController = rememberNavController()
 
-                    NavHost(navController = navController, startDestination = NavigationRoute.MAIN.route) {
-                        composable(NavigationRoute.MAIN.route) {
-                            val mainViewModel: MainViewModel by viewModels()
-                            val viewState = mainViewModel.viewState.collectAsState()
-                            MainScreen(
-                                viewState = viewState.value,
-                                onEvent = mainViewModel::onEvent,
-                                navController = navController
-                            )
-                        }
-                        composable(NavigationRoute.HISTORY.route) {
-                            val historyViewModel: HistoryViewModel by viewModels()
-                            val viewState = historyViewModel.viewState.collectAsState()
-                            HistoryScreen(viewState = viewState.value)
+                Scaffold(
+                    bottomBar = {
+                        BottomBar(
+                            defaultSelectedItem = MenuRoute.TRANSACTIONS,
+                            navController = navController
+                        )
+                    }
+                ) {
+                    Surface(
+                        modifier = Modifier.fillMaxSize().padding(it),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+
+                        NavHost(
+                            navController = navController,
+                            startDestination = NavigationRoute.TRANSACTIONS.route
+                        ) {
+                            composable(NavigationRoute.TRANSACTIONS.route) {
+                                val mainViewModel: MainViewModel by viewModels()
+                                val viewState = mainViewModel.viewState.collectAsState()
+
+                                TransactionsScreen(
+                                    viewState = viewState.value,
+                                    onEvent = mainViewModel::onEvent,
+                                    navController = navController
+                                )
+                            }
+
+                            composable(NavigationRoute.ACCOUNTS.route) {
+                                AccountsScreen(
+                                    navController = navController
+                                )
+                            }
+
+                            composable(NavigationRoute.SETTINGS.route) {
+                                val settingsViewModel: SettingsViewModel by viewModels()
+                                SettingsScreen(
+                                    onEvent = settingsViewModel::onEvent,
+                                    navController = navController
+                                )
+                            }
+
+                            composable(NavigationRoute.HISTORY.route) {
+                                val historyViewModel: HistoryViewModel by viewModels()
+                                val viewState = historyViewModel.viewState.collectAsState()
+                                HistoryScreen(viewState = viewState.value)
+                            }
                         }
                     }
                 }

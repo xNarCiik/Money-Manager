@@ -1,4 +1,4 @@
-package com.dms.moneymanager.presentation.screen.main.component.mainlist
+package com.dms.moneymanager.presentation.screen.transactions.component.mainlist
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
@@ -17,9 +17,9 @@ import androidx.compose.ui.unit.dp
 import com.dms.moneymanager.R
 import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.domain.model.main.Transaction
-import com.dms.moneymanager.presentation.screen.main.MainEvent
-import com.dms.moneymanager.presentation.screen.main.model.MainBottomSheetType
-import com.dms.moneymanager.presentation.screen.main.model.MainUiState
+import com.dms.moneymanager.presentation.screen.MainEvent
+import com.dms.moneymanager.presentation.screen.transactions.model.MainBottomSheetType
+import com.dms.moneymanager.presentation.screen.transactions.model.MainUiState
 import com.dms.moneymanager.presentation.util.gridItems
 
 @Composable

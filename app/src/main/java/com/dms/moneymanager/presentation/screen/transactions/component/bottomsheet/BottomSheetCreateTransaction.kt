@@ -1,4 +1,4 @@
-package com.dms.moneymanager.presentation.screen.main.component.bottomsheet
+package com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,8 +28,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dms.moneymanager.R
 import com.dms.moneymanager.domain.model.main.Account
-import com.dms.moneymanager.presentation.screen.main.MainEvent
-import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.commun.AccountItem
+import com.dms.moneymanager.presentation.screen.MainEvent
+import com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet.commun.AccountItem
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 
 @Composable

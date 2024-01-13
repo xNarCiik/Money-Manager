@@ -1,24 +1,24 @@
-package com.dms.moneymanager.presentation.screen.main
+package com.dms.moneymanager.presentation.screen.transactions
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.FabPosition
-import androidx.compose.material.Scaffold
-import androidx.compose.material.SnackbarDuration
-import androidx.compose.material.SnackbarResult
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -39,31 +39,34 @@ import androidx.navigation.compose.rememberNavController
 import com.dms.moneymanager.R
 import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.domain.model.main.Transaction
-import com.dms.moneymanager.presentation.screen.main.component.InfoBalance
-import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetConfirmRemoveAccount
-import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetConfirmRemoveTransaction
-import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetCreateAccount
-import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetCreateTransaction
-import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetEditAccount
-import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetEditTransaction
-import com.dms.moneymanager.presentation.screen.main.component.bottomsheet.BottomSheetTransfer
-import com.dms.moneymanager.presentation.screen.main.component.mainlist.MainList
-import com.dms.moneymanager.presentation.screen.main.model.MainBottomSheetType
-import com.dms.moneymanager.presentation.screen.main.model.MainUiModel
-import com.dms.moneymanager.presentation.screen.main.model.MainUiState
+import com.dms.moneymanager.presentation.screen.MainEvent
+import com.dms.moneymanager.presentation.screen.commun.BottomBar
+import com.dms.moneymanager.presentation.screen.commun.MenuRoute
+import com.dms.moneymanager.presentation.screen.transactions.component.InfoBalance
+import com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet.BottomSheetConfirmRemoveAccount
+import com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet.BottomSheetConfirmRemoveTransaction
+import com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet.BottomSheetCreateAccount
+import com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet.BottomSheetCreateTransaction
+import com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet.BottomSheetEditAccount
+import com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet.BottomSheetEditTransaction
+import com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet.BottomSheetTransfer
+import com.dms.moneymanager.presentation.screen.transactions.component.mainlist.MainList
+import com.dms.moneymanager.presentation.screen.transactions.model.MainBottomSheetType
+import com.dms.moneymanager.presentation.screen.transactions.model.MainUiModel
+import com.dms.moneymanager.presentation.screen.transactions.model.MainUiState
 import com.dms.moneymanager.presentation.util.NavigationRoute
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(
+fun TransactionsScreen(
     viewState: MainUiModel,
     onEvent: (MainEvent) -> Unit,
     navController: NavHostController
 ) {
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scaffoldState = rememberScaffoldState()
+    val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
     // Sheet content
@@ -125,25 +128,16 @@ fun MainScreen(
     }
 
     Scaffold(
-        scaffoldState = scaffoldState,
-        backgroundColor = MaterialTheme.colorScheme.background,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             AddFloatingButton(
                 addAccountAction = { onEvent(MainEvent.OpenBottomSheet(mainBottomSheetType = MainBottomSheetType.BottomSheetCreateAccount)) },
                 addTransactionAction = { onEvent(MainEvent.OpenBottomSheet(mainBottomSheetType = MainBottomSheetType.BottomSheetCreateTransaction)) }
             )
         },
-        bottomBar = {
-            /*  BottomBar(
-                  defaultSelectedItem = MenuRoute.HOME,
-                  onHomeClick = { },
-                  onSettingClick = { navController.navigate(NavigationRoute.HISTORY.route) }
-              )  */ // TODO LATER
-        },
-        isFloatingActionButtonDocked = true,
-        floatingActionButtonPosition = FabPosition.Center
+        floatingActionButtonPosition = FabPosition.End
     ) {
-        MainContent(
+        TransactionsContent(
             modifier = Modifier.padding(paddingValues = it),
             viewState = viewState,
             onEvent = onEvent,
@@ -160,7 +154,7 @@ fun MainScreen(
         MainUiState.APPLIED_TRANSACTION -> {
             LaunchedEffect(key1 = "snackbar_key", block = {
                 coroutineScope.launch {
-                    val snackbarResult = scaffoldState.snackbarHostState.showSnackbar(
+                    val snackbarResult = snackbarHostState.showSnackbar(
                         message = "Cliquez sur le compte vers lequel appliquer la transaction ${viewState.selectedTransaction?.name}.",
                         actionLabel = "Annuler",
                         duration = SnackbarDuration.Indefinite
@@ -174,13 +168,13 @@ fun MainScreen(
         }
 
         else -> {
-            scaffoldState.snackbarHostState.currentSnackbarData?.dismiss()
+            snackbarHostState.currentSnackbarData?.dismiss()
         }
     }
 }
 
 @Composable
-private fun MainContent(
+private fun TransactionsContent(
     modifier: Modifier = Modifier,
     viewState: MainUiModel,
     onEvent: (MainEvent) -> Unit,
@@ -249,9 +243,9 @@ private fun AddFloatingButton(
 
 @Preview
 @Composable
-private fun MainScreenPreview() {
+private fun TransactionsScreenPreview() {
     MoneyManagerTheme {
-        MainScreen(
+        TransactionsScreen(
             viewState = MainUiModel(
                 accounts = arrayListOf(Account(name = "account 1", currentBalance = 2000.0f)),
                 transactions = arrayListOf(

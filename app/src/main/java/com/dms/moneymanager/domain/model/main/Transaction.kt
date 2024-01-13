@@ -18,6 +18,7 @@ data class Transaction(
     include = JsonTypeInfo.As.PROPERTY,
     property = "type")
 abstract class RecurrenceType {
-    data class MonthlyRecurrence(val numberOfRepetition: Int): RecurrenceType()
+    data class FixedRecurrence(val numberOfRepetition: Int): RecurrenceType()
+    data class MonthlyRecurrence(val dayOfApplied: Int): RecurrenceType()
     object YearRecurrence: RecurrenceType()
 }

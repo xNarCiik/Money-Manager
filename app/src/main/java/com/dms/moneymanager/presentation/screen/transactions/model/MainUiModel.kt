@@ -1,4 +1,4 @@
-package com.dms.moneymanager.presentation.screen.main.model
+package com.dms.moneymanager.presentation.screen.transactions.model
 
 import androidx.annotation.StringRes
 import com.dms.moneymanager.domain.model.main.Account

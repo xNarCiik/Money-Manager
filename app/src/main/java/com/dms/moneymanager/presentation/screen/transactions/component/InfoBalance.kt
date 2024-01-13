@@ -1,4 +1,4 @@
-package com.dms.moneymanager.presentation.screen.main.component
+package com.dms.moneymanager.presentation.screen.transactions.component
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement

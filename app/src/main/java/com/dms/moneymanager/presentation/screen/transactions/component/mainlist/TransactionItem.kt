@@ -1,14 +1,17 @@
-package com.dms.moneymanager.presentation.screen.main.component.mainlist
+package com.dms.moneymanager.presentation.screen.transactions.component.mainlist
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults.cardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -24,45 +27,35 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.dms.moneymanager.R
-import com.dms.moneymanager.domain.model.main.Account
-import com.dms.moneymanager.presentation.screen.main.model.MainUiState
+import com.dms.moneymanager.domain.model.main.Transaction
+import com.dms.moneymanager.presentation.util.getDayOfTheMonth
 import com.dms.moneymanager.presentation.util.getTextColor
 import com.dms.moneymanager.presentation.util.toAmountString
+import com.dms.moneymanager.ui.theme.Blue
+import com.dms.moneymanager.ui.theme.Green
 
 @Composable
-fun AccountItem(
-    modifier: Modifier = Modifier,
-    mainUiState: MainUiState,
-    account: Account,
-    appliedTransaction: () -> Unit,
-    transferAction: () -> Unit,
+fun TransactionItem(
+    transaction: Transaction,
+    appliedAction: () -> Unit,
     editAction: () -> Unit,
     enableOrDisableAction: () -> Unit,
     removeAction: () -> Unit
 ) {
     var expandedDropDownMenu by remember { mutableStateOf(false) }
-    val isEnable = account.isEnable
+    val isEnable = transaction.isEnable
 
     Card(
-        modifier = modifier
-            .padding(all = 4.dp),
+        modifier = Modifier.padding(all = 4.dp),
         shape = RoundedCornerShape(size = 8.dp),
-        border = BorderStroke(width = 1.dp, color = Color.Black),
-        colors = cardColors(
+        border = BorderStroke(width = 1.dp, Color.Black),
+        colors = CardDefaults.cardColors(
             containerColor = if (isEnable) MaterialTheme.colorScheme.surfaceVariant else Color.Gray
         ),
-        onClick = {
-            when (mainUiState) {
-                MainUiState.APPLIED_TRANSACTION -> {
-                    appliedTransaction()
-                }
-
-                else -> expandedDropDownMenu = true
-            }
-        }
+        onClick = { expandedDropDownMenu = true }
     ) {
         Column(
             modifier = Modifier
@@ -70,51 +63,75 @@ fun AccountItem(
                 .padding(all = 8.dp)
         ) {
             Text(
-                text = account.name,
+                text = transaction.name,
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Bold
             )
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = account.currentBalance.toAmountString(),
+                    modifier = Modifier.padding(start = 16.dp),
+                    text = transaction.amount.toAmountString(),
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold,
-                    color = account.currentBalance.getTextColor()
+                    color = transaction.amount.getTextColor()
                 )
 
-                Text(
-                    text = "(${account.futureBalance.toAmountString()})",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = account.futureBalance.getTextColor()
-                )
+                Spacer(modifier = Modifier.weight(weight = 1f))
+
+                transaction.destinationAccount?.let { destinationAccount ->
+                    Text(
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .border(
+                                width = 1.dp,
+                                color = Blue,
+                                shape = CircleShape
+                            )
+                            .background(color = Blue, shape = CircleShape)
+                            .padding(all = 4.dp),
+                        text = destinationAccount.name, // TODO FIND ACCOUNT NAME BY ID
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
+                        color = Color.White
+                    )
+                }
+
+                transaction.dueDate?.let { dueDate ->
+                    Text(
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .border(
+                                width = 1.dp,
+                                color = Green,
+                                shape = CircleShape
+                            )
+                            .background(color = Green, shape = CircleShape)
+                            .padding(all = 4.dp),
+                        text = "${getDayOfTheMonth(dueDate)} du mois", // TODO PHRASE
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
+                        color = Color.White
+                    )
+                }
             }
 
-            DropDownMenuAccount(
+            DropDownMenuTransaction(
                 expanded = expandedDropDownMenu,
                 closeDropDownMenuAction = { expandedDropDownMenu = false },
-                transferAction = transferAction,
+                appliedAction = appliedAction,
                 editAction = editAction,
                 isEnable = isEnable,
                 enableOrDisableAction = enableOrDisableAction,
                 removeAction = removeAction
             )
         }
-
     }
 }
 
 @Composable
-private fun DropDownMenuAccount(
+private fun DropDownMenuTransaction(
     expanded: Boolean,
     closeDropDownMenuAction: () -> Unit,
-    transferAction: () -> Unit,
+    appliedAction: () -> Unit,
     editAction: () -> Unit,
     isEnable: Boolean,
     enableOrDisableAction: () -> Unit,
@@ -125,9 +142,9 @@ private fun DropDownMenuAccount(
         onDismissRequest = closeDropDownMenuAction
     ) {
         DropdownMenuItem(
-            text = { Text(text = stringResource(R.string.transfer)) },
+            text = { Text(text = stringResource(id = R.string.applied)) },
             onClick = {
-                transferAction()
+                appliedAction()
                 closeDropDownMenuAction()
             }
         )
@@ -154,7 +171,7 @@ private fun DropDownMenuAccount(
         )
         HorizontalDivider()
         DropdownMenuItem(
-            text = { Text(text = stringResource(R.string.remove)) },
+            text = { Text(text = stringResource(id = R.string.remove)) },
             onClick = {
                 removeAction()
                 closeDropDownMenuAction()
