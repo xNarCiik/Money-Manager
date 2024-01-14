@@ -40,7 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dms.moneymanager.R
 import com.dms.moneymanager.domain.model.main.Account
-import com.dms.moneymanager.presentation.screen.MainEvent
+import com.dms.moneymanager.presentation.screen.transactions.TransactionsEvent
 import com.dms.moneymanager.presentation.util.getTextColor
 import com.dms.moneymanager.presentation.util.toAmountString
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
@@ -49,7 +49,7 @@ import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 fun BottomSheetTransfer(
     listAccount: List<Account>,
     account: Account,
-    onEvent: (MainEvent) -> Unit
+    onEvent: (TransactionsEvent) -> Unit
 ) {
     val listAccountFiltered = listAccount.filter { it.id != account.id }
 
@@ -58,7 +58,7 @@ fun BottomSheetTransfer(
 
     val onValidateAction = {
         onEvent(
-            MainEvent.OnClickTransfer(
+            TransactionsEvent.OnClickTransfer(
                 transmitterAccount = account,
                 receiverAccount = selectedAccount,
                 amount = amount.text

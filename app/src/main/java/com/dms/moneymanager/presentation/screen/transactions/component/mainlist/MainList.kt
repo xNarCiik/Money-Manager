@@ -17,18 +17,19 @@ import androidx.compose.ui.unit.dp
 import com.dms.moneymanager.R
 import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.domain.model.main.Transaction
-import com.dms.moneymanager.presentation.screen.MainEvent
-import com.dms.moneymanager.presentation.screen.transactions.model.MainBottomSheetType
-import com.dms.moneymanager.presentation.screen.transactions.model.MainUiState
+import com.dms.moneymanager.presentation.BaseEvent
+import com.dms.moneymanager.presentation.screen.transactions.TransactionsEvent
+import com.dms.moneymanager.presentation.screen.transactions.model.TransactionsBottomSheetType
+import com.dms.moneymanager.presentation.screen.transactions.model.TransactionsUiState
 import com.dms.moneymanager.presentation.util.gridItems
 
 @Composable
 fun MainList(
     modifier: Modifier = Modifier,
-    mainUiState: MainUiState,
+    transactionsUiState: TransactionsUiState,
     listAccount: List<Account>,
     listTransaction: List<Transaction>,
-    onEvent: (MainEvent) -> Unit
+    onEvent: (BaseEvent) -> Unit
 ) {
     LazyColumn(
         modifier = modifier
@@ -44,13 +45,13 @@ fun MainList(
         if (listAccount.isNotEmpty()) {
             gridItems(data = listAccount, columnCount = 2) { account ->
                 AccountItem(
-                    mainUiState = mainUiState,
+                    transactionsUiState = transactionsUiState,
                     account = account,
-                    appliedTransaction = { onEvent(MainEvent.AppliedTransaction(toAccount = account)) },
+                    appliedTransaction = { onEvent(TransactionsEvent.AppliedTransaction(toAccount = account)) },
                     transferAction = {
                         onEvent(
-                            MainEvent.OpenBottomSheet(
-                                mainBottomSheetType = MainBottomSheetType.BottomSheetTransfer(
+                            BaseEvent.OpenBottomSheet(
+                                bottomSheetType = TransactionsBottomSheetType.BottomSheetTransfer(
                                     account = account
                                 )
                             )
@@ -58,20 +59,20 @@ fun MainList(
                     },
                     editAction = {
                         onEvent(
-                            MainEvent.OpenBottomSheet(
-                                MainBottomSheetType.BottomSheetEditAccount(
+                            BaseEvent.OpenBottomSheet(
+                                TransactionsBottomSheetType.BottomSheetEditAccount(
                                     account = account
                                 )
                             )
                         )
                     },
                     enableOrDisableAction = {
-                        onEvent(MainEvent.EnableOrDisableAccountEvent(account = account))
+                        onEvent(TransactionsEvent.EnableOrDisableAccountEvent(account = account))
                     },
                     removeAction = {
                         onEvent(
-                            MainEvent.OpenBottomSheet(
-                                mainBottomSheetType = MainBottomSheetType.BottomSheetConfirmRemoveAccount(
+                            BaseEvent.OpenBottomSheet(
+                                bottomSheetType = TransactionsBottomSheetType.BottomSheetConfirmRemoveAccount(
                                     account = account
                                 )
                             )
@@ -83,7 +84,7 @@ fun MainList(
             item {
                 EmptyText(
                     stringId = R.string.empty_account,
-                    onClick = { onEvent(MainEvent.OpenBottomSheet(MainBottomSheetType.BottomSheetCreateAccount)) }
+                    onClick = { onEvent(BaseEvent.OpenBottomSheet(TransactionsBottomSheetType.BottomSheetCreateAccount)) }
                 )
             }
         }
@@ -100,24 +101,24 @@ fun MainList(
                 TransactionItem(
                     transaction = transaction,
                     appliedAction = {
-                        onEvent(MainEvent.OnClickAppliedTransaction(transaction = transaction))
+                        onEvent(TransactionsEvent.OnClickAppliedTransaction(transaction = transaction))
                     },
                     editAction = {
                         onEvent(
-                            MainEvent.OpenBottomSheet(
-                                mainBottomSheetType = MainBottomSheetType.BottomSheetEditTransaction(
+                            BaseEvent.OpenBottomSheet(
+                                bottomSheetType = TransactionsBottomSheetType.BottomSheetEditTransaction(
                                     transaction = transaction
                                 )
                             )
                         )
                     },
                     enableOrDisableAction = {
-                        onEvent(MainEvent.EnableOrDisableTransactionEvent(transaction = transaction))
+                        onEvent(TransactionsEvent.EnableOrDisableTransactionEvent(transaction = transaction))
                     },
                     removeAction = {
                         onEvent(
-                            MainEvent.OpenBottomSheet(
-                                mainBottomSheetType = MainBottomSheetType.BottomSheetConfirmRemoveTransaction(
+                            BaseEvent.OpenBottomSheet(
+                                bottomSheetType = TransactionsBottomSheetType.BottomSheetConfirmRemoveTransaction(
                                     transaction = transaction
                                 )
                             )
@@ -129,7 +130,7 @@ fun MainList(
             item {
                 EmptyText(
                     stringId = R.string.empty_transaction,
-                    onClick = { onEvent(MainEvent.OpenBottomSheet(MainBottomSheetType.BottomSheetCreateTransaction)) }
+                    onClick = { onEvent(BaseEvent.OpenBottomSheet(TransactionsBottomSheetType.BottomSheetCreateTransaction)) }
                 )
             }
         }

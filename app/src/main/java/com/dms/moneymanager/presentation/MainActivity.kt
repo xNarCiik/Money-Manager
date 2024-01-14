@@ -14,9 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.dms.moneymanager.presentation.screen.transactions.TransactionsViewModel
 import com.dms.moneymanager.presentation.screen.history.HistoryViewModel
 import com.dms.moneymanager.presentation.screen.history.HistoryScreen
-import com.dms.moneymanager.presentation.screen.MainViewModel
 import com.dms.moneymanager.presentation.screen.settings.SettingsScreen
 import com.dms.moneymanager.presentation.screen.settings.SettingsViewModel
 import com.dms.moneymanager.presentation.screen.accounts.AccountsScreen
@@ -45,7 +45,9 @@ class MainActivity : ComponentActivity() {
                     }
                 ) {
                     Surface(
-                        modifier = Modifier.fillMaxSize().padding(it),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(it),
                         color = MaterialTheme.colorScheme.background
                     ) {
 
@@ -54,12 +56,16 @@ class MainActivity : ComponentActivity() {
                             startDestination = NavigationRoute.TRANSACTIONS.route
                         ) {
                             composable(NavigationRoute.TRANSACTIONS.route) {
-                                val mainViewModel: MainViewModel by viewModels()
-                                val viewState = mainViewModel.viewState.collectAsState()
+                                val transactionsViewModel: TransactionsViewModel by viewModels()
+                                val viewState = transactionsViewModel.viewState.collectAsState()
+                                val currentBottomSheet = transactionsViewModel.currentBottomSheet.collectAsState()
+                                val toastMessage = transactionsViewModel.toastMessage.collectAsState()
 
                                 TransactionsScreen(
                                     viewState = viewState.value,
-                                    onEvent = mainViewModel::onEvent,
+                                    onEvent = transactionsViewModel::onEvent,
+                                    currentBottomSheet = currentBottomSheet.value,
+                                    toastMessage = toastMessage.value,
                                     navController = navController
                                 )
                             }
@@ -72,9 +78,11 @@ class MainActivity : ComponentActivity() {
 
                             composable(NavigationRoute.SETTINGS.route) {
                                 val settingsViewModel: SettingsViewModel by viewModels()
+                                val toastMessage = settingsViewModel.toastMessage.collectAsState()
+
                                 SettingsScreen(
                                     onEvent = settingsViewModel::onEvent,
-                                    navController = navController
+                                    toastMessage = toastMessage.value,
                                 )
                             }
 

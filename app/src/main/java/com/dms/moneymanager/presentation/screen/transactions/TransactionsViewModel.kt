@@ -1,15 +1,15 @@
-package com.dms.moneymanager.presentation.screen
+package com.dms.moneymanager.presentation.screen.transactions
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dms.moneymanager.R
 import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.domain.model.main.Transaction
 import com.dms.moneymanager.domain.usecase.AccountUseCase
 import com.dms.moneymanager.domain.usecase.TransactionUseCase
-import com.dms.moneymanager.presentation.screen.transactions.model.MainBottomSheetType
-import com.dms.moneymanager.presentation.screen.transactions.model.MainUiModel
-import com.dms.moneymanager.presentation.screen.transactions.model.MainUiState
+import com.dms.moneymanager.presentation.BaseEvent
+import com.dms.moneymanager.presentation.BaseViewModel
+import com.dms.moneymanager.presentation.screen.transactions.model.TransactionsUiModel
+import com.dms.moneymanager.presentation.screen.transactions.model.TransactionsUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -18,118 +18,108 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-sealed interface MainEvent {
-    class AddAccountEvent(val name: String, val balance: String) : MainEvent
-    class EditAccountEvent(val id: Int, val name: String, val balance: String) : MainEvent
-    class EnableOrDisableAccountEvent(val account: Account) : MainEvent
-    class RemoveAccountEvent(val account: Account) : MainEvent
+sealed interface TransactionsEvent : BaseEvent {
+    class AddAccountEvent(val name: String, val balance: String) : TransactionsEvent
+    class EditAccountEvent(val id: Int, val name: String, val balance: String) : TransactionsEvent
+    class EnableOrDisableAccountEvent(val account: Account) : TransactionsEvent
+    class RemoveAccountEvent(val account: Account) : TransactionsEvent
     class OnClickTransfer(
         val transmitterAccount: Account,
         val receiverAccount: Account?,
         val amount: String
-    ) : MainEvent
+    ) : TransactionsEvent
 
     class AddTransactionEvent(
         val name: String,
         val amount: String,
         val destinationAccount: Account?
-    ) : MainEvent
+    ) : TransactionsEvent
 
     class EditTransactionEvent(
         val id: Int,
         val name: String,
         val amount: String,
         val destinationAccount: Account?
-    ) : MainEvent
+    ) : TransactionsEvent
 
-    class EnableOrDisableTransactionEvent(val transaction: Transaction) : MainEvent
-    class OnClickAppliedTransaction(val transaction: Transaction) : MainEvent
-    class AppliedTransaction(val toAccount: Account) : MainEvent
-    class RemoveTransactionEvent(val transaction: Transaction) : MainEvent
-    class OpenBottomSheet(val mainBottomSheetType: MainBottomSheetType) : MainEvent
-    object CloseBottomSheet : MainEvent
-    object RemoveToast : MainEvent
-    object CancelSnackbar : MainEvent
+    class EnableOrDisableTransactionEvent(val transaction: Transaction) : TransactionsEvent
+    class OnClickAppliedTransaction(val transaction: Transaction) : TransactionsEvent
+    class AppliedTransaction(val toAccount: Account) : TransactionsEvent
+    class RemoveTransactionEvent(val transaction: Transaction) : TransactionsEvent
 }
 
 @HiltViewModel
-class MainViewModel @Inject constructor(
+class TransactionsViewModel @Inject constructor(
     private val accountUseCase: AccountUseCase,
     private val transactionUseCase: TransactionUseCase
-) : ViewModel() {
+) : BaseViewModel() {
 
-    private var _mainUiState = MutableStateFlow(value = MainUiState.NORMAL)
+    private var _transactionsUiState = MutableStateFlow(value = TransactionsUiState.NORMAL)
     private var _currentBalance = MutableStateFlow(value = 0.0f)
     private val _futureBalance = MutableStateFlow(value = 0.0f)
     private var _listAccount = MutableStateFlow<List<Account>>(value = emptyList())
     private var _listTransaction = MutableStateFlow<List<Transaction>>(value = emptyList())
     private var _selectedAccount = MutableStateFlow<Account?>(value = null)
     private var _selectedTransaction = MutableStateFlow<Transaction?>(value = null)
-    private var _mainBottomSheetType = MutableStateFlow<MainBottomSheetType?>(value = null)
-    private var _toastMessage = MutableStateFlow<Int?>(value = null)
 
     @Suppress("UNCHECKED_CAST")
     val viewState = combine(
-        _mainUiState,
+        _transactionsUiState,
         _currentBalance,
         _futureBalance,
         _listAccount,
         _listTransaction,
         _selectedAccount,
         _selectedTransaction,
-        _mainBottomSheetType,
-        _toastMessage
     ) { params ->
-        val mainUiState = params[0] as MainUiState
+        val transactionsUiState = params[0] as TransactionsUiState
         val currentBalance = params[1] as Float
         val futureBalance = params[2] as Float
         val listAccount = params[3] as List<Account>
         val listTransaction = params[4] as List<Transaction>
         val selectedAccount = params[5] as Account?
         val selectedTransaction = params[6] as Transaction?
-        val mainBottomSheetType = params[7] as MainBottomSheetType?
-        val toastMessage = params[8] as Int?
 
-        MainUiModel(
-            mainUiState = mainUiState,
+        TransactionsUiModel(
+            transactionsUiState = transactionsUiState,
             currentBalance = currentBalance,
             futureBalance = futureBalance,
             accounts = listAccount,
             transactions = listTransaction,
             selectedAccount = selectedAccount,
             selectedTransaction = selectedTransaction,
-            mainBottomSheetType = mainBottomSheetType,
-            toastMessage = toastMessage
         )
-    }.stateIn(viewModelScope, SharingStarted.Lazily, MainUiModel())
+    }.stateIn(viewModelScope, SharingStarted.Lazily, TransactionsUiModel())
 
     init {
         refreshData()
     }
 
-    fun onEvent(event: MainEvent) {
+    override fun onEvent(event: BaseEvent) {
+        super.onEvent(event)
+
         when (event) {
-            is MainEvent.AddAccountEvent -> {
+            is TransactionsEvent.AddAccountEvent -> {
                 createAccount(name = event.name, balance = event.balance)
             }
 
-            is MainEvent.EditAccountEvent -> {
+            is TransactionsEvent.EditAccountEvent -> {
                 editAccount(id = event.id, name = event.name, balance = event.balance)
             }
 
-            is MainEvent.EnableOrDisableAccountEvent -> {
+            is TransactionsEvent.EnableOrDisableAccountEvent -> {
                 viewModelScope.launch {
                     accountUseCase.enableOrDisableAccount(account = event.account)
                     refreshData()
                 }
             }
 
-            is MainEvent.RemoveAccountEvent -> {
+            is TransactionsEvent.RemoveAccountEvent -> {
                 removeAccount(account = event.account)
-                _mainBottomSheetType.value = null
+                _currentBottomSheet.value = null
             }
 
-            is MainEvent.OnClickTransfer -> {
+            is TransactionsEvent.OnClickTransfer -> {
                 transfer(
                     transmitterAccount = event.transmitterAccount,
                     receiverAccount = event.receiverAccount,
@@ -137,7 +127,7 @@ class MainViewModel @Inject constructor(
                 )
             }
 
-            is MainEvent.AddTransactionEvent -> {
+            is TransactionsEvent.AddTransactionEvent -> {
                 createTransaction(
                     name = event.name,
                     amount = event.amount,
@@ -145,7 +135,7 @@ class MainViewModel @Inject constructor(
                 )
             }
 
-            is MainEvent.EditTransactionEvent -> {
+            is TransactionsEvent.EditTransactionEvent -> {
                 editTransaction(
                     id = event.id,
                     name = event.name,
@@ -154,46 +144,34 @@ class MainViewModel @Inject constructor(
                 )
             }
 
-            is MainEvent.EnableOrDisableTransactionEvent -> {
+            is TransactionsEvent.EnableOrDisableTransactionEvent -> {
                 viewModelScope.launch {
                     transactionUseCase.enableOrDisableTransaction(transaction = event.transaction)
                     refreshData()
                 }
             }
 
-            is MainEvent.OnClickAppliedTransaction -> {
-                _mainUiState.value = MainUiState.APPLIED_TRANSACTION
+            is TransactionsEvent.OnClickAppliedTransaction -> {
+                _transactionsUiState.value = TransactionsUiState.APPLIED_TRANSACTION
                 _selectedTransaction.value = event.transaction
             }
 
-            is MainEvent.AppliedTransaction -> {
+            is TransactionsEvent.AppliedTransaction -> {
                 _selectedTransaction.value?.let {
                     appliedTransaction(account = event.toAccount, transaction = it)
                 }
-                onEvent(MainEvent.CancelSnackbar)
+                onEvent(BaseEvent.ActionPerformedSnackbar)
             }
 
-            is MainEvent.RemoveTransactionEvent -> {
+            is TransactionsEvent.RemoveTransactionEvent -> {
                 removeTransaction(transaction = event.transaction)
-                _mainBottomSheetType.value = null
+                _currentBottomSheet.value = null
             }
 
-            is MainEvent.OpenBottomSheet -> {
-                _mainBottomSheetType.value = event.mainBottomSheetType
-            }
-
-            is MainEvent.CloseBottomSheet -> {
-                _mainBottomSheetType.value = null
-            }
-
-            is MainEvent.RemoveToast -> {
-                _toastMessage.value = null
-            }
-
-            is MainEvent.CancelSnackbar -> {
-                when (_mainUiState.value) {
-                    MainUiState.APPLIED_TRANSACTION -> {
-                        _mainUiState.value = MainUiState.NORMAL
+            is BaseEvent.ActionPerformedSnackbar -> {
+                when (_transactionsUiState.value) {
+                    TransactionsUiState.APPLIED_TRANSACTION -> {
+                        _transactionsUiState.value = TransactionsUiState.NORMAL
                         _selectedTransaction.value = null
                     }
 
@@ -217,7 +195,7 @@ class MainViewModel @Inject constructor(
             val account = Account(name = name, currentBalance = balanceFloat)
             kotlin.runCatching { accountUseCase.createAccount(account = account) }
                 .onSuccess {
-                    onEvent(MainEvent.CloseBottomSheet)
+                    onEvent(BaseEvent.CloseBottomSheet)
                     refreshData()
                 }
                 .onFailure { _toastMessage.value = R.string.error_failed_add_account }
@@ -244,7 +222,7 @@ class MainViewModel @Inject constructor(
                 )
             }
                 .onSuccess {
-                    onEvent(MainEvent.CloseBottomSheet)
+                    onEvent(BaseEvent.CloseBottomSheet)
                     refreshData()
                 }
                 .onFailure { _toastMessage.value = R.string.error_failed_add_account }
@@ -270,7 +248,7 @@ class MainViewModel @Inject constructor(
                 )
             }
                 .onSuccess {
-                    onEvent(MainEvent.CloseBottomSheet)
+                    onEvent(BaseEvent.CloseBottomSheet)
                     refreshData()
                 }
                 .onFailure { _toastMessage.value = R.string.error_failed_transfer }
@@ -303,7 +281,7 @@ class MainViewModel @Inject constructor(
             )
             kotlin.runCatching { transactionUseCase.createTransaction(transaction = transaction) }
                 .onSuccess {
-                    onEvent(MainEvent.CloseBottomSheet)
+                    onEvent(BaseEvent.CloseBottomSheet)
                     refreshData()
                 }
                 .onFailure { _toastMessage.value = R.string.error_failed_add_transaction }
@@ -336,7 +314,7 @@ class MainViewModel @Inject constructor(
                 )
             }
                 .onSuccess {
-                    onEvent(MainEvent.CloseBottomSheet)
+                    onEvent(BaseEvent.CloseBottomSheet)
                     refreshData()
                 }
                 .onFailure { _toastMessage.value = R.string.error_failed_add_account }

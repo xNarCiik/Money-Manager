@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.dms.moneymanager.R
 import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.domain.model.main.Transaction
-import com.dms.moneymanager.presentation.screen.MainEvent
+import com.dms.moneymanager.presentation.screen.transactions.TransactionsEvent
 import com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet.commun.AccountItem
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 
@@ -37,7 +37,7 @@ import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 fun BottomSheetEditTransaction(
     transaction: Transaction,
     accounts: List<Account>,
-    onEvent: (MainEvent) -> Unit
+    onEvent: (TransactionsEvent) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -58,7 +58,7 @@ fun BottomSheetEditTransaction(
 
         val onValidateAction = {
             onEvent(
-                MainEvent.EditTransactionEvent(
+                TransactionsEvent.EditTransactionEvent(
                     id = transaction.id,
                     name = name.text,
                     amount = amount.text,

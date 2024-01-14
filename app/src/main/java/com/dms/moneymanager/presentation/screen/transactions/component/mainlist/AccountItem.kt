@@ -24,18 +24,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.dms.moneymanager.R
 import com.dms.moneymanager.domain.model.main.Account
-import com.dms.moneymanager.presentation.screen.transactions.model.MainUiState
+import com.dms.moneymanager.presentation.screen.transactions.model.TransactionsUiState
 import com.dms.moneymanager.presentation.util.getTextColor
 import com.dms.moneymanager.presentation.util.toAmountString
 
 @Composable
 fun AccountItem(
     modifier: Modifier = Modifier,
-    mainUiState: MainUiState,
+    transactionsUiState: TransactionsUiState,
     account: Account,
     appliedTransaction: () -> Unit,
     transferAction: () -> Unit,
@@ -55,8 +54,8 @@ fun AccountItem(
             containerColor = if (isEnable) MaterialTheme.colorScheme.surfaceVariant else Color.Gray
         ),
         onClick = {
-            when (mainUiState) {
-                MainUiState.APPLIED_TRANSACTION -> {
+            when (transactionsUiState) {
+                TransactionsUiState.APPLIED_TRANSACTION -> {
                     appliedTransaction()
                 }
 

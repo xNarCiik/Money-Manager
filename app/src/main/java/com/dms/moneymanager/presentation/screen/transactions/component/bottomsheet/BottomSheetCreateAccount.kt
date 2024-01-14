@@ -22,11 +22,11 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dms.moneymanager.R
-import com.dms.moneymanager.presentation.screen.MainEvent
+import com.dms.moneymanager.presentation.screen.transactions.TransactionsEvent
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 
 @Composable
-fun BottomSheetCreateAccount(onEvent: (MainEvent) -> Unit) {
+fun BottomSheetCreateAccount(onEvent: (TransactionsEvent) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -44,7 +44,7 @@ fun BottomSheetCreateAccount(onEvent: (MainEvent) -> Unit) {
 
         val onValidateAction = {
             onEvent(
-                MainEvent.AddAccountEvent(
+                TransactionsEvent.AddAccountEvent(
                     name = name.text,
                     balance = balance.text
                 )

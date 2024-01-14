@@ -18,15 +18,15 @@ import androidx.compose.ui.unit.dp
 import com.dms.moneymanager.R
 import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.domain.model.main.Transaction
-import com.dms.moneymanager.presentation.screen.MainEvent
+import com.dms.moneymanager.presentation.screen.transactions.TransactionsEvent
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 
 @Composable
-fun BottomSheetConfirmRemoveAccount(onEvent: (MainEvent) -> Unit, account: Account) {
+fun BottomSheetConfirmRemoveAccount(onEvent: (TransactionsEvent) -> Unit, account: Account) {
     BottomSheetConfirmRemove(
         onValidateAction = {
             onEvent(
-                MainEvent.RemoveAccountEvent(account = account)
+                TransactionsEvent.RemoveAccountEvent(account = account)
             )
         },
         name = account.name
@@ -34,11 +34,14 @@ fun BottomSheetConfirmRemoveAccount(onEvent: (MainEvent) -> Unit, account: Accou
 }
 
 @Composable
-fun BottomSheetConfirmRemoveTransaction(onEvent: (MainEvent) -> Unit, transaction: Transaction) {
+fun BottomSheetConfirmRemoveTransaction(
+    onEvent: (TransactionsEvent) -> Unit,
+    transaction: Transaction
+) {
     BottomSheetConfirmRemove(
         onValidateAction = {
             onEvent(
-                MainEvent.RemoveTransactionEvent(transaction = transaction)
+                TransactionsEvent.RemoveTransactionEvent(transaction = transaction)
             )
         },
         name = transaction.name

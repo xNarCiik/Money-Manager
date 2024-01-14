@@ -23,13 +23,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dms.moneymanager.R
 import com.dms.moneymanager.domain.model.main.Account
-import com.dms.moneymanager.presentation.screen.MainEvent
+import com.dms.moneymanager.presentation.screen.transactions.TransactionsEvent
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 
 @Composable
 fun BottomSheetEditAccount(
     account: Account,
-    onEvent: (MainEvent) -> Unit
+    onEvent: (TransactionsEvent) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -48,7 +48,7 @@ fun BottomSheetEditAccount(
 
         val onValidateAction = {
             onEvent(
-                MainEvent.EditAccountEvent(
+                TransactionsEvent.EditAccountEvent(
                     id = account.id,
                     name = name.text,
                     balance = balance.text

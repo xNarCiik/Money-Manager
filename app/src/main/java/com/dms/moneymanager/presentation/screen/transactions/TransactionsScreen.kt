@@ -39,9 +39,8 @@ import androidx.navigation.compose.rememberNavController
 import com.dms.moneymanager.R
 import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.domain.model.main.Transaction
-import com.dms.moneymanager.presentation.screen.MainEvent
-import com.dms.moneymanager.presentation.screen.commun.BottomBar
-import com.dms.moneymanager.presentation.screen.commun.MenuRoute
+import com.dms.moneymanager.presentation.BaseEvent
+import com.dms.moneymanager.presentation.BottomSheetType
 import com.dms.moneymanager.presentation.screen.transactions.component.InfoBalance
 import com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet.BottomSheetConfirmRemoveAccount
 import com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet.BottomSheetConfirmRemoveTransaction
@@ -51,9 +50,9 @@ import com.dms.moneymanager.presentation.screen.transactions.component.bottomshe
 import com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet.BottomSheetEditTransaction
 import com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet.BottomSheetTransfer
 import com.dms.moneymanager.presentation.screen.transactions.component.mainlist.MainList
-import com.dms.moneymanager.presentation.screen.transactions.model.MainBottomSheetType
-import com.dms.moneymanager.presentation.screen.transactions.model.MainUiModel
-import com.dms.moneymanager.presentation.screen.transactions.model.MainUiState
+import com.dms.moneymanager.presentation.screen.transactions.model.TransactionsBottomSheetType
+import com.dms.moneymanager.presentation.screen.transactions.model.TransactionsUiModel
+import com.dms.moneymanager.presentation.screen.transactions.model.TransactionsUiState
 import com.dms.moneymanager.presentation.util.NavigationRoute
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 import kotlinx.coroutines.launch
@@ -61,8 +60,10 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionsScreen(
-    viewState: MainUiModel,
-    onEvent: (MainEvent) -> Unit,
+    viewState: TransactionsUiModel,
+    onEvent: (BaseEvent) -> Unit,
+    currentBottomSheet: BottomSheetType? = null,
+    toastMessage: Int? = null,
     navController: NavHostController
 ) {
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -70,59 +71,61 @@ fun TransactionsScreen(
     val coroutineScope = rememberCoroutineScope()
 
     // Sheet content
-    if (viewState.mainBottomSheetType != null) {
+    if (currentBottomSheet != null) {
         ModalBottomSheet(
-            onDismissRequest = { onEvent(MainEvent.CloseBottomSheet) },
+            onDismissRequest = { onEvent(BaseEvent.CloseBottomSheet) },
             sheetState = bottomSheetState
         ) {
-            when (viewState.mainBottomSheetType) {
-                is MainBottomSheetType.BottomSheetCreateAccount -> {
+            when (currentBottomSheet) {
+                is TransactionsBottomSheetType.BottomSheetCreateAccount -> {
                     BottomSheetCreateAccount(onEvent = onEvent)
                 }
 
-                is MainBottomSheetType.BottomSheetTransfer -> {
+                is TransactionsBottomSheetType.BottomSheetTransfer -> {
                     BottomSheetTransfer(
                         listAccount = viewState.accounts,
-                        account = viewState.mainBottomSheetType.account,
+                        account = currentBottomSheet.account,
                         onEvent = onEvent
                     )
                 }
 
-                is MainBottomSheetType.BottomSheetEditAccount -> {
+                is TransactionsBottomSheetType.BottomSheetEditAccount -> {
                     BottomSheetEditAccount(
-                        account = viewState.mainBottomSheetType.account,
+                        account = currentBottomSheet.account,
                         onEvent = onEvent
                     )
                 }
 
-                is MainBottomSheetType.BottomSheetConfirmRemoveAccount -> {
+                is TransactionsBottomSheetType.BottomSheetConfirmRemoveAccount -> {
                     BottomSheetConfirmRemoveAccount(
-                        account = viewState.mainBottomSheetType.account,
+                        account = currentBottomSheet.account,
                         onEvent = onEvent
                     )
                 }
 
-                is MainBottomSheetType.BottomSheetCreateTransaction -> {
+                is TransactionsBottomSheetType.BottomSheetCreateTransaction -> {
                     BottomSheetCreateTransaction(
                         onEvent = onEvent,
                         accounts = viewState.accounts
                     )
                 }
 
-                is MainBottomSheetType.BottomSheetEditTransaction -> {
+                is TransactionsBottomSheetType.BottomSheetEditTransaction -> {
                     BottomSheetEditTransaction(
-                        transaction = viewState.mainBottomSheetType.transaction,
+                        transaction = currentBottomSheet.transaction,
                         accounts = viewState.accounts,
                         onEvent = onEvent
                     )
                 }
 
-                is MainBottomSheetType.BottomSheetConfirmRemoveTransaction -> {
+                is TransactionsBottomSheetType.BottomSheetConfirmRemoveTransaction -> {
                     BottomSheetConfirmRemoveTransaction(
-                        transaction = viewState.mainBottomSheetType.transaction,
+                        transaction = currentBottomSheet.transaction,
                         onEvent = onEvent
                     )
                 }
+
+                else -> {}
             }
         }
     }
@@ -131,8 +134,8 @@ fun TransactionsScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             AddFloatingButton(
-                addAccountAction = { onEvent(MainEvent.OpenBottomSheet(mainBottomSheetType = MainBottomSheetType.BottomSheetCreateAccount)) },
-                addTransactionAction = { onEvent(MainEvent.OpenBottomSheet(mainBottomSheetType = MainBottomSheetType.BottomSheetCreateTransaction)) }
+                addAccountAction = { onEvent(BaseEvent.OpenBottomSheet(bottomSheetType = TransactionsBottomSheetType.BottomSheetCreateAccount)) },
+                addTransactionAction = { onEvent(BaseEvent.OpenBottomSheet(bottomSheetType = TransactionsBottomSheetType.BottomSheetCreateTransaction)) }
             )
         },
         floatingActionButtonPosition = FabPosition.End
@@ -145,13 +148,13 @@ fun TransactionsScreen(
         )
     }
 
-    viewState.toastMessage?.let { error ->
+    toastMessage?.let { error ->
         Toast.makeText(LocalContext.current, error, Toast.LENGTH_SHORT).show()
-        onEvent(MainEvent.RemoveToast)
+        onEvent(BaseEvent.RemoveToast)
     }
 
-    when (viewState.mainUiState) {
-        MainUiState.APPLIED_TRANSACTION -> {
+    when (viewState.transactionsUiState) {
+        TransactionsUiState.APPLIED_TRANSACTION -> {
             LaunchedEffect(key1 = "snackbar_key", block = {
                 coroutineScope.launch {
                     val snackbarResult = snackbarHostState.showSnackbar(
@@ -160,7 +163,7 @@ fun TransactionsScreen(
                         duration = SnackbarDuration.Indefinite
                     )
                     when (snackbarResult) {
-                        SnackbarResult.ActionPerformed -> onEvent(MainEvent.CancelSnackbar)
+                        SnackbarResult.ActionPerformed -> onEvent(BaseEvent.ActionPerformedSnackbar)
                         SnackbarResult.Dismissed -> {}
                     }
                 }
@@ -176,8 +179,8 @@ fun TransactionsScreen(
 @Composable
 private fun TransactionsContent(
     modifier: Modifier = Modifier,
-    viewState: MainUiModel,
-    onEvent: (MainEvent) -> Unit,
+    viewState: TransactionsUiModel,
+    onEvent: (BaseEvent) -> Unit,
     navController: NavHostController
 ) {
     Column(modifier = modifier.padding(horizontal = 12.dp)) {
@@ -193,7 +196,7 @@ private fun TransactionsContent(
 
         MainList(
             modifier = Modifier.padding(top = 12.dp),
-            mainUiState = viewState.mainUiState,
+            transactionsUiState = viewState.transactionsUiState,
             listAccount = viewState.accounts,
             listTransaction = viewState.transactions,
             onEvent = onEvent
@@ -246,7 +249,7 @@ private fun AddFloatingButton(
 private fun TransactionsScreenPreview() {
     MoneyManagerTheme {
         TransactionsScreen(
-            viewState = MainUiModel(
+            viewState = TransactionsUiModel(
                 accounts = arrayListOf(Account(name = "account 1", currentBalance = 2000.0f)),
                 transactions = arrayListOf(
                     Transaction(

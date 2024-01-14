@@ -28,13 +28,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dms.moneymanager.R
 import com.dms.moneymanager.domain.model.main.Account
-import com.dms.moneymanager.presentation.screen.MainEvent
+import com.dms.moneymanager.presentation.screen.transactions.TransactionsEvent
 import com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet.commun.AccountItem
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 
 @Composable
 fun BottomSheetCreateTransaction(
-    onEvent: (MainEvent) -> Unit,
+    onEvent: (TransactionsEvent) -> Unit,
     accounts: List<Account>
 ) {
     Column(
@@ -56,7 +56,7 @@ fun BottomSheetCreateTransaction(
 
         val onValidateAction = {
             onEvent(
-                MainEvent.AddTransactionEvent(
+                TransactionsEvent.AddTransactionEvent(
                     name = name.text,
                     amount = amount.text,
                     destinationAccount = selectedAccount
@@ -98,7 +98,7 @@ fun BottomSheetCreateTransaction(
             Checkbox(
                 checked = selectAccount,
                 onCheckedChange = { selected ->
-                    if(!selected) {
+                    if (!selected) {
                         selectedAccount = null
                     }
                     selectAccount = selected

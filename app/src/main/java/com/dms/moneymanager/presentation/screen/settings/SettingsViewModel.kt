@@ -1,90 +1,72 @@
 package com.dms.moneymanager.presentation.screen.settings
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
 import androidx.lifecycle.viewModelScope
-import com.dms.moneymanager.domain.model.main.Account
-import com.dms.moneymanager.domain.model.main.Transaction
+import com.dms.moneymanager.R
 import com.dms.moneymanager.domain.usecase.AccountUseCase
 import com.dms.moneymanager.domain.usecase.TransactionUseCase
-import com.dms.moneymanager.presentation.screen.transactions.model.MainBottomSheetType
-import com.dms.moneymanager.presentation.screen.transactions.model.MainUiModel
-import com.dms.moneymanager.presentation.screen.transactions.model.MainUiState
+import com.dms.moneymanager.presentation.BaseEvent
+import com.dms.moneymanager.presentation.BaseViewModel
+import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import timber.log.Timber
+import java.io.File
 import javax.inject.Inject
 
-sealed interface SettingsEvent {
-    class OnClickAppliedTransaction(val transaction: Transaction) : SettingsEvent
-    class AppliedTransaction(val toAccount: Account) : SettingsEvent
-    class RemoveTransactionEvent(val transaction: Transaction) : SettingsEvent
-    class OpenBottomSheet(val mainBottomSheetType: MainBottomSheetType) : SettingsEvent
-    object CloseBottomSheet : SettingsEvent
-    object RemoveToast : SettingsEvent
-    object CancelSnackbar : SettingsEvent
+sealed interface SettingsEvent: BaseEvent {
+    object OnClickSaveState : SettingsEvent
+    object OnClickRestoreState : SettingsEvent
 }
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
+    application: Application,
     private val accountUseCase: AccountUseCase,
     private val transactionUseCase: TransactionUseCase
-) : ViewModel() {
+) : BaseViewModel() {
 
-    private var _mainUiState = MutableStateFlow(value = MainUiState.NORMAL)
-    private var _currentBalance = MutableStateFlow(value = 0.0f)
-    private val _futureBalance = MutableStateFlow(value = 0.0f)
-    private var _listAccount = MutableStateFlow<List<Account>>(value = emptyList())
-    private var _listTransaction = MutableStateFlow<List<Transaction>>(value = emptyList())
-    private var _selectedAccount = MutableStateFlow<Account?>(value = null)
-    private var _selectedTransaction = MutableStateFlow<Transaction?>(value = null)
-    private var _mainBottomSheetType = MutableStateFlow<MainBottomSheetType?>(value = null)
-    private var _toastMessage = MutableStateFlow<Int?>(value = null)
-
-    @Suppress("UNCHECKED_CAST")
-    val viewState = combine(
-        _mainUiState,
-        _currentBalance,
-        _futureBalance,
-        _listAccount,
-        _listTransaction,
-        _selectedAccount,
-        _selectedTransaction,
-        _mainBottomSheetType,
-        _toastMessage
-    ) { params ->
-        val mainUiState = params[0] as MainUiState
-        val currentBalance = params[1] as Float
-        val futureBalance = params[2] as Float
-        val listAccount = params[3] as List<Account>
-        val listTransaction = params[4] as List<Transaction>
-        val selectedAccount = params[5] as Account?
-        val selectedTransaction = params[6] as Transaction?
-        val mainBottomSheetType = params[7] as MainBottomSheetType?
-        val toastMessage = params[8] as Int?
-
-        MainUiModel(
-            mainUiState = mainUiState,
-            currentBalance = currentBalance,
-            futureBalance = futureBalance,
-            accounts = listAccount,
-            transactions = listTransaction,
-            selectedAccount = selectedAccount,
-            selectedTransaction = selectedTransaction,
-            mainBottomSheetType = mainBottomSheetType,
-            toastMessage = toastMessage
-        )
-    }.stateIn(viewModelScope, SharingStarted.Lazily, MainUiModel())
+    private val gson = Gson()
+    private var fileTransactions: File
+    private var fileAccounts: File
 
     init {
-
+        val filesDir = application.filesDir
+        fileAccounts = File(filesDir, "accounts.json")
+        fileTransactions = File(filesDir, "transactions.json")
     }
 
-    fun onEvent(event: SettingsEvent) {
-        // when (event) {
-        //
-        // }
+    override fun onEvent(event: BaseEvent) {
+        when (event) {
+            SettingsEvent.OnClickSaveState -> {
+                saveCurrentState()
+            }
+
+            SettingsEvent.OnClickRestoreState -> {
+                restoreState()
+            }
+        }
     }
 
+    private fun saveCurrentState() {
+        viewModelScope.launch {
+            try {
+                val accounts = accountUseCase.getAccounts()
+                val jsonAccounts = gson.toJson(accounts)
+                fileAccounts.writeText(text = jsonAccounts)
+
+                val transactions = transactionUseCase.getAllTransactions()
+                val jsonTransactions = gson.toJson(transactions)
+                fileTransactions.writeText(text = jsonTransactions)
+
+                _toastMessage.value = R.string.save_state_success
+            } catch (exception: Exception) {
+                Timber.e(exception)
+                _toastMessage.value = R.string.error_save_state
+            }
+        }
+    }
+
+    private fun restoreState() {
+    }
 }
