@@ -21,25 +21,22 @@ class TransactionRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun getTransactions(): List<Transaction> {
-        return transactionDao.getTransactions()
-            .map {
-                it.toTransaction(
-                    destinationAccount = if (it.accountId != null) accountDao.getById(id = it.accountId)
-                        ?.toAccount() else null
-                )
-            }
-    }
+    override suspend fun getTransactions(): List<Transaction> = transactionDao.getTransactions()
+        .map {
+            it.toTransaction(
+                destinationAccount = if (it.accountId != null) accountDao.getById(id = it.accountId)
+                    ?.toAccount() else null
+            )
+        }
 
-    override suspend fun insertTransaction(transaction: Transaction) {
+    override suspend fun insertTransaction(transaction: Transaction) =
         transactionDao.insert(transaction.toTransactionEntity())
-    }
 
-    override suspend fun updateTransaction(transaction: Transaction) {
+    override suspend fun updateTransaction(transaction: Transaction) =
         transactionDao.update(transaction.toTransactionEntity())
-    }
 
-    override suspend fun removeTransaction(transaction: Transaction) {
+    override suspend fun removeTransaction(transaction: Transaction) =
         transactionDao.deleteById(transaction.id)
-    }
+
+    override suspend fun removeTransactions() = transactionDao.deleteAll()
 }

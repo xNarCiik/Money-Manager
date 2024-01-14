@@ -37,6 +37,10 @@
     <string name="debug">Debug</string>
     <string name="settings_debug_save_state">Sauvegarder les comptes et transactions actuels</string>
     <string name="settings_debug_restore_state">Restaurer les comptes et transactions</string>
+    <string name="settings_debug_remove_data">Effacer les données</string>
+    <string name="data_removed">Données effacées.</string>
     <string name="save_state_success">Sauvegarde réussie avec succès</string>
     <string name="error_save_state">Erreur lors de la sauvegarde</string>
+    <string name="restore_state_success">Restoration réussie avec succès</string>
+    <string name="error_restore_state">Erreur lors de la restoration</string>
 </resources>

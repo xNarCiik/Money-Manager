@@ -10,23 +10,19 @@ import javax.inject.Inject
 class AccountRepositoryImpl @Inject constructor(
     private val accountDao: AccountDao
 ) : AccountRepository {
-    override suspend fun getAccountById(id: Int): Account? {
-        return accountDao.getById(id = id)?.toAccount()
-    }
+    override suspend fun getAccountById(id: Int): Account? =
+        accountDao.getById(id = id)?.toAccount()
 
-    override suspend fun getAccounts(): List<Account> {
-        return accountDao.getAccounts().map { it.toAccount() }
-    }
+    override suspend fun getAccounts(): List<Account> =
+        accountDao.getAccounts().map { it.toAccount() }
 
-    override suspend fun insertAccount(account: Account) {
+    override suspend fun insertAccount(account: Account) =
         accountDao.insert(account.toAccountEntity())
-    }
 
-    override suspend fun updateAccount(account: Account) {
+    override suspend fun updateAccount(account: Account) =
         accountDao.update(account.toAccountEntity())
-    }
 
-    override suspend fun removeAccount(account: Account) {
-        accountDao.deleteById(account.id)
-    }
+    override suspend fun removeAccount(account: Account) = accountDao.deleteById(account.id)
+
+    override suspend fun removeAccounts() = accountDao.deleteAll()
 }

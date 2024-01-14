@@ -80,6 +80,12 @@ private fun SettingsContent(
             ) {
                 onEvent(SettingsEvent.OnClickRestoreState)
             }
+
+            SettingsItem(
+                name = R.string.settings_debug_remove_data
+            ) {
+                onEvent(SettingsEvent.OnClickRemoveData)
+            }
         }
     }
 }

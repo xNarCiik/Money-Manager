@@ -130,6 +130,10 @@ fun TransactionsScreen(
         }
     }
 
+    LaunchedEffect(key1 = true, block = {
+        onEvent(TransactionsEvent.RefreshData)
+    })
+
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {

@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 sealed interface TransactionsEvent : BaseEvent {
+    object RefreshData : TransactionsEvent
     class AddAccountEvent(val name: String, val balance: String) : TransactionsEvent
     class EditAccountEvent(val id: Int, val name: String, val balance: String) : TransactionsEvent
     class EnableOrDisableAccountEvent(val account: Account) : TransactionsEvent
@@ -91,14 +92,14 @@ class TransactionsViewModel @Inject constructor(
         )
     }.stateIn(viewModelScope, SharingStarted.Lazily, TransactionsUiModel())
 
-    init {
-        refreshData()
-    }
-
     override fun onEvent(event: BaseEvent) {
         super.onEvent(event)
 
         when (event) {
+            is TransactionsEvent.RefreshData -> {
+                refreshData()
+            }
+
             is TransactionsEvent.AddAccountEvent -> {
                 createAccount(name = event.name, balance = event.balance)
             }

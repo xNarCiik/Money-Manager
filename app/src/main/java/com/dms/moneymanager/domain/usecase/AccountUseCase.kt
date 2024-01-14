@@ -13,12 +13,10 @@ class AccountUseCase @Inject constructor(
 
     suspend fun getAccounts() = accountRepository.getAccounts()
 
-    suspend fun createAccount(account: Account) {
-        accountRepository.insertAccount(account = account)
-    }
+    suspend fun createAccount(account: Account) = accountRepository.insertAccount(account = account)
 
-    suspend fun updateAccount(id: Int, name: String, currentBalance: Float) {
-        getAccountById(id = id)?.let { currentAccount ->
+
+    suspend fun updateAccount(id: Int, name: String, currentBalance: Float) = getAccountById(id = id)?.let { currentAccount ->
             accountRepository.updateAccount(
                 account = currentAccount.copy(
                     name = name,
@@ -26,7 +24,7 @@ class AccountUseCase @Inject constructor(
                 )
             )
         }
-    }
+
 
     suspend fun enableOrDisableAccount(account: Account) {
         account.isEnable = !account.isEnable
@@ -52,11 +50,13 @@ class AccountUseCase @Inject constructor(
         transactionUseCase.removeAccountOnTransactions(account = account)
     }
 
-    fun updateFutureBalanceAccount(account: Account, transactions: List<Transaction>) {
+    suspend fun removeAll() = accountRepository.removeAccounts()
+
+    private fun updateFutureBalanceAccount(account: Account, transactions: List<Transaction>) {
         account.futureBalance =
             account.currentBalance +
-                    transactions.filter { it.isEnable && it.destinationAccount?.id == account.id }
-                        .map { it.amount }.sum()
+                transactions.filter { it.isEnable && it.destinationAccount?.id == account.id }
+                    .map { it.amount }.sum()
     }
 
     fun getCurrentBalance(accounts: List<Account>) =
