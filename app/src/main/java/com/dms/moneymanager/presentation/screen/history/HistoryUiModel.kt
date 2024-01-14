@@ -1,4 +1,4 @@
-package com.dms.moneymanager.presentation.screen.history.model
+package com.dms.moneymanager.presentation.screen.history
 
 import com.dms.moneymanager.domain.model.main.Transaction
 

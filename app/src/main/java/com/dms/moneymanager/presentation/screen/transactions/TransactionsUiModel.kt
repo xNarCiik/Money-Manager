@@ -1,4 +1,4 @@
-package com.dms.moneymanager.presentation.screen.transactions.model
+package com.dms.moneymanager.presentation.screen.transactions
 
 import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.domain.model.main.Transaction
@@ -25,5 +25,6 @@ sealed interface TransactionsBottomSheetType : BottomSheetType {
     class BottomSheetConfirmRemoveAccount(val account: Account) : TransactionsBottomSheetType
     object BottomSheetCreateTransaction : TransactionsBottomSheetType
     class BottomSheetEditTransaction(val transaction: Transaction) : TransactionsBottomSheetType
-    class BottomSheetConfirmRemoveTransaction(val transaction: Transaction) : TransactionsBottomSheetType
+    class BottomSheetConfirmRemoveTransaction(val transaction: Transaction) :
+        TransactionsBottomSheetType
 }

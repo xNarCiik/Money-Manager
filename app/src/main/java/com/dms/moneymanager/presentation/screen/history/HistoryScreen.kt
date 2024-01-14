@@ -12,7 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.dms.moneymanager.domain.model.main.Transaction
-import com.dms.moneymanager.presentation.screen.history.model.HistoryUiModel
 import com.dms.moneymanager.presentation.util.toAmountString
 
 @Composable

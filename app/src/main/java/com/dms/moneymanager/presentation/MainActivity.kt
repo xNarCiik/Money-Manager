@@ -20,6 +20,7 @@ import com.dms.moneymanager.presentation.screen.history.HistoryScreen
 import com.dms.moneymanager.presentation.screen.settings.SettingsScreen
 import com.dms.moneymanager.presentation.screen.settings.SettingsViewModel
 import com.dms.moneymanager.presentation.screen.accounts.AccountsScreen
+import com.dms.moneymanager.presentation.screen.accounts.AccountsViewModel
 import com.dms.moneymanager.presentation.screen.commun.BottomBar
 import com.dms.moneymanager.presentation.screen.commun.MenuRoute
 import com.dms.moneymanager.presentation.screen.transactions.TransactionsScreen
@@ -58,8 +59,10 @@ class MainActivity : ComponentActivity() {
                             composable(NavigationRoute.TRANSACTIONS.route) {
                                 val transactionsViewModel: TransactionsViewModel by viewModels()
                                 val viewState = transactionsViewModel.viewState.collectAsState()
-                                val currentBottomSheet = transactionsViewModel.currentBottomSheet.collectAsState()
-                                val toastMessage = transactionsViewModel.toastMessage.collectAsState()
+                                val currentBottomSheet =
+                                    transactionsViewModel.currentBottomSheet.collectAsState()
+                                val toastMessage =
+                                    transactionsViewModel.toastMessage.collectAsState()
 
                                 TransactionsScreen(
                                     viewState = viewState.value,
@@ -71,7 +74,15 @@ class MainActivity : ComponentActivity() {
                             }
 
                             composable(NavigationRoute.ACCOUNTS.route) {
+                                val accountsViewModel: AccountsViewModel by viewModels()
+                                val viewState = accountsViewModel.viewState.collectAsState()
+                                val currentBottomSheet =
+                                    accountsViewModel.currentBottomSheet.collectAsState()
+                                val toastMessage = accountsViewModel.toastMessage.collectAsState()
+
                                 AccountsScreen(
+                                    viewState = viewState.value,
+                                    onEvent = accountsViewModel::onEvent,
                                     navController = navController
                                 )
                             }

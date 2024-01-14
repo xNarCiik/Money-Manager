@@ -8,8 +8,6 @@ import com.dms.moneymanager.domain.usecase.AccountUseCase
 import com.dms.moneymanager.domain.usecase.TransactionUseCase
 import com.dms.moneymanager.presentation.BaseEvent
 import com.dms.moneymanager.presentation.BaseViewModel
-import com.dms.moneymanager.presentation.screen.transactions.model.TransactionsUiModel
-import com.dms.moneymanager.presentation.screen.transactions.model.TransactionsUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -345,13 +343,14 @@ class TransactionsViewModel @Inject constructor(
 
     private fun refreshData() {
         viewModelScope.launch {
-            _listAccount.value = accountUseCase.getAccounts()
             _listTransaction.value = transactionUseCase.getNotAppliedTransactions()
-            _currentBalance.value = accountUseCase.getCurrentBalance(accounts = _listAccount.value)
+            val accounts = accountUseCase.getAccounts()
+            _currentBalance.value = accountUseCase.getCurrentBalance(accounts = accounts)
             _futureBalance.value = accountUseCase.getFutureBalance(
-                accounts = _listAccount.value,
+                accounts = accounts,
                 transactions = _listTransaction.value
             )
+            _listAccount.value = accounts
         }
     }
 }

@@ -3,7 +3,6 @@ package com.dms.moneymanager.presentation.screen.history
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dms.moneymanager.domain.usecase.TransactionUseCase
-import com.dms.moneymanager.presentation.screen.history.model.HistoryUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

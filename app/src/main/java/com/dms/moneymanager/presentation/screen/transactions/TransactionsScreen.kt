@@ -49,10 +49,7 @@ import com.dms.moneymanager.presentation.screen.transactions.component.bottomshe
 import com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet.BottomSheetEditAccount
 import com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet.BottomSheetEditTransaction
 import com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet.BottomSheetTransfer
-import com.dms.moneymanager.presentation.screen.transactions.component.mainlist.MainList
-import com.dms.moneymanager.presentation.screen.transactions.model.TransactionsBottomSheetType
-import com.dms.moneymanager.presentation.screen.transactions.model.TransactionsUiModel
-import com.dms.moneymanager.presentation.screen.transactions.model.TransactionsUiState
+import com.dms.moneymanager.presentation.screen.transactions.component.mainlist.TransactionsList
 import com.dms.moneymanager.presentation.util.NavigationRoute
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 import kotlinx.coroutines.launch
@@ -198,10 +195,9 @@ private fun TransactionsContent(
             onExpendedClick = { isExpended = !isExpended }
         )
 
-        MainList(
+        TransactionsList(
             modifier = Modifier.padding(top = 12.dp),
             transactionsUiState = viewState.transactionsUiState,
-            listAccount = viewState.accounts,
             listTransaction = viewState.transactions,
             onEvent = onEvent
         )
