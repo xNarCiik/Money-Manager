@@ -1,5 +1,6 @@
 package com.dms.moneymanager.presentation.screen.transactions
 
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dms.moneymanager.R
 import com.dms.moneymanager.domain.model.main.Account
@@ -17,7 +18,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 sealed interface TransactionsEvent : BaseEvent {
-    object RefreshData : TransactionsEvent
+    data object RefreshData : TransactionsEvent
     class AddAccountEvent(val name: String, val balance: String) : TransactionsEvent
     class EditAccountEvent(val id: Int, val name: String, val balance: String) : TransactionsEvent
     class EnableOrDisableAccountEvent(val account: Account) : TransactionsEvent

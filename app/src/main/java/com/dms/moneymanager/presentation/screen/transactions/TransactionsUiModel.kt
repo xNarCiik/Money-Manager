@@ -17,8 +17,6 @@ enum class TransactionsUiState {
 }
 
 sealed interface TransactionsBottomSheetType : BottomSheetType {
-    object BottomSheetCreateTransaction : TransactionsBottomSheetType
-    class BottomSheetEditTransaction(val transaction: Transaction) : TransactionsBottomSheetType
     class BottomSheetConfirmRemoveTransaction(val transaction: Transaction) :
         TransactionsBottomSheetType
 }

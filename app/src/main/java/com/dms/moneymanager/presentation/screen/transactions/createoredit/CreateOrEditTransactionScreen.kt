@@ -1,8 +1,8 @@
-package com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet
+package com.dms.moneymanager.presentation.screen.transactions.createoredit
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,8 +10,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -28,31 +28,52 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dms.moneymanager.R
 import com.dms.moneymanager.domain.model.main.Account
+import com.dms.moneymanager.domain.model.main.Transaction
 import com.dms.moneymanager.presentation.screen.transactions.TransactionsEvent
+import com.dms.moneymanager.presentation.screen.transactions.TransactionsUiModel
 import com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet.commun.AccountItem
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 
 @Composable
-fun BottomSheetCreateTransaction(
+fun CreateOrEditTransactionScreen(
+    viewState: TransactionsUiModel,
+    onEvent: (TransactionsEvent) -> Unit
+) {
+    Scaffold {
+        CreateOrEditTransactionContent(
+            modifier = Modifier.padding(it),
+            onEvent = onEvent,
+            transaction = viewState.selectedTransaction,
+            accounts = viewState.accounts
+        )
+    }
+}
+
+@Composable
+private fun CreateOrEditTransactionContent(
+    modifier: Modifier = Modifier,
     onEvent: (TransactionsEvent) -> Unit,
+    transaction: Transaction? = null,
     accounts: List<Account>
 ) {
+    // if transaction != null is a edit screen
+    val isCreateScreen = transaction == null
+
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = modifier
+            .fillMaxSize()
             .padding(horizontal = 22.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = stringResource(R.string.add_transaction),
+            text = stringResource(if (isCreateScreen) R.string.add_transaction else R.string.edit_transaction),
             style = MaterialTheme.typography.titleLarge
         )
 
-        var name by remember { mutableStateOf(TextFieldValue(text = "")) }
-        var amount by remember { mutableStateOf(TextFieldValue(text = "")) }
-        var selectAccount by remember { mutableStateOf(value = false) }
-        var selectedAccount by remember { mutableStateOf<Account?>(null) }
+        var name by remember { mutableStateOf(TextFieldValue(text = transaction?.name ?: "")) }
+        var amount by remember { mutableStateOf(TextFieldValue(text = transaction?.amount.toString())) }
+        var selectedAccount by remember { mutableStateOf(transaction?.destinationAccount) }
 
         val onValidateAction = {
             onEvent(
@@ -62,6 +83,16 @@ fun BottomSheetCreateTransaction(
                     destinationAccount = selectedAccount
                 )
             )
+
+            // TODO
+//            onEvent(
+//                TransactionsEvent.EditTransactionEvent(
+//                    id = transaction.id,
+//                    name = name.text,
+//                    amount = amount.text,
+//                    destinationAccount = selectedAccount
+//                )
+//            )
         }
 
         TextField(
@@ -87,43 +118,18 @@ fun BottomSheetCreateTransaction(
 
         Spacer(modifier = Modifier.padding(top = 14.dp))
 
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = "Sélectionner un compte de destination",
-                style = MaterialTheme.typography.labelMedium
-            )
-
-            Spacer(modifier = Modifier.weight(weight = 1f))
-
-            Checkbox(
-                checked = selectAccount,
-                onCheckedChange = { selected ->
-                    if (!selected) {
-                        selectedAccount = null
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            itemsIndexed(accounts) { _, account ->
+                AccountItem(
+                    account = account,
+                    isSelected = selectedAccount == account,
+                    onClick = {
+                        selectedAccount = account
                     }
-                    selectAccount = selected
-                }
-            )
-        }
-
-        if (selectAccount) {
-            Spacer(modifier = Modifier.padding(top = 8.dp))
-
-            Column(modifier = Modifier.fillMaxWidth()) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    itemsIndexed(accounts) { _, account ->
-                        AccountItem(
-                            account = account,
-                            isSelected = selectedAccount == account,
-                            onClick = {
-                                selectedAccount = account
-                            }
-                        )
-                    }
-                }
+                )
             }
         }
 
@@ -131,18 +137,26 @@ fun BottomSheetCreateTransaction(
             modifier = Modifier.padding(vertical = 18.dp),
             onClick = onValidateAction
         ) {
-            Text(text = stringResource(R.string.add_the_transaction))
+            Text(text = stringResource(if (isCreateScreen) R.string.add_the_transaction else R.string.edit_transaction))
         }
     }
 }
 
 @Preview
 @Composable
-private fun BottomSheetCreateTransactionPreview() {
+private fun CreateOrEditTransactionScreenPreview() {
     MoneyManagerTheme {
         val account1 = Account(id = 0, name = "account 1", currentBalance = 50f)
         val account2 = Account(id = 1, name = "account 2", currentBalance = 100f)
 
-        BottomSheetCreateTransaction(onEvent = { }, accounts = listOf(account1, account2))
+        CreateOrEditTransactionScreen(
+            viewState = TransactionsUiModel(
+                accounts = listOf(
+                    account1,
+                    account2
+                )
+            ),
+            onEvent = { },
+        )
     }
 }

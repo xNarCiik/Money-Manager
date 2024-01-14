@@ -1,8 +1,6 @@
 package com.dms.moneymanager.presentation.screen.transactions.component.transactionslist
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -10,8 +8,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -21,7 +17,7 @@ import com.dms.moneymanager.domain.model.main.Transaction
 import com.dms.moneymanager.presentation.BaseEvent
 import com.dms.moneymanager.presentation.screen.transactions.TransactionsBottomSheetType
 import com.dms.moneymanager.presentation.screen.transactions.TransactionsEvent
-import timber.log.Timber
+import com.dms.moneymanager.presentation.util.NavigationRoute
 
 @Composable
 fun TransactionsList(
@@ -56,10 +52,8 @@ fun TransactionsList(
                     },
                     editAction = {
                         onEvent(
-                            BaseEvent.OpenBottomSheet(
-                                bottomSheetType = TransactionsBottomSheetType.BottomSheetEditTransaction(
-                                    transaction = transaction
-                                )
+                            BaseEvent.NavigateToScreen(
+                                route = NavigationRoute.CREATE_OR_EDIT_TRANSACTION.route + "/transaction" // TODO parameter
                             )
                         )
                     },
@@ -82,8 +76,7 @@ fun TransactionsList(
                 Text(
                     text = stringResource(id = R.string.empty_transaction),
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onEvent(BaseEvent.OpenBottomSheet(TransactionsBottomSheetType.BottomSheetCreateTransaction)) },
+                        .fillMaxWidth(),
                     textAlign = TextAlign.Center
                 )
             }
