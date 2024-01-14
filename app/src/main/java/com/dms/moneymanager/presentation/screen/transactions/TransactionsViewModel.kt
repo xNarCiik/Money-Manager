@@ -54,8 +54,6 @@ class TransactionsViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     private var _transactionsUiState = MutableStateFlow(value = TransactionsUiState.NORMAL)
-    private var _currentBalance = MutableStateFlow(value = 0.0f)
-    private val _futureBalance = MutableStateFlow(value = 0.0f)
     private var _listAccount = MutableStateFlow<List<Account>>(value = emptyList())
     private var _listTransaction = MutableStateFlow<List<Transaction>>(value = emptyList())
     private var _selectedAccount = MutableStateFlow<Account?>(value = null)
@@ -64,25 +62,19 @@ class TransactionsViewModel @Inject constructor(
     @Suppress("UNCHECKED_CAST")
     val viewState = combine(
         _transactionsUiState,
-        _currentBalance,
-        _futureBalance,
         _listAccount,
         _listTransaction,
         _selectedAccount,
         _selectedTransaction,
     ) { params ->
         val transactionsUiState = params[0] as TransactionsUiState
-        val currentBalance = params[1] as Float
-        val futureBalance = params[2] as Float
-        val listAccount = params[3] as List<Account>
-        val listTransaction = params[4] as List<Transaction>
-        val selectedAccount = params[5] as Account?
-        val selectedTransaction = params[6] as Transaction?
+        val listAccount = params[1] as List<Account>
+        val listTransaction = params[2] as List<Transaction>
+        val selectedAccount = params[3] as Account?
+        val selectedTransaction = params[4] as Transaction?
 
         TransactionsUiModel(
             transactionsUiState = transactionsUiState,
-            currentBalance = currentBalance,
-            futureBalance = futureBalance,
             accounts = listAccount,
             transactions = listTransaction,
             selectedAccount = selectedAccount,
@@ -344,13 +336,7 @@ class TransactionsViewModel @Inject constructor(
     private fun refreshData() {
         viewModelScope.launch {
             _listTransaction.value = transactionUseCase.getNotAppliedTransactions()
-            val accounts = accountUseCase.getAccounts()
-            _currentBalance.value = accountUseCase.getCurrentBalance(accounts = accounts)
-            _futureBalance.value = accountUseCase.getFutureBalance(
-                accounts = accounts,
-                transactions = _listTransaction.value
-            )
-            _listAccount.value = accounts
+            _listAccount.value = accountUseCase.getAccounts()
         }
     }
 }

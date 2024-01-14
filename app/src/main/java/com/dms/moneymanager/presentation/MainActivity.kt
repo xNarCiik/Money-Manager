@@ -68,8 +68,7 @@ class MainActivity : ComponentActivity() {
                                     viewState = viewState.value,
                                     onEvent = transactionsViewModel::onEvent,
                                     currentBottomSheet = currentBottomSheet.value,
-                                    toastMessage = toastMessage.value,
-                                    navController = navController
+                                    toastMessage = toastMessage.value
                                 )
                             }
 
@@ -83,7 +82,7 @@ class MainActivity : ComponentActivity() {
                                 AccountsScreen(
                                     viewState = viewState.value,
                                     onEvent = accountsViewModel::onEvent,
-                                    navController = navController
+                                    currentBottomSheet = currentBottomSheet.value
                                 )
                             }
 

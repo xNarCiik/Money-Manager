@@ -1,10 +1,11 @@
-package com.dms.moneymanager.presentation.screen.accounts.component
+package com.dms.moneymanager.presentation.screen.transactions.component.transactionslist
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -14,17 +15,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.dms.moneymanager.R
-import com.dms.moneymanager.domain.model.main.Account
+import com.dms.moneymanager.domain.model.main.Transaction
 import com.dms.moneymanager.presentation.BaseEvent
 import com.dms.moneymanager.presentation.screen.transactions.TransactionsEvent
-import com.dms.moneymanager.presentation.screen.transactions.component.mainlist.AccountItem
 import com.dms.moneymanager.presentation.screen.transactions.TransactionsBottomSheetType
-import com.dms.moneymanager.presentation.util.gridItems
 
 @Composable
-fun AccountsList(
+fun TransactionsList(
     modifier: Modifier = Modifier,
-    listAccount: List<Account>,
+    listTransaction: List<Transaction>,
     onEvent: (BaseEvent) -> Unit
 ) {
     LazyColumn(
@@ -34,41 +33,34 @@ fun AccountsList(
         item {
             TitleListText(
                 modifier = Modifier.padding(bottom = 8.dp),
-                stringId = R.string.my_accounts
+                stringId = R.string.incoming_transactions
             )
         }
 
-        if (listAccount.isNotEmpty()) {
-            gridItems(data = listAccount, columnCount = 2) { account ->
-                AccountItem(
-                    account = account,
-                    appliedTransaction = { onEvent(TransactionsEvent.AppliedTransaction(toAccount = account)) },
-                    transferAction = {
-                        onEvent(
-                            BaseEvent.OpenBottomSheet(
-                                bottomSheetType = TransactionsBottomSheetType.BottomSheetTransfer(
-                                    account = account
-                                )
-                            )
-                        )
+        if (listTransaction.isNotEmpty()) {
+            itemsIndexed(listTransaction) { _, transaction ->
+                TransactionItem(
+                    transaction = transaction,
+                    appliedAction = {
+                        onEvent(TransactionsEvent.OnClickAppliedTransaction(transaction = transaction))
                     },
                     editAction = {
                         onEvent(
                             BaseEvent.OpenBottomSheet(
-                                TransactionsBottomSheetType.BottomSheetEditAccount(
-                                    account = account
+                                bottomSheetType = TransactionsBottomSheetType.BottomSheetEditTransaction(
+                                    transaction = transaction
                                 )
                             )
                         )
                     },
                     enableOrDisableAction = {
-                        onEvent(TransactionsEvent.EnableOrDisableAccountEvent(account = account))
+                        onEvent(TransactionsEvent.EnableOrDisableTransactionEvent(transaction = transaction))
                     },
                     removeAction = {
                         onEvent(
                             BaseEvent.OpenBottomSheet(
-                                bottomSheetType = TransactionsBottomSheetType.BottomSheetConfirmRemoveAccount(
-                                    account = account
+                                bottomSheetType = TransactionsBottomSheetType.BottomSheetConfirmRemoveTransaction(
+                                    transaction = transaction
                                 )
                             )
                         )
@@ -78,15 +70,14 @@ fun AccountsList(
         } else {
             item {
                 EmptyText(
-                    stringId = R.string.empty_account,
-                    onClick = { onEvent(BaseEvent.OpenBottomSheet(TransactionsBottomSheetType.BottomSheetCreateAccount)) }
+                    stringId = R.string.empty_transaction,
+                    onClick = { onEvent(BaseEvent.OpenBottomSheet(TransactionsBottomSheetType.BottomSheetCreateTransaction)) }
                 )
             }
         }
     }
 }
 
-// TODO MOVE TO COMMON
 @Composable
 private fun TitleListText(
     modifier: Modifier = Modifier,
