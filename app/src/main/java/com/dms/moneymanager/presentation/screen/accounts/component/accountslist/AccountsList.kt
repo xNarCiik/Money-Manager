@@ -1,10 +1,10 @@
 package com.dms.moneymanager.presentation.screen.accounts.component.accountslist
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,7 +18,6 @@ import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.presentation.BaseEvent
 import com.dms.moneymanager.presentation.screen.accounts.AccountsBottomSheetType
 import com.dms.moneymanager.presentation.screen.transactions.TransactionsEvent
-import com.dms.moneymanager.presentation.util.gridItems
 
 @Composable
 fun AccountsList(
@@ -31,15 +30,19 @@ fun AccountsList(
             .fillMaxWidth()
     ) {
         item {
-            TitleListText(
-                modifier = Modifier.padding(bottom = 8.dp),
-                stringId = R.string.my_accounts
+            Text(
+                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                text = stringResource(id = R.string.my_accounts),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
             )
         }
 
         if (listAccount.isNotEmpty()) {
-            gridItems(data = listAccount, columnCount = 2) { account ->
+            itemsIndexed(listAccount) { _, account ->
                 AccountItem(
+                    modifier = Modifier.padding(bottom = 1.dp),
                     account = account,
                     appliedTransaction = { onEvent(TransactionsEvent.AppliedTransaction(toAccount = account)) },
                     transferAction = {
@@ -76,40 +79,14 @@ fun AccountsList(
             }
         } else {
             item {
-                EmptyText(
-                    stringId = R.string.empty_account,
-                    onClick = { onEvent(BaseEvent.OpenBottomSheet(AccountsBottomSheetType.BottomSheetCreateAccount)) }
+                Text(
+                    text = stringResource(id = R.string.empty_account),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onEvent(BaseEvent.OpenBottomSheet(AccountsBottomSheetType.BottomSheetCreateAccount)) },
+                    textAlign = TextAlign.Center
                 )
             }
         }
     }
-}
-
-// TODO MOVE TO COMMON
-@Composable
-private fun TitleListText(
-    modifier: Modifier = Modifier,
-    @StringRes stringId: Int
-) {
-    Text(
-        modifier = modifier.fillMaxWidth(),
-        text = stringResource(id = stringId),
-        style = MaterialTheme.typography.titleLarge,
-        fontWeight = FontWeight.Bold,
-        textAlign = TextAlign.Center
-    )
-}
-
-@Composable
-private fun EmptyText(
-    modifier: Modifier = Modifier,
-    @StringRes stringId: Int, onClick: () -> Unit
-) {
-    Text(
-        text = stringResource(id = stringId),
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable { onClick() },
-        textAlign = TextAlign.Center
-    )
 }

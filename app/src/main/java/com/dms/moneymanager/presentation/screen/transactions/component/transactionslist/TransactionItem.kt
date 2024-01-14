@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -21,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.dms.moneymanager.R
 import com.dms.moneymanager.domain.model.main.Transaction
@@ -29,6 +31,7 @@ import com.dms.moneymanager.presentation.util.toAmountString
 
 @Composable
 fun TransactionItem(
+    modifier: Modifier = Modifier,
     transaction: Transaction,
     appliedAction: () -> Unit,
     editAction: () -> Unit,
@@ -39,8 +42,8 @@ fun TransactionItem(
     val isEnable = transaction.isEnable
 
     Box(
-        modifier = Modifier
-            .padding(bottom = 1.dp)
+        modifier = modifier
+            .fillMaxWidth()
             .clickable {
                 expandedDropDownMenu = true
             }
@@ -48,7 +51,6 @@ fun TransactionItem(
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
                 .padding(all = 8.dp)
         ) {
             Text(
@@ -57,24 +59,24 @@ fun TransactionItem(
                 fontWeight = FontWeight.Bold
             )
 
-            transaction.destinationAccount?.let { destinationAccount ->
-                Text(
-                    text = destinationAccount.name, // TODO FIND ACCOUNT NAME BY ID
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
+            Text(
+                text = transaction.destinationAccount?.name ?: "", // TODO FIND ACCOUNT NAME BY ID
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onBackground
+            )
         }
 
         Text(
-            modifier = Modifier.align(Alignment.CenterEnd),
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .padding(end = 8.dp),
             text = transaction.amount.toAmountString(),
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Bold,
             color = transaction.amount.getTextColor()
         )
 
-        /* // TODO AFFICHER DATA
+        /* // TODO AFFICHER DATE
         transaction.dueDate?.let { dueDate ->
             Text(
                 modifier = Modifier

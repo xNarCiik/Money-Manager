@@ -1,17 +1,14 @@
 package com.dms.moneymanager.presentation.screen.accounts.component.accountslist
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults.cardColors
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,25 +40,20 @@ fun AccountItem(
     var expandedDropDownMenu by remember { mutableStateOf(false) }
     val isEnable = account.isEnable
 
-    Card(
+    Box(
         modifier = modifier
-            .padding(all = 4.dp),
-        shape = RoundedCornerShape(size = 8.dp),
-        border = BorderStroke(width = 1.dp, color = Color.Black),
-        colors = cardColors(
-            containerColor = if (isEnable) MaterialTheme.colorScheme.surfaceVariant else Color.Gray
-        ),
-        onClick = {
-            expandedDropDownMenu = true
-            // TODO
-            // when (transactionsUiState) {
-            //     TransactionsUiState.APPLIED_TRANSACTION -> {
-            //         appliedTransaction()
-            //     }
-            //
-            //     else -> expandedDropDownMenu = true
-            // }
-        }
+            .clickable {
+                expandedDropDownMenu = true
+                // TODO
+                // when (transactionsUiState) {
+                //     TransactionsUiState.APPLIED_TRANSACTION -> {
+                //         appliedTransaction()
+                //     }
+                //
+                //     else -> expandedDropDownMenu = true
+                // }
+            }
+            .background(color = if (isEnable) MaterialTheme.colorScheme.surfaceVariant else Color.Gray)
     ) {
         Column(
             modifier = Modifier
@@ -74,38 +66,33 @@ fun AccountItem(
                 fontWeight = FontWeight.Bold
             )
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = account.currentBalance.toAmountString(),
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = account.currentBalance.getTextColor()
-                )
-
-                Text(
-                    text = "(${account.futureBalance.toAmountString()})",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = account.futureBalance.getTextColor()
-                )
-            }
-
-            DropDownMenuAccount(
-                expanded = expandedDropDownMenu,
-                closeDropDownMenuAction = { expandedDropDownMenu = false },
-                transferAction = transferAction,
-                editAction = editAction,
-                isEnable = isEnable,
-                enableOrDisableAction = enableOrDisableAction,
-                removeAction = removeAction
+            Text(
+                text = account.currentBalance.toAmountString(),
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold,
+                color = account.currentBalance.getTextColor()
             )
         }
 
+        Text(
+            modifier = Modifier
+                .align(alignment = Alignment.CenterEnd)
+                .padding(end = 8.dp),
+            text = account.futureBalance.toAmountString(),
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Bold,
+            color = account.futureBalance.getTextColor()
+        )
+
+        DropDownMenuAccount(
+            expanded = expandedDropDownMenu,
+            closeDropDownMenuAction = { expandedDropDownMenu = false },
+            transferAction = transferAction,
+            editAction = editAction,
+            isEnable = isEnable,
+            enableOrDisableAction = enableOrDisableAction,
+            removeAction = removeAction
+        )
     }
 }
 

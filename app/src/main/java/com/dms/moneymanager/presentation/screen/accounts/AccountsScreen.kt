@@ -104,7 +104,7 @@ private fun AccountsContent(
     viewState: AccountsUiModel,
     onEvent: (BaseEvent) -> Unit
 ) {
-    Column(modifier = modifier.padding(horizontal = 12.dp)) {
+    Column(modifier = modifier) {
         var isExpended by remember { mutableStateOf(true) }
         InfoBalance(
             modifier = Modifier.padding(all = 12.dp),
