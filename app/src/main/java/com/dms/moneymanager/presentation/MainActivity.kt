@@ -11,6 +11,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.LaunchedEffect
@@ -21,20 +23,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.dms.moneymanager.presentation.screen.transactions.TransactionsViewModel
-import com.dms.moneymanager.presentation.screen.history.HistoryViewModel
-import com.dms.moneymanager.presentation.screen.history.HistoryScreen
-import com.dms.moneymanager.presentation.screen.settings.SettingsScreen
-import com.dms.moneymanager.presentation.screen.settings.SettingsViewModel
+import androidx.navigation.navArgument
 import com.dms.moneymanager.presentation.screen.accounts.AccountsScreen
 import com.dms.moneymanager.presentation.screen.accounts.AccountsViewModel
 import com.dms.moneymanager.presentation.screen.commun.BottomBar
 import com.dms.moneymanager.presentation.screen.commun.MenuRoute
+import com.dms.moneymanager.presentation.screen.history.HistoryScreen
+import com.dms.moneymanager.presentation.screen.history.HistoryViewModel
+import com.dms.moneymanager.presentation.screen.settings.SettingsScreen
+import com.dms.moneymanager.presentation.screen.settings.SettingsViewModel
 import com.dms.moneymanager.presentation.screen.transactions.TransactionsBottomSheetType
 import com.dms.moneymanager.presentation.screen.transactions.TransactionsScreen
+import com.dms.moneymanager.presentation.screen.transactions.TransactionsViewModel
 import com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet.BottomSheetConfirmRemoveTransaction
 import com.dms.moneymanager.presentation.screen.transactions.createoredit.CreateOrEditTransactionScreen
 import com.dms.moneymanager.presentation.util.NavigationRoute
@@ -50,23 +54,31 @@ class MainActivity : ComponentActivity() {
         setContent {
             MoneyManagerTheme {
                 val navController = rememberNavController()
+                val snackbarHostState = remember { SnackbarHostState() }
 
+                // Base view model observe
                 var currentViewModel: BaseViewModel? by remember { mutableStateOf(null) }
-                val currentRoute = currentViewModel?.currentRoute?.collectAsState()
+                val eventNavigation = currentViewModel?.eventNavigation?.collectAsState()
                 val currentBottomSheet =
                     currentViewModel?.currentBottomSheet?.collectAsState()
                 val toastMessage =
                     currentViewModel?.toastMessage?.collectAsState()
 
-                LaunchedEffect(key1 = currentRoute?.value) {
-                    currentRoute?.value?.let { route ->
-                        navController.navigate(route = route)
+                // Navigation handle
+                LaunchedEffect(key1 = eventNavigation?.value) {
+                    eventNavigation?.value?.let { event ->
+                        when (event) {
+                            is NavigationEvent.GoBack -> navController.popBackStack()
+                            is NavigationEvent.NavigateTo -> navController.navigate(route = event.route)
+                        }
+
                         // After navigate : reset currentRoute to avoid multiple navigation
                         currentViewModel?.onEvent(BaseEvent.ResetNavigateScreen)
                     }
                 }
 
                 Scaffold(
+                    snackbarHost = { SnackbarHost(snackbarHostState) },
                     bottomBar = {
                         BottomBar(
                             defaultSelectedItem = MenuRoute.TRANSACTIONS,
@@ -106,7 +118,7 @@ class MainActivity : ComponentActivity() {
                             navController = navController,
                             startDestination = NavigationRoute.TRANSACTIONS.route
                         ) {
-                            composable(NavigationRoute.TRANSACTIONS.route) {
+                            composable(route = NavigationRoute.TRANSACTIONS.route) {
                                 val transactionsViewModel: TransactionsViewModel by viewModels()
                                 currentViewModel = transactionsViewModel
                                 val viewState = transactionsViewModel.viewState.collectAsState()
@@ -117,18 +129,29 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
 
-                            composable(NavigationRoute.CREATE_OR_EDIT_TRANSACTION.route) {
+                            composable(
+                                route = NavigationRoute.CREATE_OR_EDIT_TRANSACTION.route + "?transactionId={transactionId}",
+                                arguments = listOf(
+                                    navArgument("transactionId") {
+                                        type = NavType.IntType
+                                        defaultValue = -1
+                                    }
+                                )
+                            ) { backStackEntry ->
                                 val transactionsViewModel: TransactionsViewModel by viewModels()
                                 currentViewModel = transactionsViewModel
                                 val viewState = transactionsViewModel.viewState.collectAsState()
+                                val transactionId =
+                                    backStackEntry.arguments?.getInt("transactionId")
 
                                 CreateOrEditTransactionScreen(
                                     viewState = viewState.value,
+                                    transaction = transactionsViewModel.getTransactionById(id = transactionId),
                                     onEvent = transactionsViewModel::onEvent
                                 )
                             }
 
-                            composable(NavigationRoute.ACCOUNTS.route) {
+                            composable(route = NavigationRoute.ACCOUNTS.route) {
                                 val accountsViewModel: AccountsViewModel by viewModels()
                                 currentViewModel = accountsViewModel
                                 val viewState = accountsViewModel.viewState.collectAsState()
@@ -139,7 +162,7 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
 
-                            composable(NavigationRoute.SETTINGS.route) {
+                            composable(route = NavigationRoute.SETTINGS.route) {
                                 val settingsViewModel: SettingsViewModel by viewModels()
                                 currentViewModel = settingsViewModel
 
@@ -148,7 +171,7 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
 
-                            composable(NavigationRoute.HISTORY.route) {
+                            composable(route = NavigationRoute.HISTORY.route) {
                                 val historyViewModel: HistoryViewModel by viewModels()
                                 val viewState = historyViewModel.viewState.collectAsState()
                                 HistoryScreen(viewState = viewState.value)
@@ -156,6 +179,28 @@ class MainActivity : ComponentActivity() {
                         }
                     }
 
+                    // TODO handle differently
+//                    when (viewState.transactionsUiState) {
+//                        TransactionsUiState.APPLIED_TRANSACTION -> {
+//                            LaunchedEffect(key1 = "snackbar_key", block = {
+//                                coroutineScope.launch {
+//                                    val snackbarResult = snackbarHostState.showSnackbar(
+//                                        message = "Cliquez sur le compte vers lequel appliquer la transaction ${viewState.selectedTransaction?.name}.",
+//                                        actionLabel = "Annuler",
+//                                        duration = SnackbarDuration.Indefinite
+//                                    )
+//                                    when (snackbarResult) {
+//                                        SnackbarResult.ActionPerformed -> onEvent(BaseEvent.ActionPerformedSnackbar)
+//                                        SnackbarResult.Dismissed -> {}
+//                                    }
+//                                }
+//                            })
+//                        }
+//
+//                        else -> {
+//                            snackbarHostState.currentSnackbarData?.dismiss()
+//                        }
+//                    }
 
                     toastMessage?.value?.let { error ->
                         Toast.makeText(LocalContext.current, error, Toast.LENGTH_SHORT).show()

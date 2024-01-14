@@ -37,13 +37,14 @@ import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 @Composable
 fun CreateOrEditTransactionScreen(
     viewState: TransactionsUiModel,
+    transaction: Transaction? = null,
     onEvent: (TransactionsEvent) -> Unit
 ) {
     Scaffold {
         CreateOrEditTransactionContent(
             modifier = Modifier.padding(it),
             onEvent = onEvent,
-            transaction = viewState.selectedTransaction,
+            transaction = transaction,
             accounts = viewState.accounts
         )
     }
@@ -72,27 +73,37 @@ private fun CreateOrEditTransactionContent(
         )
 
         var name by remember { mutableStateOf(TextFieldValue(text = transaction?.name ?: "")) }
-        var amount by remember { mutableStateOf(TextFieldValue(text = transaction?.amount.toString())) }
-        var selectedAccount by remember { mutableStateOf(transaction?.destinationAccount) }
-
-        val onValidateAction = {
-            onEvent(
-                TransactionsEvent.AddTransactionEvent(
-                    name = name.text,
-                    amount = amount.text,
-                    destinationAccount = selectedAccount
+        var amount by remember {
+            mutableStateOf(
+                TextFieldValue(
+                    text = transaction?.amount?.toString() ?: ""
                 )
             )
+        }
+        var selectedAccount by remember { mutableStateOf(transaction?.destinationAccount) }
 
-            // TODO
-//            onEvent(
-//                TransactionsEvent.EditTransactionEvent(
-//                    id = transaction.id,
-//                    name = name.text,
-//                    amount = amount.text,
-//                    destinationAccount = selectedAccount
-//                )
-//            )
+        val onValidateAction: () -> Unit = {
+            // TODO unifier Add & edit
+            if (isCreateScreen) {
+                onEvent(
+                    TransactionsEvent.AddTransactionEvent(
+                        name = name.text,
+                        amount = amount.text,
+                        destinationAccount = selectedAccount
+                    )
+                )
+            } else {
+                transaction?.id?.let { id ->
+                    onEvent(
+                        TransactionsEvent.EditTransactionEvent(
+                            id = id,
+                            name = name.text,
+                            amount = amount.text,
+                            destinationAccount = selectedAccount
+                        )
+                    )
+                }
+            }
         }
 
         TextField(

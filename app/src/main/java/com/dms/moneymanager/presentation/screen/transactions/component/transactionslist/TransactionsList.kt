@@ -53,7 +53,7 @@ fun TransactionsList(
                     editAction = {
                         onEvent(
                             BaseEvent.NavigateToScreen(
-                                route = NavigationRoute.CREATE_OR_EDIT_TRANSACTION.route + "/transaction" // TODO parameter
+                                route = NavigationRoute.CREATE_OR_EDIT_TRANSACTION.route + "?transactionId=${transaction.id}"
                             )
                         )
                     },

@@ -1,5 +1,6 @@
 package com.dms.moneymanager.presentation.screen.settings
 
+import androidx.activity.compose.BackHandler
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,6 +35,8 @@ import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 fun SettingsScreen(
     onEvent: (BaseEvent) -> Unit
 ) {
+    BackHandler { } // Do nothing
+
     SettingsContent(
         onEvent = onEvent
     )

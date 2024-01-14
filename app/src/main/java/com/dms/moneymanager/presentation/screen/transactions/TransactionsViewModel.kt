@@ -9,6 +9,7 @@ import com.dms.moneymanager.domain.usecase.AccountUseCase
 import com.dms.moneymanager.domain.usecase.TransactionUseCase
 import com.dms.moneymanager.presentation.BaseEvent
 import com.dms.moneymanager.presentation.BaseViewModel
+import com.dms.moneymanager.presentation.util.NavigationRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -144,15 +145,17 @@ class TransactionsViewModel @Inject constructor(
             }
 
             is TransactionsEvent.OnClickAppliedTransaction -> {
+                // TODO Handle differently
                 _transactionsUiState.value = TransactionsUiState.APPLIED_TRANSACTION
                 _selectedTransaction.value = event.transaction
             }
 
             is TransactionsEvent.AppliedTransaction -> {
+                // TODO Handle differently
                 _selectedTransaction.value?.let {
                     appliedTransaction(account = event.toAccount, transaction = it)
                 }
-                onEvent(BaseEvent.ActionPerformedSnackbar)
+                onEvent(event = BaseEvent.ActionPerformedSnackbar)
             }
 
             is TransactionsEvent.RemoveTransactionEvent -> {
@@ -172,6 +175,9 @@ class TransactionsViewModel @Inject constructor(
             }
         }
     }
+
+    fun getTransactionById(id: Int?) =
+        _listTransaction.value.find { it.id == id }
 
     private fun createAccount(name: String, balance: String) {
         viewModelScope.launch {
@@ -273,7 +279,7 @@ class TransactionsViewModel @Inject constructor(
             )
             kotlin.runCatching { transactionUseCase.createTransaction(transaction = transaction) }
                 .onSuccess {
-                    onEvent(BaseEvent.CloseBottomSheet)
+                    onEvent(BaseEvent.GoBack)
                     refreshData()
                 }
                 .onFailure { _toastMessage.value = R.string.error_failed_add_transaction }
@@ -306,7 +312,7 @@ class TransactionsViewModel @Inject constructor(
                 )
             }
                 .onSuccess {
-                    onEvent(BaseEvent.CloseBottomSheet)
+                    onEvent(BaseEvent.GoBack)
                     refreshData()
                 }
                 .onFailure { _toastMessage.value = R.string.error_failed_add_account }

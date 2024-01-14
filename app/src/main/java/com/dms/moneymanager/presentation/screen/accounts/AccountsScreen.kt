@@ -1,5 +1,6 @@
 package com.dms.moneymanager.presentation.screen.accounts
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
@@ -40,6 +41,8 @@ fun AccountsScreen(
     onEvent: (BaseEvent) -> Unit,
     currentBottomSheet: BottomSheetType? = null
 ) {
+    BackHandler { } // Do nothing
+
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     // Sheet content
