@@ -1,4 +1,4 @@
-package com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet
+package com.dms.moneymanager.presentation.screen.accounts.createoredit
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -7,6 +7,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -23,37 +24,73 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dms.moneymanager.R
 import com.dms.moneymanager.domain.model.main.Account
-import com.dms.moneymanager.presentation.screen.transactions.TransactionsEvent
+import com.dms.moneymanager.presentation.screen.accounts.AccountsEvent
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 
 @Composable
-fun BottomSheetEditAccount(
-    account: Account,
-    onEvent: (TransactionsEvent) -> Unit
+fun CreateOrEditAccountScreen(
+    account: Account? = null,
+    onEvent: (AccountsEvent) -> Unit
 ) {
+    Scaffold {
+        CreateOrEditAccountContent(
+            modifier = Modifier.padding(it),
+            onEvent = onEvent,
+            account = account
+        )
+    }
+}
+
+@Composable
+private fun CreateOrEditAccountContent(
+    modifier: Modifier = Modifier,
+    onEvent: (AccountsEvent) -> Unit,
+    account: Account? = null
+) {
+    // if transaction != null is a edit screen
+    val isCreateScreen = account == null
+
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 22.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = stringResource(R.string.edit_account),
+            text = stringResource(if (isCreateScreen) R.string.add_account else R.string.edit_account),
             style = MaterialTheme.typography.titleLarge
         )
 
-        var name by remember { mutableStateOf(TextFieldValue(account.name)) }
-        var balance by remember { mutableStateOf(TextFieldValue(account.currentBalance.toString())) }
-
-        val onValidateAction = {
-            onEvent(
-                TransactionsEvent.EditAccountEvent(
-                    id = account.id,
-                    name = name.text,
-                    balance = balance.text
+        var name by remember { mutableStateOf(TextFieldValue(account?.name ?: "")) }
+        var balance by remember {
+            mutableStateOf(
+                TextFieldValue(
+                    account?.currentBalance?.toString() ?: ""
                 )
             )
+        }
+
+        val onValidateAction: () -> Unit = {
+            // TODO unifier Add & edit
+            if (isCreateScreen) {
+                onEvent(
+                    AccountsEvent.AddAccountEvent(
+                        name = name.text,
+                        balance = balance.text
+                    )
+                )
+            } else {
+                account?.id?.let { id ->
+                    onEvent(
+                        AccountsEvent.EditAccountEvent(
+                            id = account.id,
+                            name = name.text,
+                            balance = balance.text
+                        )
+                    )
+                }
+            }
         }
 
         TextField(
@@ -81,18 +118,17 @@ fun BottomSheetEditAccount(
             modifier = Modifier.padding(vertical = 18.dp),
             onClick = onValidateAction
         ) {
-            Text(text = stringResource(R.string.edit_account))
+            Text(text = stringResource(if (isCreateScreen) R.string.add_the_account else R.string.edit_account))
         }
     }
 }
 
 @Preview
 @Composable
-private fun BottomSheetEditAccountPreview() {
+private fun CreateOrEditAccountScreenPreview() {
     MoneyManagerTheme {
-        BottomSheetEditAccount(
-            account = Account(id = 0, name = "name", currentBalance = 100f),
-            onEvent = { }
+        CreateOrEditAccountScreen(
+            onEvent = { },
         )
     }
 }

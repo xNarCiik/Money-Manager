@@ -6,13 +6,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -25,61 +22,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.presentation.BaseEvent
-import com.dms.moneymanager.presentation.BottomSheetType
 import com.dms.moneymanager.presentation.screen.accounts.component.accountslist.AccountsList
 import com.dms.moneymanager.presentation.screen.transactions.component.InfoBalance
-import com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet.BottomSheetConfirmRemoveAccount
-import com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet.BottomSheetCreateAccount
-import com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet.BottomSheetEditAccount
-import com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet.BottomSheetTransfer
+import com.dms.moneymanager.presentation.util.NavigationRoute
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountsScreen(
     viewState: AccountsUiModel,
-    onEvent: (BaseEvent) -> Unit,
-    currentBottomSheet: BottomSheetType? = null
+    onEvent: (BaseEvent) -> Unit
 ) {
     BackHandler { } // Do nothing
-
-    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
-    // Sheet content
-    if (currentBottomSheet != null) {
-        ModalBottomSheet(
-            onDismissRequest = { onEvent(BaseEvent.CloseBottomSheet) },
-            sheetState = bottomSheetState
-        ) {
-            when (currentBottomSheet) {
-                is AccountsBottomSheetType.BottomSheetCreateAccount -> {
-                    BottomSheetCreateAccount(onEvent = onEvent)
-                }
-
-                is AccountsBottomSheetType.BottomSheetEditAccount -> {
-                    BottomSheetEditAccount(
-                        account = currentBottomSheet.account,
-                        onEvent = onEvent
-                    )
-                }
-
-                is AccountsBottomSheetType.BottomSheetTransfer -> {
-                    BottomSheetTransfer(
-                        listAccount = viewState.accounts,
-                        account = currentBottomSheet.account,
-                        onEvent = onEvent
-                    )
-                }
-
-                is AccountsBottomSheetType.BottomSheetConfirmRemoveAccount -> {
-                    BottomSheetConfirmRemoveAccount(
-                        account = currentBottomSheet.account,
-                        onEvent = onEvent
-                    )
-                }
-            }
-        }
-    }
 
     LaunchedEffect(key1 = true, block = {
         onEvent(AccountsEvent.RefreshData)
@@ -88,7 +41,7 @@ fun AccountsScreen(
     Scaffold(
         floatingActionButton = {
             AddFloatingButton(
-                onClick = { onEvent(BaseEvent.OpenBottomSheet(bottomSheetType = AccountsBottomSheetType.BottomSheetCreateAccount)) }
+                onClick = { onEvent(BaseEvent.NavigateToScreen(route = NavigationRoute.CREATE_OR_EDIT_ACCOUNT.route)) }
             )
         },
         floatingActionButtonPosition = FabPosition.End

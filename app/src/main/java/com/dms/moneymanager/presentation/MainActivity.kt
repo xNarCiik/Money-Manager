@@ -28,8 +28,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.dms.moneymanager.presentation.screen.accounts.AccountsBottomSheetType
 import com.dms.moneymanager.presentation.screen.accounts.AccountsScreen
 import com.dms.moneymanager.presentation.screen.accounts.AccountsViewModel
+import com.dms.moneymanager.presentation.screen.accounts.createoredit.CreateOrEditAccountScreen
 import com.dms.moneymanager.presentation.screen.commun.BottomBar
 import com.dms.moneymanager.presentation.screen.commun.MenuRoute
 import com.dms.moneymanager.presentation.screen.history.HistoryScreen
@@ -39,7 +41,9 @@ import com.dms.moneymanager.presentation.screen.settings.SettingsViewModel
 import com.dms.moneymanager.presentation.screen.transactions.TransactionsBottomSheetType
 import com.dms.moneymanager.presentation.screen.transactions.TransactionsScreen
 import com.dms.moneymanager.presentation.screen.transactions.TransactionsViewModel
+import com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet.BottomSheetConfirmRemoveAccount
 import com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet.BottomSheetConfirmRemoveTransaction
+import com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet.BottomSheetTransfer
 import com.dms.moneymanager.presentation.screen.transactions.createoredit.CreateOrEditTransactionScreen
 import com.dms.moneymanager.presentation.util.NavigationRoute
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
@@ -109,6 +113,22 @@ class MainActivity : ComponentActivity() {
                                         )
                                     }
 
+                                    // TODO
+//                                    is AccountsBottomSheetType.BottomSheetTransfer -> {
+//                                        BottomSheetTransfer(
+//                                            listAccount = viewState.accounts,
+//                                            account = bottomSheet.account,
+//                                            onEvent = { event -> currentViewModel?.onEvent(event) }
+//                                        )
+//                                    }
+
+                                    is AccountsBottomSheetType.BottomSheetConfirmRemoveAccount -> {
+                                        BottomSheetConfirmRemoveAccount(
+                                            account = bottomSheet.account,
+                                            onEvent = { event -> currentViewModel?.onEvent(event) }
+                                        )
+                                    }
+
                                     else -> {}
                                 }
                             }
@@ -158,6 +178,26 @@ class MainActivity : ComponentActivity() {
 
                                 AccountsScreen(
                                     viewState = viewState.value,
+                                    onEvent = accountsViewModel::onEvent
+                                )
+                            }
+
+                            composable(
+                                route = NavigationRoute.CREATE_OR_EDIT_ACCOUNT.route + "?accountId={accountId}",
+                                arguments = listOf(
+                                    navArgument("accountId") {
+                                        type = NavType.IntType
+                                        defaultValue = -1
+                                    }
+                                )
+                            ) { backStackEntry ->
+                                val accountsViewModel: AccountsViewModel by viewModels()
+                                currentViewModel = accountsViewModel
+                                val accountId =
+                                    backStackEntry.arguments?.getInt("accountId")
+
+                                CreateOrEditAccountScreen(
+                                    account = accountsViewModel.getAccountById(id = accountId),
                                     onEvent = accountsViewModel::onEvent
                                 )
                             }

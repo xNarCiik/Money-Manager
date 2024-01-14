@@ -1,6 +1,5 @@
 package com.dms.moneymanager.presentation.screen.transactions
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dms.moneymanager.R
 import com.dms.moneymanager.domain.model.main.Account
@@ -9,7 +8,6 @@ import com.dms.moneymanager.domain.usecase.AccountUseCase
 import com.dms.moneymanager.domain.usecase.TransactionUseCase
 import com.dms.moneymanager.presentation.BaseEvent
 import com.dms.moneymanager.presentation.BaseViewModel
-import com.dms.moneymanager.presentation.util.NavigationRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -20,16 +18,6 @@ import javax.inject.Inject
 
 sealed interface TransactionsEvent : BaseEvent {
     data object RefreshData : TransactionsEvent
-    class AddAccountEvent(val name: String, val balance: String) : TransactionsEvent
-    class EditAccountEvent(val id: Int, val name: String, val balance: String) : TransactionsEvent
-    class EnableOrDisableAccountEvent(val account: Account) : TransactionsEvent
-    class RemoveAccountEvent(val account: Account) : TransactionsEvent
-    class OnClickTransfer(
-        val transmitterAccount: Account,
-        val receiverAccount: Account?,
-        val amount: String
-    ) : TransactionsEvent
-
     class AddTransactionEvent(
         val name: String,
         val amount: String,
@@ -92,34 +80,6 @@ class TransactionsViewModel @Inject constructor(
                 refreshData()
             }
 
-            is TransactionsEvent.AddAccountEvent -> {
-                createAccount(name = event.name, balance = event.balance)
-            }
-
-            is TransactionsEvent.EditAccountEvent -> {
-                editAccount(id = event.id, name = event.name, balance = event.balance)
-            }
-
-            is TransactionsEvent.EnableOrDisableAccountEvent -> {
-                viewModelScope.launch {
-                    accountUseCase.enableOrDisableAccount(account = event.account)
-                    refreshData()
-                }
-            }
-
-            is TransactionsEvent.RemoveAccountEvent -> {
-                removeAccount(account = event.account)
-                _currentBottomSheet.value = null
-            }
-
-            is TransactionsEvent.OnClickTransfer -> {
-                transfer(
-                    transmitterAccount = event.transmitterAccount,
-                    receiverAccount = event.receiverAccount,
-                    amount = event.amount
-                )
-            }
-
             is TransactionsEvent.AddTransactionEvent -> {
                 createTransaction(
                     name = event.name,
@@ -179,85 +139,10 @@ class TransactionsViewModel @Inject constructor(
     fun getTransactionById(id: Int?) =
         _listTransaction.value.find { it.id == id }
 
-    private fun createAccount(name: String, balance: String) {
+    private fun refreshData() {
         viewModelScope.launch {
-            if (name.isEmpty()) {
-                _toastMessage.value = R.string.error_incorrect_name
-                return@launch
-            }
-            val balanceFloat = balance.toFloatOrNull()
-            if (balanceFloat == null) {
-                _toastMessage.value = R.string.error_incorrect_balance
-                return@launch
-            }
-            val account = Account(name = name, currentBalance = balanceFloat)
-            kotlin.runCatching { accountUseCase.createAccount(account = account) }
-                .onSuccess {
-                    onEvent(BaseEvent.CloseBottomSheet)
-                    refreshData()
-                }
-                .onFailure { _toastMessage.value = R.string.error_failed_add_account }
-        }
-    }
-
-    private fun editAccount(id: Int, name: String, balance: String) {
-        viewModelScope.launch {
-            // TODO REFACTO CHECK WITH CREATE
-            if (name.isEmpty()) {
-                _toastMessage.value = R.string.error_incorrect_name
-                return@launch
-            }
-            val balanceFloat = balance.toFloatOrNull()
-            if (balanceFloat == null) {
-                _toastMessage.value = R.string.error_incorrect_balance
-                return@launch
-            }
-            kotlin.runCatching {
-                accountUseCase.updateAccount(
-                    id = id,
-                    name = name,
-                    currentBalance = balanceFloat
-                )
-            }
-                .onSuccess {
-                    onEvent(BaseEvent.CloseBottomSheet)
-                    refreshData()
-                }
-                .onFailure { _toastMessage.value = R.string.error_failed_add_account }
-        }
-    }
-
-    private fun transfer(transmitterAccount: Account, receiverAccount: Account?, amount: String) {
-        viewModelScope.launch {
-            val amountFloat = amount.toFloatOrNull()
-            if (amountFloat == null || transmitterAccount.currentBalance < amountFloat || amountFloat <= 0.0f) {
-                _toastMessage.value = R.string.error_incorrect_amount
-                return@launch
-            }
-            if (receiverAccount == null) {
-                _toastMessage.value = R.string.error_account_not_selected
-                return@launch
-            }
-            kotlin.runCatching {
-                accountUseCase.transfer(
-                    transmitterAccount = transmitterAccount,
-                    receiverAccount = receiverAccount,
-                    amount = amountFloat
-                )
-            }
-                .onSuccess {
-                    onEvent(BaseEvent.CloseBottomSheet)
-                    refreshData()
-                }
-                .onFailure { _toastMessage.value = R.string.error_failed_transfer }
-        }
-    }
-
-    private fun removeAccount(account: Account) {
-        viewModelScope.launch {
-            kotlin.runCatching { accountUseCase.removeAccount(account = account) }
-                .onSuccess { refreshData() }
-                .onFailure { _toastMessage.value = R.string.error_failed_remove_account }
+            _listTransaction.value = transactionUseCase.getNotAppliedTransactions()
+            _listAccount.value = accountUseCase.getAccounts()
         }
     }
 
@@ -337,13 +222,6 @@ class TransactionsViewModel @Inject constructor(
             kotlin.runCatching { transactionUseCase.removeTransaction(transaction = transaction) }
                 .onSuccess { refreshData() }
                 .onFailure { _toastMessage.value = R.string.error_failed_remove_account }
-        }
-    }
-
-    private fun refreshData() {
-        viewModelScope.launch {
-            _listTransaction.value = transactionUseCase.getNotAppliedTransactions()
-            _listAccount.value = accountUseCase.getAccounts()
         }
     }
 }

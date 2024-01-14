@@ -11,8 +11,6 @@ data class AccountsUiModel(
 
 
 sealed interface AccountsBottomSheetType : BottomSheetType {
-    object BottomSheetCreateAccount : AccountsBottomSheetType
-    class BottomSheetEditAccount(val account: Account) : AccountsBottomSheetType
     class BottomSheetTransfer(val account: Account) : AccountsBottomSheetType
     class BottomSheetConfirmRemoveAccount(val account: Account) : AccountsBottomSheetType
 }

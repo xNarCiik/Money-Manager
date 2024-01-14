@@ -1,6 +1,5 @@
 package com.dms.moneymanager.presentation.screen.accounts.component.accountslist
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,7 +16,9 @@ import com.dms.moneymanager.R
 import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.presentation.BaseEvent
 import com.dms.moneymanager.presentation.screen.accounts.AccountsBottomSheetType
+import com.dms.moneymanager.presentation.screen.accounts.AccountsEvent
 import com.dms.moneymanager.presentation.screen.transactions.TransactionsEvent
+import com.dms.moneymanager.presentation.util.NavigationRoute
 
 @Composable
 fun AccountsList(
@@ -31,7 +32,9 @@ fun AccountsList(
     ) {
         item {
             Text(
-                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
                 text = stringResource(id = R.string.my_accounts),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
@@ -55,16 +58,10 @@ fun AccountsList(
                         )
                     },
                     editAction = {
-                        onEvent(
-                            BaseEvent.OpenBottomSheet(
-                                AccountsBottomSheetType.BottomSheetEditAccount(
-                                    account = account
-                                )
-                            )
-                        )
+                        onEvent(BaseEvent.NavigateToScreen(route = NavigationRoute.CREATE_OR_EDIT_ACCOUNT.route + "?accountId=${account.id}"))
                     },
                     enableOrDisableAction = {
-                        onEvent(TransactionsEvent.EnableOrDisableAccountEvent(account = account))
+                        onEvent(AccountsEvent.EnableOrDisableAccountEvent(account = account))
                     },
                     removeAction = {
                         onEvent(
@@ -82,8 +79,7 @@ fun AccountsList(
                 Text(
                     text = stringResource(id = R.string.empty_account),
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onEvent(BaseEvent.OpenBottomSheet(AccountsBottomSheetType.BottomSheetCreateAccount)) },
+                        .fillMaxWidth(),
                     textAlign = TextAlign.Center
                 )
             }
