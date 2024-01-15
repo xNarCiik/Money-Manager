@@ -10,6 +10,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowLeft
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
@@ -31,6 +33,7 @@ import com.dms.moneymanager.presentation.BaseEvent
 import com.dms.moneymanager.presentation.screen.transactions.component.transactionslist.TransactionsList
 import com.dms.moneymanager.presentation.util.NavigationRoute
 import com.dms.moneymanager.presentation.util.getCurrentDateString
+import com.dms.moneymanager.presentation.util.monthlyAndYearString
 import com.dms.moneymanager.ui.theme.Green
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 import com.dms.moneymanager.ui.theme.Red
@@ -73,9 +76,9 @@ private fun TransactionsContent(
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         DateSelector(
             modifier = Modifier.padding(top = 8.dp),
-            onClickArrowLeft = { },
-            onClickArrowRight = { },
-            currentDate = getCurrentDateString()
+            onClickArrowLeft = { onEvent(TransactionsEvent.OnClickLeftArrowDate) },
+            onClickArrowRight = { onEvent(TransactionsEvent.OnClickRightArrowDate) },
+            currentDate = viewState.currentDate.monthlyAndYearString()
         )
 
         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
@@ -119,7 +122,7 @@ private fun TransactionsContent(
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(text = "Solde final", style = MaterialTheme.typography.bodySmall)
                 Text(
-                    text = " 8451.00 €",
+                    text = " 8 451.00 €",
                     style = MaterialTheme.typography.bodySmall,
                     color = Green
                 )
@@ -146,7 +149,7 @@ private fun DateSelector(
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         IconButton(onClick = onClickArrowLeft) {
             Icon(
-                imageVector = Icons.AutoMirrored.Default.ArrowLeft,
+                imageVector = Icons.AutoMirrored.Default.KeyboardArrowLeft,
                 contentDescription = "icone date left"
             )
         }
@@ -155,7 +158,7 @@ private fun DateSelector(
 
         IconButton(onClick = onClickArrowRight) {
             Icon(
-                imageVector = Icons.AutoMirrored.Default.ArrowRight,
+                imageVector = Icons.AutoMirrored.Default.KeyboardArrowRight,
                 contentDescription = "icone date left"
             )
         }

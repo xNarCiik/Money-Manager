@@ -14,10 +14,15 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.util.Calendar
+import java.util.Date
 import javax.inject.Inject
 
 sealed interface TransactionsEvent : BaseEvent {
     data object RefreshData : TransactionsEvent
+    data object OnClickLeftArrowDate: TransactionsEvent
+    data object OnClickRightArrowDate: TransactionsEvent
+
     class AddTransactionEvent(
         val name: String,
         val amount: String,
@@ -43,7 +48,10 @@ class TransactionsViewModel @Inject constructor(
     private val transactionUseCase: TransactionUseCase
 ) : BaseViewModel() {
 
+    var calendar = Calendar.getInstance()
+
     private var _transactionsUiState = MutableStateFlow(value = TransactionsUiState.NORMAL)
+    private var _currentDate = MutableStateFlow<Date>(value = calendar.time)
     private var _listAccount = MutableStateFlow<List<Account>>(value = emptyList())
     private var _listTransaction = MutableStateFlow<List<Transaction>>(value = emptyList())
     private var _selectedAccount = MutableStateFlow<Account?>(value = null)
@@ -52,19 +60,22 @@ class TransactionsViewModel @Inject constructor(
     @Suppress("UNCHECKED_CAST")
     val viewState = combine(
         _transactionsUiState,
+        _currentDate,
         _listAccount,
         _listTransaction,
         _selectedAccount,
         _selectedTransaction,
     ) { params ->
         val transactionsUiState = params[0] as TransactionsUiState
-        val listAccount = params[1] as List<Account>
-        val listTransaction = params[2] as List<Transaction>
-        val selectedAccount = params[3] as Account?
-        val selectedTransaction = params[4] as Transaction?
+        val currentDate = params[1] as Date
+        val listAccount = params[2] as List<Account>
+        val listTransaction = params[3] as List<Transaction>
+        val selectedAccount = params[4] as Account?
+        val selectedTransaction = params[5] as Transaction?
 
         TransactionsUiModel(
             transactionsUiState = transactionsUiState,
+            currentDate = currentDate,
             accounts = listAccount,
             transactions = listTransaction,
             selectedAccount = selectedAccount,
@@ -78,6 +89,16 @@ class TransactionsViewModel @Inject constructor(
         when (event) {
             is TransactionsEvent.RefreshData -> {
                 refreshData()
+            }
+
+            is TransactionsEvent.OnClickLeftArrowDate -> {
+                calendar.add(Calendar.MONTH, -1)
+                _currentDate.value = calendar.time
+            }
+
+            is TransactionsEvent.OnClickRightArrowDate -> {
+                calendar.add(Calendar.MONTH, 1)
+                _currentDate.value = calendar.time
             }
 
             is TransactionsEvent.AddTransactionEvent -> {
