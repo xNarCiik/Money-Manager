@@ -62,14 +62,12 @@ fun AccountItem(
         ) {
             Text(
                 text = account.name,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Bold
+                style = MaterialTheme.typography.bodyLarge
             )
 
             Text(
                 text = account.currentBalance.toAmountString(),
                 style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Bold,
                 color = account.currentBalance.getTextColor()
             )
         }
@@ -80,7 +78,6 @@ fun AccountItem(
                 .padding(end = 8.dp),
             text = account.futureBalance.toAmountString(),
             style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Bold,
             color = account.futureBalance.getTextColor()
         )
 

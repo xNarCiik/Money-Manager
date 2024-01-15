@@ -55,8 +55,7 @@ fun TransactionItem(
         ) {
             Text(
                 text = transaction.name,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Bold
+                style = MaterialTheme.typography.bodyLarge
             )
 
             Text(
@@ -72,7 +71,6 @@ fun TransactionItem(
                 .padding(end = 8.dp),
             text = transaction.amount.toAmountString(),
             style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Bold,
             color = transaction.amount.getTextColor()
         )
 

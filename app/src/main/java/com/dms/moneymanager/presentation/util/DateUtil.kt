@@ -5,7 +5,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-fun getCurrentDateString(): String = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(Calendar.getInstance().time)
+fun getCurrentDateString(): String = SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(Calendar.getInstance().time)
 
 fun getLastDayOfMonthDateString(): String = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(getLastDayOfMonthDate())
 

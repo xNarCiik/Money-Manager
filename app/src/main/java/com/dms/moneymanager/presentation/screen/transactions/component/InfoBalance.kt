@@ -61,18 +61,12 @@ fun InfoBalance(
                 verticalArrangement = Arrangement.Center
             ) {
                 if (isExpended) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = stringResource(R.string.current_balance),
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            modifier = Modifier.padding(start = 6.dp),
-                            text = "(Le ${getCurrentDateString()})",
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                    }
+                    Text(
+                        text = stringResource(R.string.current_balance),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+
                     Text(
                         modifier = Modifier.fillMaxWidth(),
                         text = currentBalance.toAmountString(),
