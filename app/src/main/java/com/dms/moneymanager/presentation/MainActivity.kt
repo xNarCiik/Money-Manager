@@ -5,6 +5,8 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,6 +31,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.dms.moneymanager.presentation.screen.accounts.AccountsBottomSheetType
+import com.dms.moneymanager.presentation.screen.accounts.AccountsEvent
 import com.dms.moneymanager.presentation.screen.accounts.AccountsScreen
 import com.dms.moneymanager.presentation.screen.accounts.AccountsViewModel
 import com.dms.moneymanager.presentation.screen.accounts.createoredit.CreateOrEditAccountScreen
@@ -43,14 +46,18 @@ import com.dms.moneymanager.presentation.screen.transactions.TransactionsScreen
 import com.dms.moneymanager.presentation.screen.transactions.TransactionsViewModel
 import com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet.BottomSheetConfirmRemoveAccount
 import com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet.BottomSheetConfirmRemoveTransaction
-import com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet.BottomSheetTransfer
 import com.dms.moneymanager.presentation.screen.transactions.createoredit.CreateOrEditTransactionScreen
 import com.dms.moneymanager.presentation.util.NavigationRoute
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
+private const val DurationTransition = 350
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    private val accountsViewModel: AccountsViewModel by viewModels()
+    private val transactionsViewModel: TransactionsViewModel by viewModels()
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,6 +74,11 @@ class MainActivity : ComponentActivity() {
                     currentViewModel?.currentBottomSheet?.collectAsState()
                 val toastMessage =
                     currentViewModel?.toastMessage?.collectAsState()
+
+                // Load accounts
+                LaunchedEffect(key1 = true) {
+                    accountsViewModel.onEvent(event = AccountsEvent.RefreshData)
+                }
 
                 // Navigation handle
                 LaunchedEffect(key1 = eventNavigation?.value) {
@@ -138,8 +150,26 @@ class MainActivity : ComponentActivity() {
                             navController = navController,
                             startDestination = NavigationRoute.TRANSACTIONS.route
                         ) {
-                            composable(route = NavigationRoute.TRANSACTIONS.route) {
-                                val transactionsViewModel: TransactionsViewModel by viewModels()
+                            composable(
+                                route = NavigationRoute.TRANSACTIONS.route,
+                                enterTransition = {
+                                    slideIntoContainer(
+                                        AnimatedContentTransitionScope.SlideDirection.End,
+                                        animationSpec = tween(DurationTransition)
+                                    )
+                                },
+                                exitTransition = {
+                                    when (targetState.destination.route) {
+                                        NavigationRoute.ACCOUNTS.route, NavigationRoute.SETTINGS.route ->
+                                            slideOutOfContainer(
+                                                AnimatedContentTransitionScope.SlideDirection.Start,
+                                                animationSpec = tween(DurationTransition)
+                                            )
+
+                                        else -> null
+                                    }
+                                }
+                            ) {
                                 currentViewModel = transactionsViewModel
                                 val viewState = transactionsViewModel.viewState.collectAsState()
 
@@ -150,7 +180,8 @@ class MainActivity : ComponentActivity() {
                             }
 
                             composable(
-                                route = NavigationRoute.CREATE_OR_EDIT_TRANSACTION.route + "?transactionId={transactionId}",
+                                route =
+                                NavigationRoute.CREATE_OR_EDIT_TRANSACTION.route + "?transactionId={transactionId}",
                                 arguments = listOf(
                                     navArgument("transactionId") {
                                         type = NavType.IntType
@@ -158,7 +189,6 @@ class MainActivity : ComponentActivity() {
                                     }
                                 )
                             ) { backStackEntry ->
-                                val transactionsViewModel: TransactionsViewModel by viewModels()
                                 currentViewModel = transactionsViewModel
                                 val viewState = transactionsViewModel.viewState.collectAsState()
                                 val transactionId =
@@ -171,8 +201,43 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
 
-                            composable(route = NavigationRoute.ACCOUNTS.route) {
-                                val accountsViewModel: AccountsViewModel by viewModels()
+                            composable(
+                                route = NavigationRoute.ACCOUNTS.route,
+                                enterTransition = {
+                                    when (initialState.destination.route) {
+                                        NavigationRoute.TRANSACTIONS.route ->
+                                            slideIntoContainer(
+                                                AnimatedContentTransitionScope.SlideDirection.Start,
+                                                animationSpec = tween(DurationTransition)
+                                            )
+
+                                        NavigationRoute.SETTINGS.route ->
+                                            slideIntoContainer(
+                                                AnimatedContentTransitionScope.SlideDirection.End,
+                                                animationSpec = tween(DurationTransition)
+                                            )
+
+                                        else -> null
+                                    }
+                                },
+                                exitTransition = {
+                                    when (targetState.destination.route) {
+                                        NavigationRoute.TRANSACTIONS.route ->
+                                            slideOutOfContainer(
+                                                AnimatedContentTransitionScope.SlideDirection.End,
+                                                animationSpec = tween(DurationTransition)
+                                            )
+
+                                        NavigationRoute.SETTINGS.route ->
+                                            slideOutOfContainer(
+                                                AnimatedContentTransitionScope.SlideDirection.Start,
+                                                animationSpec = tween(DurationTransition)
+                                            )
+
+                                        else -> null
+                                    }
+                                }
+                            ) {
                                 currentViewModel = accountsViewModel
                                 val viewState = accountsViewModel.viewState.collectAsState()
 
@@ -191,7 +256,6 @@ class MainActivity : ComponentActivity() {
                                     }
                                 )
                             ) { backStackEntry ->
-                                val accountsViewModel: AccountsViewModel by viewModels()
                                 currentViewModel = accountsViewModel
                                 val accountId =
                                     backStackEntry.arguments?.getInt("accountId")
@@ -202,7 +266,26 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
 
-                            composable(route = NavigationRoute.SETTINGS.route) {
+                            composable(
+                                route = NavigationRoute.SETTINGS.route,
+                                enterTransition = {
+                                    slideIntoContainer(
+                                        towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                                        animationSpec = tween(DurationTransition)
+                                    )
+                                },
+                                exitTransition = {
+                                    when (targetState.destination.route) {
+                                        NavigationRoute.TRANSACTIONS.route, NavigationRoute.ACCOUNTS.route ->
+                                            slideOutOfContainer(
+                                                AnimatedContentTransitionScope.SlideDirection.End,
+                                                animationSpec = tween(DurationTransition)
+                                            )
+
+                                        else -> null
+                                    }
+                                }
+                            ) {
                                 val settingsViewModel: SettingsViewModel by viewModels()
                                 currentViewModel = settingsViewModel
 

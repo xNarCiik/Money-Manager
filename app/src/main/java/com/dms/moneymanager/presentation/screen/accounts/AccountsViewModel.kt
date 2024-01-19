@@ -55,6 +55,10 @@ class AccountsViewModel @Inject constructor(
         )
     }.stateIn(viewModelScope, SharingStarted.Lazily, AccountsUiModel())
 
+    init {
+        onEvent(event = AccountsEvent.RefreshData)
+    }
+
     override fun onEvent(event: BaseEvent) {
         super.onEvent(event)
 

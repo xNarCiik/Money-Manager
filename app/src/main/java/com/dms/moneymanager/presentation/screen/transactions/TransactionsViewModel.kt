@@ -48,7 +48,7 @@ class TransactionsViewModel @Inject constructor(
     private val transactionUseCase: TransactionUseCase
 ) : BaseViewModel() {
 
-    var calendar = Calendar.getInstance()
+    private var calendar = Calendar.getInstance()
 
     private var _transactionsUiState = MutableStateFlow(value = TransactionsUiState.NORMAL)
     private var _currentDate = MutableStateFlow<Date>(value = calendar.time)
@@ -82,6 +82,10 @@ class TransactionsViewModel @Inject constructor(
             selectedTransaction = selectedTransaction,
         )
     }.stateIn(viewModelScope, SharingStarted.Lazily, TransactionsUiModel())
+
+    init {
+        onEvent(event = TransactionsEvent.RefreshData)
+    }
 
     override fun onEvent(event: BaseEvent) {
         super.onEvent(event)
