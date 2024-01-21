@@ -86,7 +86,7 @@ private fun CreateOrEditTransactionContent(
             // TODO unifier Add & edit
             if (isCreateScreen) {
                 onEvent(
-                    TransactionsEvent.AddTransactionEvent(
+                    TransactionsEvent.ClickAddTransaction(
                         name = name.text,
                         amount = amount.text,
                         destinationAccount = selectedAccount
@@ -95,7 +95,7 @@ private fun CreateOrEditTransactionContent(
             } else {
                 transaction?.id?.let { id ->
                     onEvent(
-                        TransactionsEvent.EditTransactionEvent(
+                        TransactionsEvent.ClickEditTransaction(
                             id = id,
                             name = name.text,
                             amount = amount.text,

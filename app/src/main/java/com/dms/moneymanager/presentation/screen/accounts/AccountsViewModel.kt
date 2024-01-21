@@ -7,6 +7,7 @@ import com.dms.moneymanager.domain.usecase.AccountUseCase
 import com.dms.moneymanager.domain.usecase.TransactionUseCase
 import com.dms.moneymanager.presentation.BaseEvent
 import com.dms.moneymanager.presentation.BaseViewModel
+import com.dms.moneymanager.presentation.SnackbarState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -17,15 +18,17 @@ import javax.inject.Inject
 
 sealed interface AccountsEvent : BaseEvent {
     object RefreshData : BaseEvent
-    class AddAccountEvent(val name: String, val balance: String) : AccountsEvent
-    class EditAccountEvent(val id: Int, val name: String, val balance: String) : AccountsEvent
-    class EnableOrDisableAccountEvent(val account: Account) : AccountsEvent
-    class RemoveAccountEvent(val account: Account) : AccountsEvent
-    class OnClickTransfer(
+    class ClickAddAccount(val name: String, val balance: String) : AccountsEvent
+    class ClickEditAccount(val id: Int, val name: String, val balance: String) : AccountsEvent
+    class ClickEnableOrDisableAccount(val account: Account) : AccountsEvent
+    class ClickTransfer(
         val transmitterAccount: Account,
         val receiverAccount: Account?,
         val amount: String
     ) : AccountsEvent
+
+    class ClickRemoveAccount(val account: Account) : AccountsEvent
+    class ClickCancelRemoveAccount(val account: Account) : AccountsEvent
 }
 
 @HiltViewModel
@@ -67,32 +70,47 @@ class AccountsViewModel @Inject constructor(
                 refreshData()
             }
 
-            is AccountsEvent.AddAccountEvent -> {
+            is AccountsEvent.ClickAddAccount -> {
                 createAccount(name = event.name, balance = event.balance)
             }
 
-            is AccountsEvent.EditAccountEvent -> {
+            is AccountsEvent.ClickEditAccount -> {
                 editAccount(id = event.id, name = event.name, balance = event.balance)
             }
 
-            is AccountsEvent.EnableOrDisableAccountEvent -> {
+            is AccountsEvent.ClickEnableOrDisableAccount -> {
                 viewModelScope.launch {
                     accountUseCase.enableOrDisableAccount(account = event.account)
                     refreshData()
                 }
             }
 
-            is AccountsEvent.RemoveAccountEvent -> {
-                removeAccount(account = event.account)
-                _currentBottomSheet.value = null
-            }
-
-            is AccountsEvent.OnClickTransfer -> {
+            is AccountsEvent.ClickTransfer -> {
                 transfer(
                     transmitterAccount = event.transmitterAccount,
                     receiverAccount = event.receiverAccount,
                     amount = event.amount
                 )
+            }
+
+            is AccountsEvent.ClickRemoveAccount -> {
+                val account = event.account
+                _snackbarState.value = SnackbarState(
+                    message = "Compte ${account.name} supprimé.",
+                    actionLabel = "Annuler",
+                    onActionPerformed = { onEvent(event = AccountsEvent.ClickCancelRemoveAccount(account = account)) }
+                )
+                removeAccount(account = event.account)
+            }
+
+            is AccountsEvent.ClickCancelRemoveAccount -> {
+                viewModelScope.launch {
+                    kotlin.runCatching { accountUseCase.createAccount(account = event.account) }
+                        .onSuccess {
+                            _snackbarState.value = null
+                            refreshData()
+                        }
+                }
             }
         }
     }

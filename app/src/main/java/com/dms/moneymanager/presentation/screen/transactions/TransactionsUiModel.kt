@@ -7,19 +7,9 @@ import java.util.Calendar
 import java.util.Date
 
 data class TransactionsUiModel(
-    val transactionsUiState: TransactionsUiState = TransactionsUiState.NORMAL,
     val currentDate: Date = Calendar.getInstance().time,
     val accounts: List<Account> = emptyList(),
     val transactions: List<Transaction> = emptyList(),
     val selectedAccount: Account? = null,
     val selectedTransaction: Transaction? = null
 )
-
-enum class TransactionsUiState {
-    NORMAL, APPLIED_TRANSACTION
-}
-
-sealed interface TransactionsBottomSheetType : BottomSheetType {
-    class BottomSheetConfirmRemoveTransaction(val transaction: Transaction) :
-        TransactionsBottomSheetType
-}

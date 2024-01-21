@@ -8,6 +8,7 @@ import com.dms.moneymanager.domain.usecase.AccountUseCase
 import com.dms.moneymanager.domain.usecase.TransactionUseCase
 import com.dms.moneymanager.presentation.BaseEvent
 import com.dms.moneymanager.presentation.BaseViewModel
+import com.dms.moneymanager.presentation.SnackbarState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -20,26 +21,27 @@ import javax.inject.Inject
 
 sealed interface TransactionsEvent : BaseEvent {
     data object RefreshData : TransactionsEvent
-    data object OnClickLeftArrowDate: TransactionsEvent
-    data object OnClickRightArrowDate: TransactionsEvent
+    data object ClickLeftArrowDate : TransactionsEvent
+    data object ClickRightArrowDate : TransactionsEvent
 
-    class AddTransactionEvent(
+    class ClickAddTransaction(
         val name: String,
         val amount: String,
         val destinationAccount: Account?
     ) : TransactionsEvent
 
-    class EditTransactionEvent(
+    class ClickEditTransaction(
         val id: Int,
         val name: String,
         val amount: String,
         val destinationAccount: Account?
     ) : TransactionsEvent
 
-    class EnableOrDisableTransactionEvent(val transaction: Transaction) : TransactionsEvent
-    class OnClickAppliedTransaction(val transaction: Transaction) : TransactionsEvent
+    class ClickEnableOrDisableTransaction(val transaction: Transaction) : TransactionsEvent
+    class ClickAppliedTransaction(val transaction: Transaction) : TransactionsEvent
     class AppliedTransaction(val toAccount: Account) : TransactionsEvent
-    class RemoveTransactionEvent(val transaction: Transaction) : TransactionsEvent
+    class ClickRemoveTransaction(val transaction: Transaction) : TransactionsEvent
+    class ClickCancelRemoveTransaction(val transaction: Transaction) : TransactionsEvent
 }
 
 @HiltViewModel
@@ -50,7 +52,6 @@ class TransactionsViewModel @Inject constructor(
 
     private var calendar = Calendar.getInstance()
 
-    private var _transactionsUiState = MutableStateFlow(value = TransactionsUiState.NORMAL)
     private var _currentDate = MutableStateFlow<Date>(value = calendar.time)
     private var _listAccount = MutableStateFlow<List<Account>>(value = emptyList())
     private var _listTransaction = MutableStateFlow<List<Transaction>>(value = emptyList())
@@ -59,22 +60,19 @@ class TransactionsViewModel @Inject constructor(
 
     @Suppress("UNCHECKED_CAST")
     val viewState = combine(
-        _transactionsUiState,
         _currentDate,
         _listAccount,
         _listTransaction,
         _selectedAccount,
         _selectedTransaction,
     ) { params ->
-        val transactionsUiState = params[0] as TransactionsUiState
-        val currentDate = params[1] as Date
-        val listAccount = params[2] as List<Account>
-        val listTransaction = params[3] as List<Transaction>
-        val selectedAccount = params[4] as Account?
-        val selectedTransaction = params[5] as Transaction?
+        val currentDate = params[0] as Date
+        val listAccount = params[1] as List<Account>
+        val listTransaction = params[2] as List<Transaction>
+        val selectedAccount = params[3] as Account?
+        val selectedTransaction = params[4] as Transaction?
 
         TransactionsUiModel(
-            transactionsUiState = transactionsUiState,
             currentDate = currentDate,
             accounts = listAccount,
             transactions = listTransaction,
@@ -95,17 +93,17 @@ class TransactionsViewModel @Inject constructor(
                 refreshData()
             }
 
-            is TransactionsEvent.OnClickLeftArrowDate -> {
+            is TransactionsEvent.ClickLeftArrowDate -> {
                 calendar.add(Calendar.MONTH, -1)
                 _currentDate.value = calendar.time
             }
 
-            is TransactionsEvent.OnClickRightArrowDate -> {
+            is TransactionsEvent.ClickRightArrowDate -> {
                 calendar.add(Calendar.MONTH, 1)
                 _currentDate.value = calendar.time
             }
 
-            is TransactionsEvent.AddTransactionEvent -> {
+            is TransactionsEvent.ClickAddTransaction -> {
                 createTransaction(
                     name = event.name,
                     amount = event.amount,
@@ -113,7 +111,7 @@ class TransactionsViewModel @Inject constructor(
                 )
             }
 
-            is TransactionsEvent.EditTransactionEvent -> {
+            is TransactionsEvent.ClickEditTransaction -> {
                 editTransaction(
                     id = event.id,
                     name = event.name,
@@ -122,40 +120,43 @@ class TransactionsViewModel @Inject constructor(
                 )
             }
 
-            is TransactionsEvent.EnableOrDisableTransactionEvent -> {
+            is TransactionsEvent.ClickEnableOrDisableTransaction -> {
                 viewModelScope.launch {
                     transactionUseCase.enableOrDisableTransaction(transaction = event.transaction)
                     refreshData()
                 }
             }
 
-            is TransactionsEvent.OnClickAppliedTransaction -> {
-                // TODO Handle differently
-                _transactionsUiState.value = TransactionsUiState.APPLIED_TRANSACTION
-                _selectedTransaction.value = event.transaction
+            // is TransactionsEvent.OnClickAppliedTransaction -> {
+            //     // TODO Handle differently
+            //     _transactionsUiState.value = TransactionsUiState.APPLIED_TRANSACTION
+            //     _selectedTransaction.value = event.transaction
+            // }
+            //
+            // is TransactionsEvent.AppliedTransaction -> {
+            //     // TODO Handle differently
+            //     _selectedTransaction.value?.let {
+            //         appliedTransaction(account = event.toAccount, transaction = it)
+            //     }
+            //     onEvent(event = BaseEvent.ActionPerformedSnackbar)
+            // }
+
+            is TransactionsEvent.ClickRemoveTransaction -> {
+                val transaction = event.transaction
+                _snackbarState.value = SnackbarState(
+                    message = "Transaction ${transaction.name} supprimé.",
+                    actionLabel = "Annuler",
+                    onActionPerformed = { onEvent(event = TransactionsEvent.ClickCancelRemoveTransaction(transaction = transaction))}
+                )
+                removeTransaction(transaction = transaction)
             }
 
-            is TransactionsEvent.AppliedTransaction -> {
-                // TODO Handle differently
-                _selectedTransaction.value?.let {
-                    appliedTransaction(account = event.toAccount, transaction = it)
-                }
-                onEvent(event = BaseEvent.ActionPerformedSnackbar)
-            }
-
-            is TransactionsEvent.RemoveTransactionEvent -> {
-                removeTransaction(transaction = event.transaction)
-                _currentBottomSheet.value = null
-            }
-
-            is BaseEvent.ActionPerformedSnackbar -> {
-                when (_transactionsUiState.value) {
-                    TransactionsUiState.APPLIED_TRANSACTION -> {
-                        _transactionsUiState.value = TransactionsUiState.NORMAL
-                        _selectedTransaction.value = null
+            is TransactionsEvent.ClickCancelRemoveTransaction -> {
+                viewModelScope.launch {
+                    kotlin.runCatching { transactionUseCase.createTransaction(transaction = event.transaction) }.onSuccess {
+                        _snackbarState.value = null
+                        refreshData()
                     }
-
-                    else -> {}
                 }
             }
         }

@@ -75,7 +75,7 @@ private fun CreateOrEditAccountContent(
             // TODO unifier Add & edit
             if (isCreateScreen) {
                 onEvent(
-                    AccountsEvent.AddAccountEvent(
+                    AccountsEvent.ClickAddAccount(
                         name = name.text,
                         balance = balance.text
                     )
@@ -83,7 +83,7 @@ private fun CreateOrEditAccountContent(
             } else {
                 account?.id?.let { id ->
                     onEvent(
-                        AccountsEvent.EditAccountEvent(
+                        AccountsEvent.ClickEditAccount(
                             id = account.id,
                             name = name.text,
                             balance = balance.text

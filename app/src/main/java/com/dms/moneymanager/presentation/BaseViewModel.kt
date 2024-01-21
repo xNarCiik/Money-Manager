@@ -1,5 +1,6 @@
 package com.dms.moneymanager.presentation
 
+import androidx.compose.material3.SnackbarDuration
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,8 +16,16 @@ interface BaseEvent {
     class OpenBottomSheet(val bottomSheetType: BottomSheetType) : BaseEvent
     object CloseBottomSheet : BaseEvent
     object RemoveToast : BaseEvent
-    object ActionPerformedSnackbar : BaseEvent
 }
+
+data class SnackbarState(
+    val message: String,
+    val actionLabel: String,
+    val duration: SnackbarDuration = SnackbarDuration.Short,
+    val onActionPerformed: () -> Unit,
+    val onDismissed: (() -> Unit)? = null
+)
+
 
 interface NavigationEvent {
     object GoBack : NavigationEvent
@@ -24,7 +33,7 @@ interface NavigationEvent {
 }
 
 abstract class BaseViewModel : ViewModel() {
-    protected var _eventNavigation = MutableStateFlow<NavigationEvent?>(value = null)
+    private var _eventNavigation = MutableStateFlow<NavigationEvent?>(value = null)
     val eventNavigation: StateFlow<NavigationEvent?> = _eventNavigation
 
     protected var _currentBottomSheet = MutableStateFlow<BottomSheetType?>(value = null)
@@ -32,6 +41,9 @@ abstract class BaseViewModel : ViewModel() {
 
     protected var _toastMessage = MutableStateFlow<Int?>(value = null)
     val toastMessage: StateFlow<Int?> = _toastMessage
+
+    protected var _snackbarState = MutableStateFlow<SnackbarState?>(value = null)
+    val snackbarState: StateFlow<SnackbarState?> = _snackbarState
 
     open fun onEvent(event: BaseEvent) {
         viewModelScope.launch {

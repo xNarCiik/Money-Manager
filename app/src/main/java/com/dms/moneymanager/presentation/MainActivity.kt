@@ -15,6 +15,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.LaunchedEffect
@@ -22,6 +23,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -30,7 +32,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.dms.moneymanager.presentation.screen.accounts.AccountsBottomSheetType
 import com.dms.moneymanager.presentation.screen.accounts.AccountsEvent
 import com.dms.moneymanager.presentation.screen.accounts.AccountsScreen
 import com.dms.moneymanager.presentation.screen.accounts.AccountsViewModel
@@ -41,15 +42,13 @@ import com.dms.moneymanager.presentation.screen.history.HistoryScreen
 import com.dms.moneymanager.presentation.screen.history.HistoryViewModel
 import com.dms.moneymanager.presentation.screen.settings.SettingsScreen
 import com.dms.moneymanager.presentation.screen.settings.SettingsViewModel
-import com.dms.moneymanager.presentation.screen.transactions.TransactionsBottomSheetType
 import com.dms.moneymanager.presentation.screen.transactions.TransactionsScreen
 import com.dms.moneymanager.presentation.screen.transactions.TransactionsViewModel
-import com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet.BottomSheetConfirmRemoveAccount
-import com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet.BottomSheetConfirmRemoveTransaction
 import com.dms.moneymanager.presentation.screen.transactions.createoredit.CreateOrEditTransactionScreen
 import com.dms.moneymanager.presentation.util.NavigationRoute
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 private const val DurationTransition = 350
 
@@ -65,11 +64,14 @@ class MainActivity : ComponentActivity() {
         setContent {
             MoneyManagerTheme {
                 val navController = rememberNavController()
+                val coroutineScope = rememberCoroutineScope()
                 val snackbarHostState = remember { SnackbarHostState() }
 
                 // Base view model observe
                 var currentViewModel: BaseViewModel? by remember { mutableStateOf(null) }
                 val eventNavigation = currentViewModel?.eventNavigation?.collectAsState()
+                val snackbarState =
+                    currentViewModel?.snackbarState?.collectAsState()
                 val currentBottomSheet =
                     currentViewModel?.currentBottomSheet?.collectAsState()
                 val toastMessage =
@@ -118,13 +120,6 @@ class MainActivity : ComponentActivity() {
                                 sheetState = bottomSheetState
                             ) {
                                 when (bottomSheet) {
-                                    is TransactionsBottomSheetType.BottomSheetConfirmRemoveTransaction -> {
-                                        BottomSheetConfirmRemoveTransaction(
-                                            transaction = bottomSheet.transaction,
-                                            onEvent = { event -> currentViewModel?.onEvent(event) }
-                                        )
-                                    }
-
                                     // TODO
 //                                    is AccountsBottomSheetType.BottomSheetTransfer -> {
 //                                        BottomSheetTransfer(
@@ -133,13 +128,6 @@ class MainActivity : ComponentActivity() {
 //                                            onEvent = { event -> currentViewModel?.onEvent(event) }
 //                                        )
 //                                    }
-
-                                    is AccountsBottomSheetType.BottomSheetConfirmRemoveAccount -> {
-                                        BottomSheetConfirmRemoveAccount(
-                                            account = bottomSheet.account,
-                                            onEvent = { event -> currentViewModel?.onEvent(event) }
-                                        )
-                                    }
 
                                     else -> {}
                                 }
@@ -302,28 +290,24 @@ class MainActivity : ComponentActivity() {
                         }
                     }
 
-                    // TODO handle differently
-//                    when (viewState.transactionsUiState) {
-//                        TransactionsUiState.APPLIED_TRANSACTION -> {
-//                            LaunchedEffect(key1 = "snackbar_key", block = {
-//                                coroutineScope.launch {
-//                                    val snackbarResult = snackbarHostState.showSnackbar(
-//                                        message = "Cliquez sur le compte vers lequel appliquer la transaction ${viewState.selectedTransaction?.name}.",
-//                                        actionLabel = "Annuler",
-//                                        duration = SnackbarDuration.Indefinite
-//                                    )
-//                                    when (snackbarResult) {
-//                                        SnackbarResult.ActionPerformed -> onEvent(BaseEvent.ActionPerformedSnackbar)
-//                                        SnackbarResult.Dismissed -> {}
-//                                    }
-//                                }
-//                            })
-//                        }
-//
-//                        else -> {
-//                            snackbarHostState.currentSnackbarData?.dismiss()
-//                        }
-//                    }
+                    val snackbarStateValue = snackbarState?.value
+                    LaunchedEffect(key1 = snackbarStateValue, block = {
+                        if(snackbarStateValue != null) {
+                            coroutineScope.launch {
+                                val snackbarResult = snackbarHostState.showSnackbar(
+                                    message = snackbarStateValue.message,
+                                    actionLabel = snackbarStateValue.actionLabel,
+                                    duration = snackbarStateValue.duration
+                                )
+                                when (snackbarResult) {
+                                    SnackbarResult.ActionPerformed -> snackbarStateValue.onActionPerformed()
+                                    SnackbarResult.Dismissed -> snackbarStateValue.onDismissed?.invoke()
+                                }
+                            }
+                        } else {
+                            snackbarHostState.currentSnackbarData?.dismiss()
+                        }
+                    })
 
                     toastMessage?.value?.let { error ->
                         Toast.makeText(LocalContext.current, error, Toast.LENGTH_SHORT).show()

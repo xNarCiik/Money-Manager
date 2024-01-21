@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowLeft
-import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
@@ -32,7 +30,6 @@ import com.dms.moneymanager.domain.model.main.Transaction
 import com.dms.moneymanager.presentation.BaseEvent
 import com.dms.moneymanager.presentation.screen.transactions.component.transactionslist.TransactionsList
 import com.dms.moneymanager.presentation.util.NavigationRoute
-import com.dms.moneymanager.presentation.util.getCurrentDateString
 import com.dms.moneymanager.presentation.util.monthlyAndYearString
 import com.dms.moneymanager.ui.theme.Green
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
@@ -76,8 +73,8 @@ private fun TransactionsContent(
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         DateSelector(
             modifier = Modifier.padding(top = 8.dp),
-            onClickArrowLeft = { onEvent(TransactionsEvent.OnClickLeftArrowDate) },
-            onClickArrowRight = { onEvent(TransactionsEvent.OnClickRightArrowDate) },
+            onClickArrowLeft = { onEvent(TransactionsEvent.ClickLeftArrowDate) },
+            onClickArrowRight = { onEvent(TransactionsEvent.ClickRightArrowDate) },
             currentDate = viewState.currentDate.monthlyAndYearString()
         )
 

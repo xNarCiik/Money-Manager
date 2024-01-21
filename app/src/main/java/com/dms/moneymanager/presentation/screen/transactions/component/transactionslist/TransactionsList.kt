@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import com.dms.moneymanager.R
 import com.dms.moneymanager.domain.model.main.Transaction
 import com.dms.moneymanager.presentation.BaseEvent
-import com.dms.moneymanager.presentation.screen.transactions.TransactionsBottomSheetType
 import com.dms.moneymanager.presentation.screen.transactions.TransactionsEvent
 import com.dms.moneymanager.presentation.util.NavigationRoute
 
@@ -50,7 +49,7 @@ fun TransactionsList(
                         .padding(bottom = 1.dp),
                     transaction = transaction,
                     appliedAction = {
-                        onEvent(TransactionsEvent.OnClickAppliedTransaction(transaction = transaction))
+                        onEvent(TransactionsEvent.ClickAppliedTransaction(transaction = transaction))
                     },
                     editAction = {
                         onEvent(
@@ -60,16 +59,10 @@ fun TransactionsList(
                         )
                     },
                     enableOrDisableAction = {
-                        onEvent(TransactionsEvent.EnableOrDisableTransactionEvent(transaction = transaction))
+                        onEvent(TransactionsEvent.ClickEnableOrDisableTransaction(transaction = transaction))
                     },
                     removeAction = {
-                        onEvent(
-                            BaseEvent.OpenBottomSheet(
-                                bottomSheetType = TransactionsBottomSheetType.BottomSheetConfirmRemoveTransaction(
-                                    transaction = transaction
-                                )
-                            )
-                        )
+                        onEvent(TransactionsEvent.ClickRemoveTransaction(transaction = transaction))
                     }
                 )
             }

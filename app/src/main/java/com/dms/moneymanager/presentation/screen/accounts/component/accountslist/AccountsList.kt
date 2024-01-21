@@ -61,16 +61,10 @@ fun AccountsList(
                         onEvent(BaseEvent.NavigateToScreen(route = NavigationRoute.CREATE_OR_EDIT_ACCOUNT.route + "?accountId=${account.id}"))
                     },
                     enableOrDisableAction = {
-                        onEvent(AccountsEvent.EnableOrDisableAccountEvent(account = account))
+                        onEvent(AccountsEvent.ClickEnableOrDisableAccount(account = account))
                     },
                     removeAction = {
-                        onEvent(
-                            BaseEvent.OpenBottomSheet(
-                                bottomSheetType = AccountsBottomSheetType.BottomSheetConfirmRemoveAccount(
-                                    account = account
-                                )
-                            )
-                        )
+                        onEvent(AccountsEvent.ClickRemoveAccount(account = account))
                     }
                 )
             }

@@ -58,7 +58,7 @@ fun BottomSheetTransfer(
 
     val onValidateAction = {
         onEvent(
-            AccountsEvent.OnClickTransfer(
+            AccountsEvent.ClickTransfer(
                 transmitterAccount = account,
                 receiverAccount = selectedAccount,
                 amount = amount.text
