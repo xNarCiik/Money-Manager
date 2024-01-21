@@ -32,6 +32,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.dms.moneymanager.presentation.screen.accounts.AccountsBottomSheetType
 import com.dms.moneymanager.presentation.screen.accounts.AccountsEvent
 import com.dms.moneymanager.presentation.screen.accounts.AccountsScreen
 import com.dms.moneymanager.presentation.screen.accounts.AccountsViewModel
@@ -44,6 +45,7 @@ import com.dms.moneymanager.presentation.screen.settings.SettingsScreen
 import com.dms.moneymanager.presentation.screen.settings.SettingsViewModel
 import com.dms.moneymanager.presentation.screen.transactions.TransactionsScreen
 import com.dms.moneymanager.presentation.screen.transactions.TransactionsViewModel
+import com.dms.moneymanager.presentation.screen.transactions.component.bottomsheet.BottomSheetTransfer
 import com.dms.moneymanager.presentation.screen.transactions.createoredit.CreateOrEditTransactionScreen
 import com.dms.moneymanager.presentation.util.NavigationRoute
 import com.dms.moneymanager.ui.theme.MoneyManagerTheme
@@ -120,14 +122,13 @@ class MainActivity : ComponentActivity() {
                                 sheetState = bottomSheetState
                             ) {
                                 when (bottomSheet) {
-                                    // TODO
-//                                    is AccountsBottomSheetType.BottomSheetTransfer -> {
-//                                        BottomSheetTransfer(
-//                                            listAccount = viewState.accounts,
-//                                            account = bottomSheet.account,
-//                                            onEvent = { event -> currentViewModel?.onEvent(event) }
-//                                        )
-//                                    }
+                                   is AccountsBottomSheetType.BottomSheetTransfer -> {
+                                       BottomSheetTransfer(
+                                           listAccount = bottomSheet.listAccounts,
+                                           account = bottomSheet.account,
+                                           onEvent = { event -> currentViewModel?.onEvent(event) }
+                                       )
+                                   }
 
                                     else -> {}
                                 }
@@ -301,7 +302,7 @@ class MainActivity : ComponentActivity() {
                                 )
                                 when (snackbarResult) {
                                     SnackbarResult.ActionPerformed -> snackbarStateValue.onActionPerformed()
-                                    SnackbarResult.Dismissed -> snackbarStateValue.onDismissed?.invoke()
+                                    SnackbarResult.Dismissed -> currentViewModel?.onEvent(BaseEvent.OnSnackbarDismissed)
                                 }
                             }
                         } else {
@@ -309,8 +310,8 @@ class MainActivity : ComponentActivity() {
                         }
                     })
 
-                    toastMessage?.value?.let { error ->
-                        Toast.makeText(LocalContext.current, error, Toast.LENGTH_SHORT).show()
+                    toastMessage?.value?.let { message ->
+                        Toast.makeText(LocalContext.current, message, Toast.LENGTH_SHORT).show()
                         currentViewModel?.onEvent(BaseEvent.RemoveToast)
                     }
                 }

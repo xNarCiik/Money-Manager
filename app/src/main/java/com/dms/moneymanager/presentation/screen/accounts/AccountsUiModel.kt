@@ -11,5 +11,5 @@ data class AccountsUiModel(
 
 
 sealed interface AccountsBottomSheetType : BottomSheetType {
-    class BottomSheetTransfer(val account: Account) : AccountsBottomSheetType
+    class BottomSheetTransfer(val listAccounts: List<Account>, val account: Account) : AccountsBottomSheetType
 }

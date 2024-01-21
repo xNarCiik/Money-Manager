@@ -16,14 +16,14 @@ interface BaseEvent {
     class OpenBottomSheet(val bottomSheetType: BottomSheetType) : BaseEvent
     object CloseBottomSheet : BaseEvent
     object RemoveToast : BaseEvent
+    object OnSnackbarDismissed : BaseEvent
 }
 
 data class SnackbarState(
     val message: String,
     val actionLabel: String,
     val duration: SnackbarDuration = SnackbarDuration.Short,
-    val onActionPerformed: () -> Unit,
-    val onDismissed: (() -> Unit)? = null
+    val onActionPerformed: () -> Unit
 )
 
 
@@ -70,6 +70,10 @@ abstract class BaseViewModel : ViewModel() {
 
                 is BaseEvent.RemoveToast -> {
                     _toastMessage.value = null
+                }
+
+                is BaseEvent.OnSnackbarDismissed -> {
+                    _snackbarState.value = null
                 }
             }
         }

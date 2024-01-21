@@ -20,7 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.dms.moneymanager.R
 import com.dms.moneymanager.domain.model.main.Account
@@ -31,7 +30,6 @@ import com.dms.moneymanager.presentation.util.toAmountString
 fun AccountItem(
     modifier: Modifier = Modifier,
     account: Account,
-    appliedTransaction: () -> Unit,
     transferAction: () -> Unit,
     editAction: () -> Unit,
     enableOrDisableAction: () -> Unit,
@@ -44,14 +42,6 @@ fun AccountItem(
         modifier = modifier
             .clickable {
                 expandedDropDownMenu = true
-                // TODO
-                // when (transactionsUiState) {
-                //     TransactionsUiState.APPLIED_TRANSACTION -> {
-                //         appliedTransaction()
-                //     }
-                //
-                //     else -> expandedDropDownMenu = true
-                // }
             }
             .background(color = if (isEnable) MaterialTheme.colorScheme.surfaceVariant else Color.Gray)
     ) {

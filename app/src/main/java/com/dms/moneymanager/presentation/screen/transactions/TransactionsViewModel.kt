@@ -39,7 +39,9 @@ sealed interface TransactionsEvent : BaseEvent {
 
     class ClickEnableOrDisableTransaction(val transaction: Transaction) : TransactionsEvent
     class ClickAppliedTransaction(val transaction: Transaction) : TransactionsEvent
-    class AppliedTransaction(val toAccount: Account) : TransactionsEvent
+    class ClickCancelAppliedTransaction(val transaction: Transaction, val account: Account) :
+        TransactionsEvent
+
     class ClickRemoveTransaction(val transaction: Transaction) : TransactionsEvent
     class ClickCancelRemoveTransaction(val transaction: Transaction) : TransactionsEvent
 }
@@ -55,29 +57,21 @@ class TransactionsViewModel @Inject constructor(
     private var _currentDate = MutableStateFlow<Date>(value = calendar.time)
     private var _listAccount = MutableStateFlow<List<Account>>(value = emptyList())
     private var _listTransaction = MutableStateFlow<List<Transaction>>(value = emptyList())
-    private var _selectedAccount = MutableStateFlow<Account?>(value = null)
-    private var _selectedTransaction = MutableStateFlow<Transaction?>(value = null)
 
     @Suppress("UNCHECKED_CAST")
     val viewState = combine(
         _currentDate,
         _listAccount,
-        _listTransaction,
-        _selectedAccount,
-        _selectedTransaction,
+        _listTransaction
     ) { params ->
         val currentDate = params[0] as Date
         val listAccount = params[1] as List<Account>
         val listTransaction = params[2] as List<Transaction>
-        val selectedAccount = params[3] as Account?
-        val selectedTransaction = params[4] as Transaction?
 
         TransactionsUiModel(
             currentDate = currentDate,
             accounts = listAccount,
-            transactions = listTransaction,
-            selectedAccount = selectedAccount,
-            selectedTransaction = selectedTransaction,
+            transactions = listTransaction
         )
     }.stateIn(viewModelScope, SharingStarted.Lazily, TransactionsUiModel())
 
@@ -127,36 +121,69 @@ class TransactionsViewModel @Inject constructor(
                 }
             }
 
-            // is TransactionsEvent.OnClickAppliedTransaction -> {
-            //     // TODO Handle differently
-            //     _transactionsUiState.value = TransactionsUiState.APPLIED_TRANSACTION
-            //     _selectedTransaction.value = event.transaction
-            // }
-            //
-            // is TransactionsEvent.AppliedTransaction -> {
-            //     // TODO Handle differently
-            //     _selectedTransaction.value?.let {
-            //         appliedTransaction(account = event.toAccount, transaction = it)
-            //     }
-            //     onEvent(event = BaseEvent.ActionPerformedSnackbar)
-            // }
+            is TransactionsEvent.ClickAppliedTransaction -> {
+                val transaction = event.transaction
+                if (transaction.destinationAccount != null) {
+                    appliedTransaction(
+                        account = transaction.destinationAccount,
+                        transaction = transaction
+                    )
+                    _snackbarState.value = SnackbarState(
+                        message = "Transaction ${transaction.name} appliqué au compte ${transaction.destinationAccount.name}.",
+                        actionLabel = "Annuler",
+                        onActionPerformed = {
+                            onEvent(
+                                event = TransactionsEvent.ClickCancelAppliedTransaction(
+                                    transaction = transaction,
+                                    account = transaction.destinationAccount
+                                )
+                            )
+                        }
+                    )
+                } else {
+                    // TODO NAV AND SELECT ACCOUNT
+                }
+            }
+
+            is TransactionsEvent.ClickCancelAppliedTransaction -> {
+                viewModelScope.launch {
+                    kotlin.runCatching {
+                        accountUseCase.cancelAppliedTransaction(
+                            transaction = event.transaction,
+                            account = event.account
+                        )
+                    }
+                        .onSuccess {
+                            _snackbarState.value = null
+                            refreshData()
+                        }
+                }
+                _snackbarState.value = null
+            }
 
             is TransactionsEvent.ClickRemoveTransaction -> {
                 val transaction = event.transaction
                 _snackbarState.value = SnackbarState(
                     message = "Transaction ${transaction.name} supprimé.",
                     actionLabel = "Annuler",
-                    onActionPerformed = { onEvent(event = TransactionsEvent.ClickCancelRemoveTransaction(transaction = transaction))}
+                    onActionPerformed = {
+                        onEvent(
+                            event = TransactionsEvent.ClickCancelRemoveTransaction(
+                                transaction = transaction
+                            )
+                        )
+                    }
                 )
                 removeTransaction(transaction = transaction)
             }
 
             is TransactionsEvent.ClickCancelRemoveTransaction -> {
                 viewModelScope.launch {
-                    kotlin.runCatching { transactionUseCase.createTransaction(transaction = event.transaction) }.onSuccess {
-                        _snackbarState.value = null
-                        refreshData()
-                    }
+                    kotlin.runCatching { transactionUseCase.createTransaction(transaction = event.transaction) }
+                        .onSuccess {
+                            _snackbarState.value = null
+                            refreshData()
+                        }
                 }
             }
         }

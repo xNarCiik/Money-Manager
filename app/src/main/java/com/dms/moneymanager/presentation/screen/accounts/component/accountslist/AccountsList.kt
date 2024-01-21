@@ -17,7 +17,6 @@ import com.dms.moneymanager.domain.model.main.Account
 import com.dms.moneymanager.presentation.BaseEvent
 import com.dms.moneymanager.presentation.screen.accounts.AccountsBottomSheetType
 import com.dms.moneymanager.presentation.screen.accounts.AccountsEvent
-import com.dms.moneymanager.presentation.screen.transactions.TransactionsEvent
 import com.dms.moneymanager.presentation.util.NavigationRoute
 
 @Composable
@@ -47,11 +46,11 @@ fun AccountsList(
                 AccountItem(
                     modifier = Modifier.padding(bottom = 1.dp),
                     account = account,
-                    appliedTransaction = { onEvent(TransactionsEvent.AppliedTransaction(toAccount = account)) },
                     transferAction = {
                         onEvent(
                             BaseEvent.OpenBottomSheet(
                                 bottomSheetType = AccountsBottomSheetType.BottomSheetTransfer(
+                                    listAccounts = listAccount,
                                     account = account
                                 )
                             )
